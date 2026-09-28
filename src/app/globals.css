@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/*
+ * ─────────────────────────────────────────────────────────────
+ * Conectrz design tokens
+ * ─────────────────────────────────────────────────────────────
+ * Every token below becomes a Tailwind utility automatically:
+ *   --color-primary      → bg-primary, text-primary, border-primary …
+ *   --font-display       → font-display
+ *   --radius-card        → rounded-card
+ *   --shadow-card        → shadow-card
+ * Change a value here and it updates everywhere.
+ */
+@theme {
+  /* Brand */
+  --color-primary: #7257f5;
+  --color-primary-hover: #6248e8;
+  --color-primary-light: #f0edff;
+
+  /* Neutrals */
+  --color-ink: #111315;
+  --color-graphite: #3f4145;
+  --color-muted: #74777d;
+  --color-border: #e6e7e9;
+  --color-surface: #f7f7f8;
+  --color-white: #ffffff;
+
+  /* Status (not part of the brand palette — used only for availability) */
+  --color-success: #16a34a;
+
+  /* Brand gradient stops — use sparingly (see .bg-brand-gradient below) */
+  --color-gradient-1: #7257f5;
+  --color-gradient-2: #b84ceb;
+  --color-gradient-3: #f052a7;
+  --color-gradient-4: #ff7968;
+
+  /* Typography — font variables are set by next/font in app/layout.tsx */
+  --font-display: var(--font-urbanist), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Radii */
+  --radius-control: 0.625rem; /* 10px — inputs, buttons, dropdowns */
+  --radius-card: 0.875rem; /* 14px — creator cards, panels */
+
+  /* Shadows — kept deliberately soft */
+  --shadow-card: 0 1px 2px rgb(17 19 21 / 0.04);
+  --shadow-card-hover: 0 8px 24px -8px rgb(17 19 21 / 0.12);
+  --shadow-popover: 0 12px 32px -8px rgb(17 19 21 / 0.16),
+    0 2px 6px rgb(17 19 21 / 0.04);
+
+  /* Layout */
+  --container-page: 80rem; /* 1280px → max-w-page */
+}
+
+/* The brand gradient as a utility: className="bg-brand-gradient" */
+@utility bg-brand-gradient {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-gradient-1) 0%,
+    var(--color-gradient-2) 38%,
+    var(--color-gradient-3) 70%,
+    var(--color-gradient-4) 100%
+  );
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-white);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  /* One consistent, clearly visible focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Native <dialog> backdrop used by the filter panel */
+  dialog::backdrop {
+    background: rgb(17 19 21 / 0.4);
+  }
+}
