@@ -10,7 +10,7 @@ export default function SignupPage() {
       <p className="mt-2 mb-8 text-muted">
         Find and connect with creators living in Japan.
       </p>
-      <SignupForm />
+      <SignupForm role="company" />
     </>
   );
 }

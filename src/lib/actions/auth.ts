@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isMockMode } from "@/lib/config";
 import { ensureCompanyProfile } from "@/lib/data/account";
+import { HOME_PATHS } from "@/lib/roles";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface AuthFormState {
@@ -16,10 +17,10 @@ export interface AuthFormState {
 
 const MIN_PASSWORD_LENGTH = 8;
 
-/** Only allow redirects to paths inside this app. */
+/** Only allow redirects to paths inside this app. /home picks the area by account type. */
 function safeNextPath(value: FormDataEntryValue | null) {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/discover";
+  return next.startsWith("/") && !next.startsWith("//") ? next : "/home";
 }
 
 export async function logIn(_previous: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -30,7 +31,7 @@ export async function logIn(_previous: AuthFormState, formData: FormData): Promi
   if (!email || !password) {
     return { error: "Enter your email and password.", values: { email } };
   }
-  if (isMockMode) redirect(next);
+  if (isMockMode) redirect(next === "/home" ? HOME_PATHS.company : next);
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -38,23 +39,29 @@ export async function logIn(_previous: AuthFormState, formData: FormData): Promi
     return { error: "That email and password don't match.", values: { email } };
   }
 
+  // No-op for creators/admins; finishes company setup if confirmation happened elsewhere.
   await ensureCompanyProfile(supabase, data.user);
   redirect(next);
 }
 
+/**
+ * Sign-up for both account types. The hidden "role" field decides which.
+ * Companies get their company profile right away; creators finish onboarding next.
+ */
 export async function signUp(_previous: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const companyName = String(formData.get("companyName") ?? "").trim();
+  const role = formData.get("role") === "creator" ? "creator" : "company";
+  const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const values = { companyName, email };
+  const values = { name, email };
 
-  if (!companyName || !email || !password) {
+  if (!name || !email || !password) {
     return { error: "Fill in all fields.", values };
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
     return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.`, values };
   }
-  if (isMockMode) redirect("/discover");
+  if (isMockMode) redirect(HOME_PATHS[role]);
 
   const origin = (await headers()).get("origin") ?? "";
   const supabase = await createSupabaseServerClient();
@@ -62,8 +69,11 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
     email,
     password,
     options: {
-      // Read by the on_auth_user_created trigger ("role") and ensureCompanyProfile ("company_name").
-      data: { role: "company", company_name: companyName },
+      // "role" is read by the on_auth_user_created trigger (only company/creator are accepted).
+      data:
+        role === "company"
+          ? { role, company_name: name }
+          : { role, display_name: name },
       emailRedirectTo: `${origin}/auth/confirm`,
     },
   });
@@ -76,8 +86,8 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
     return { notice: `We sent a confirmation link to ${email}. Open it to finish signing up.` };
   }
 
-  await ensureCompanyProfile(supabase, data.user);
-  redirect("/discover");
+  if (role === "company") await ensureCompanyProfile(supabase, data.user);
+  redirect(HOME_PATHS[role]);
 }
 
 export async function signOut() {

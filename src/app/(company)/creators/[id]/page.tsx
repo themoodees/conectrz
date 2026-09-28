@@ -3,9 +3,10 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CreatorProfileView } from "@/components/creator/CreatorProfileView";
+import { ProfileActions } from "@/components/creator/ProfileActions";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { getCreatorProfile } from "@/lib/data/creators";
-import { getConversationIdWithCreator } from "@/lib/data/messages";
+import { getConversationIdWithCreator, getConversationUsage } from "@/lib/data/messages";
 import { getSavedCreatorIds } from "@/lib/data/saved";
 
 export async function generateMetadata({
@@ -18,10 +19,11 @@ export async function generateMetadata({
 
 export default async function CreatorProfilePage({ params }: PageProps<"/creators/[id]">) {
   const { id } = await params;
-  const [creator, savedIds, conversationId] = await Promise.all([
+  const [creator, savedIds, conversationId, usage] = await Promise.all([
     getCreatorProfile(id),
     getSavedCreatorIds(),
     getConversationIdWithCreator(id),
+    getConversationUsage(),
   ]);
   if (!creator) notFound();
 
@@ -37,8 +39,15 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
 
       <CreatorProfileView
         creator={creator}
-        isSaved={savedIds.includes(creator.id)}
-        conversationId={conversationId}
+        actions={
+          <ProfileActions
+            creatorId={creator.id}
+            creatorName={creator.displayName}
+            isSaved={savedIds.includes(creator.id)}
+            conversationId={conversationId}
+            usage={usage}
+          />
+        }
       />
     </PageContainer>
   );

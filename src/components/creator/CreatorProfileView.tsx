@@ -9,19 +9,21 @@ import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { CreatorImage } from "@/components/discovery/CreatorImage";
 import { MapPinIcon, PlatformIcon } from "@/components/ui/icons";
 import { PortfolioGrid } from "./PortfolioGrid";
-import { ProfileActions } from "./ProfileActions";
 
 interface CreatorProfileViewProps {
   creator: CreatorProfile;
-  isSaved: boolean;
-  conversationId: string | null;
+  /**
+   * Company-only actions (contact/save/report). Omitted when a creator
+   * previews their own profile.
+   */
+  actions?: React.ReactNode;
 }
 
 /**
  * Full Creator Profile. Layout: photo left (sticky on desktop), details right,
  * portfolio full-width below. On phones everything stacks.
  */
-export function CreatorProfileView({ creator, isSaved, conversationId }: CreatorProfileViewProps) {
+export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps) {
   return (
     <>
       <div className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
@@ -41,13 +43,7 @@ export function CreatorProfileView({ creator, isSaved, conversationId }: Creator
             {formatLocation(creator)}
           </p>
 
-          <div className="mt-6">
-            <ProfileActions
-              creatorId={creator.id}
-              isSaved={isSaved}
-              conversationId={conversationId}
-            />
-          </div>
+          {actions && <div className="mt-6">{actions}</div>}
 
           <div className="mt-8 divide-y divide-border border-t border-border">
             {creator.bio && (

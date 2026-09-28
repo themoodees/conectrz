@@ -9,7 +9,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <>
       <h1 className="text-3xl font-semibold text-ink">Welcome back</h1>
-      <p className="mt-2 mb-8 text-muted">Sign in to your company account.</p>
+      <p className="mt-2 mb-8 text-muted">Sign in to your Conectrz account.</p>
       <LoginForm
         next={typeof next === "string" ? next : undefined}
         initialError={

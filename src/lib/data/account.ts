@@ -18,13 +18,18 @@ export async function getCurrentCompanyAccount(): Promise<CompanyAccount | null>
 
   const { data, error } = await supabase
     .from("company_profiles")
-    .select("id, name, contact_email")
+    .select("id, name, contact_email, status")
     .eq("id", user.id)
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
 
-  return { id: data.id, companyName: data.name, contactEmail: data.contact_email };
+  return {
+    id: data.id,
+    companyName: data.name,
+    contactEmail: data.contact_email,
+    status: data.status,
+  };
 }
 
 /**

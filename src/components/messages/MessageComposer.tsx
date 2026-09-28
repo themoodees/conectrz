@@ -3,9 +3,16 @@
 import { useActionState, useRef, useState } from "react";
 import { sendMessage, type SendMessageState } from "@/lib/actions/messages";
 import { SendIcon } from "@/components/ui/icons";
+import type { Viewer } from "@/types/messages";
 
 /** Reply box. Enter sends, Shift+Enter adds a new line. */
-export function MessageComposer({ conversationId }: { conversationId: string }) {
+export function MessageComposer({
+  conversationId,
+  viewer,
+}: {
+  conversationId: string;
+  viewer: Viewer;
+}) {
   const [text, setText] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -21,6 +28,7 @@ export function MessageComposer({ conversationId }: { conversationId: string }) 
   return (
     <form ref={formRef} action={formAction} className="border-t border-border px-4 py-3 md:px-6">
       <input type="hidden" name="conversationId" value={conversationId} />
+      <input type="hidden" name="viewer" value={viewer} />
       {state.error && (
         <p role="alert" className="mx-auto mb-2 max-w-2xl text-sm text-danger">
           {state.error}

@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Message } from "@/types/messages";
+import type { Message, Viewer } from "@/types/messages";
 import { formatDayLabel, formatTime, getDayKey } from "@/lib/format";
 import { markConversationRead } from "@/lib/actions/messages";
 
 interface MessageThreadProps {
   conversationId: string;
+  viewer: Viewer;
   messages: Message[];
   hasUnread: boolean;
 }
 
-/** Scrollable list of messages, grouped by day. Company messages sit on the right. */
-export function MessageThread({ conversationId, messages, hasUnread }: MessageThreadProps) {
+/** Scrollable list of messages, grouped by day. Your own messages sit on the right. */
+export function MessageThread({ conversationId, viewer, messages, hasUnread }: MessageThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastMine = messages.findLast((message) => message.isMine);
 
@@ -21,10 +22,10 @@ export function MessageThread({ conversationId, messages, hasUnread }: MessageTh
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages.length]);
 
-  // Opening the conversation marks the creator's messages as read.
+  // Opening the conversation marks the other side's messages as read.
   useEffect(() => {
-    if (hasUnread) void markConversationRead(conversationId);
-  }, [conversationId, hasUnread]);
+    if (hasUnread) void markConversationRead(conversationId, viewer);
+  }, [conversationId, viewer, hasUnread]);
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-6 md:px-6">

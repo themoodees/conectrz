@@ -14,6 +14,8 @@ export interface MockMessage {
 export interface MockConversation {
   id: string;
   creatorId: string;
+  archivedByCompany?: boolean;
+  archivedByCreator?: boolean;
   messages: MockMessage[];
 }
 

@@ -106,3 +106,13 @@ export function formatDayLabel(iso: string) {
   if (key === getDayKey(new Date(Date.now() - 86_400_000))) return "Yesterday";
   return dayFormat.format(new Date(iso));
 }
+
+const longDateFormat = new Intl.DateTimeFormat("en", {
+  timeZone: TIME_ZONE,
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+/** "Oct 1, 2026" */
+export const formatShortDate = (iso: string) => longDateFormat.format(new Date(iso));

@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex flex-col px-4 py-6 sm:px-8">
-        <Logo href="/login" />
+        <Logo href="/" />
         <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
           {isMockMode && (
             <p className="mb-6 rounded-control bg-surface px-3.5 py-2.5 text-xs text-graphite">

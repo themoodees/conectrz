@@ -17,3 +17,6 @@ export const supabaseConfig = {
   url: supabaseUrl ?? "",
   publishableKey: supabaseKey ?? "",
 };
+
+/** Where upgrade requests and support questions go. PLACEHOLDER — set your real address. */
+export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@conectrz.com";

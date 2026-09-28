@@ -171,7 +171,17 @@ export type Database = {
       }
     }
     Views: { [_ in never]: never }
-    Functions: { is_admin: { Args: never; Returns: boolean } }
+    Functions: {
+      is_admin: { Args: never; Returns: boolean }
+      my_conversation_usage: {
+        Args: never
+        Returns: { period_end: string; quota: number; tier_name: string; used: number }[]
+      }
+      start_conversation: {
+        Args: { p_creator_id: string; p_message: string }
+        Returns: string
+      }
+    }
     Enums: {
       account_status: "active" | "paused" | "deleted"
       admin_action_type:

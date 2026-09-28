@@ -25,5 +25,5 @@ export async function GET(request: NextRequest) {
   }
 
   await ensureCompanyProfile(supabase, data.user);
-  return NextResponse.redirect(new URL("/discover", origin));
+  return NextResponse.redirect(new URL("/home", origin));
 }
