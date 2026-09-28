@@ -4,11 +4,12 @@ import { useRef, useState } from "react";
 import type { CompanyAccount } from "@/types/account";
 import { getInitials } from "@/lib/format";
 import { useDismiss } from "@/lib/useDismiss";
+import { signOut } from "@/lib/actions/auth";
 import { ChevronDownIcon, LogOutIcon, SettingsIcon } from "@/components/ui/icons";
 
 /**
  * Company/account dropdown.
- * Menu actions are disabled until account settings and auth are built.
+ * "Account settings" stays disabled until that page is built.
  */
 export function AccountMenu({ account }: { account: CompanyAccount }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,21 +45,33 @@ export function AccountMenu({ account }: { account: CompanyAccount }) {
             <p className="truncate text-xs text-muted">{account.contactEmail}</p>
           </div>
           <div className="my-1 h-px bg-border" />
-          <MenuItem icon={<SettingsIcon className="size-4" />} label="Account settings" />
-          <MenuItem icon={<LogOutIcon className="size-4" />} label="Sign out" />
+          <MenuItem icon={<SettingsIcon className="size-4" />} label="Account settings" disabled />
+          <form action={signOut}>
+            <MenuItem icon={<LogOutIcon className="size-4" />} label="Sign out" type="submit" />
+          </form>
         </div>
       )}
     </div>
   );
 }
 
-function MenuItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function MenuItem({
+  icon,
+  label,
+  type = "button",
+  disabled = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  type?: "button" | "submit";
+  disabled?: boolean;
+}) {
   return (
     <button
-      type="button"
+      type={type}
       role="menuitem"
-      disabled
-      title="Coming soon"
+      disabled={disabled}
+      title={disabled ? "Coming soon" : undefined}
       className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-graphite enabled:hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
     >
       {icon}

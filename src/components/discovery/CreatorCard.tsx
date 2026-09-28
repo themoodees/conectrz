@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Creator } from "@/types/creator";
 import {
   formatFollowers,
@@ -28,6 +29,7 @@ interface CreatorCardProps {
  * Discovery card: a quick "is this creator relevant?" summary — not a full profile.
  * Hierarchy: photo → name/location → niches → languages → audience → services/rate.
  * Audience only appears when a creator reports follower counts (UGC creators often don't).
+ * The whole card links to the Creator Profile (via the name link); Save sits above it.
  */
 export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps) {
   const audience = creator.socialAccounts.filter((account) => account.followerCount !== null);
@@ -36,7 +38,7 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
     creator.services.length > 1 || creator.services[0]?.rateType === "starting_from";
 
   return (
-    <article className="group flex w-full flex-col overflow-hidden rounded-card border border-border bg-white shadow-card transition-shadow duration-200 hover:shadow-card-hover">
+    <article className="group relative flex w-full flex-col overflow-hidden rounded-card border border-border bg-white shadow-card transition-shadow duration-200 hover:shadow-card-hover">
       {/* Image + overlays */}
       <div className="relative">
         <CreatorImage src={creator.photoUrl} name={creator.displayName} />
@@ -48,7 +50,7 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
           onClick={() => onToggleSave(creator.id)}
           aria-pressed={isSaved}
           aria-label={isSaved ? `Remove ${creator.displayName} from saved` : `Save ${creator.displayName}`}
-          className={`absolute top-3 right-3 grid size-9 place-items-center rounded-full transition-colors ${
+          className={`absolute top-3 right-3 z-10 grid size-9 place-items-center rounded-full transition-colors ${
             isSaved
               ? "bg-primary text-white hover:bg-primary-hover"
               : "bg-white/95 text-graphite hover:text-primary"
@@ -62,7 +64,12 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>
           <h3 className="truncate text-lg leading-tight font-semibold text-ink">
-            {creator.displayName}
+            <Link
+              href={`/creators/${creator.id}`}
+              className="after:absolute after:inset-0 after:rounded-card focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-primary"
+            >
+              {creator.displayName}
+            </Link>
           </h3>
           <p className="mt-1 flex items-center gap-1 text-sm text-muted">
             <MapPinIcon className="size-3.5 shrink-0" />

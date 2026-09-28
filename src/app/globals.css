@@ -25,8 +25,10 @@
   --color-surface: #f7f7f8;
   --color-white: #ffffff;
 
-  /* Status (not part of the brand palette — used only for availability) */
-  --color-success: #16a34a;
+  /* Status (not part of the brand palette) */
+  --color-success: #16a34a; /* availability */
+  --color-danger: #b42318; /* form errors */
+  --color-danger-light: #fef3f2;
 
   /* Brand gradient stops — use sparingly (see .bg-brand-gradient below) */
   --color-gradient-1: #7257f5;

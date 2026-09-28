@@ -2,9 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Placeholder creator photos are served from Unsplash for now.
-    // When photos move to Supabase Storage, add its hostname here.
+    // Creator photos/portfolio: Supabase Storage (public buckets) + Unsplash placeholders.
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kwjpvlxnuquphjblydcy.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
       {
         protocol: "https",
         hostname: "images.unsplash.com",

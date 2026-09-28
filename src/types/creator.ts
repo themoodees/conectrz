@@ -50,3 +50,17 @@ export interface Creator {
   services: CreatorService[];
   socialAccounts: SocialAccount[];
 }
+
+export interface PortfolioItem {
+  id: string;
+  mediaUrl: string;
+  /** e.g. "image" or "video" */
+  mediaType: string;
+  title: string | null;
+  description: string | null;
+}
+
+/** Everything shown on the Creator Profile page. */
+export interface CreatorProfile extends Creator {
+  portfolio: PortfolioItem[];
+}

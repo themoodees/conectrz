@@ -19,23 +19,29 @@ import { FilterPanel } from "./FilterPanel";
 import { FilterSection } from "./FilterSection";
 import { SortSelect } from "./SortSelect";
 import { useDiscoveryFilters } from "./useDiscoveryFilters";
+import { useSavedCreators } from "@/components/creator/useSavedCreators";
 
 const ALL_FILTERS: FilterKey[] = [...PRIMARY_FILTERS, ...SECONDARY_FILTERS];
 
 interface CreatorDiscoveryProps {
   creators: Creator[];
   filterOptions: DiscoveryFilterOptions;
+  initialSavedIds: string[];
 }
 
 /**
  * Creator Discovery: search, filters, sorting and results.
- * All state is local for now (mock data). Saving is local-only too —
- * it will persist to `saved_creators` once Supabase is connected.
+ * Search/filter/sort run in the browser over the loaded creators.
+ * Saving is stored via useSavedCreators.
  */
-export function CreatorDiscovery({ creators, filterOptions }: CreatorDiscoveryProps) {
+export function CreatorDiscovery({
+  creators,
+  filterOptions,
+  initialSavedIds,
+}: CreatorDiscoveryProps) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortOption>("recommended");
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const { savedIds, toggleSave } = useSavedCreators(initialSavedIds);
   // "more" = desktop secondary filters, "all" = mobile full filter sheet
   const [panel, setPanel] = useState<"more" | "all" | null>(null);
   const { filters, actions } = useDiscoveryFilters();
@@ -54,14 +60,6 @@ export function CreatorDiscovery({ creators, filterOptions }: CreatorDiscoveryPr
   const chips = getActiveFilterChips(filters);
   const panelKeys = panel === "more" ? SECONDARY_FILTERS : ALL_FILTERS;
   const panelHasSelection = chips.some((chip) => panelKeys.includes(chip.key));
-
-  const toggleSave = (creatorId: string) =>
-    setSavedIds((current) => {
-      const next = new Set(current);
-      if (next.has(creatorId)) next.delete(creatorId);
-      else next.add(creatorId);
-      return next;
-    });
 
   const resetAll = () => {
     setQuery("");

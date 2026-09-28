@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS } from "./navItems";
+import { NAV_ITEMS, isNavItemActive } from "./navItems";
 
 /** Bottom tab bar replacing the header links on small screens. */
 export function MobileTabBar() {
@@ -14,8 +14,8 @@ export function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <ul className="grid grid-cols-3">
-        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
-          const isActive = pathname.startsWith(href);
+        {NAV_ITEMS.map(({ label, href, icon: Icon, activeFor }) => {
+          const isActive = isNavItemActive(pathname, activeFor);
           return (
             <li key={href}>
               <Link

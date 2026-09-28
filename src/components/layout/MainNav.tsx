@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS } from "./navItems";
+import { NAV_ITEMS, isNavItemActive } from "./navItems";
 
 /** Desktop/tablet navigation links inside the header. */
 export function MainNav() {
@@ -12,7 +12,7 @@ export function MainNav() {
     <nav aria-label="Main" className="hidden md:block">
       <ul className="flex items-center gap-1">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = isNavItemActive(pathname, item.activeFor);
           return (
             <li key={item.href}>
               <Link

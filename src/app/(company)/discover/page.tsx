@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { CreatorDiscovery } from "@/components/discovery/CreatorDiscovery";
 import {
   getDiscoverableCreators,
   getDiscoveryFilterOptions,
 } from "@/lib/data/creators";
+import { getSavedCreatorIds } from "@/lib/data/saved";
 
 export const metadata: Metadata = { title: "Discover creators" };
 
@@ -15,13 +17,14 @@ const COPY = {
 };
 
 export default async function DiscoverPage() {
-  const [creators, filterOptions] = await Promise.all([
+  const [creators, filterOptions, savedIds] = await Promise.all([
     getDiscoverableCreators(),
     getDiscoveryFilterOptions(),
+    getSavedCreatorIds(),
   ]);
 
   return (
-    <div className="mx-auto max-w-page px-4 md:px-6 lg:px-8">
+    <PageContainer>
       <header className="pt-7 pb-6 md:pt-10 md:pb-7">
         <h1 className="text-[1.75rem] leading-tight font-semibold text-ink md:text-4xl">
           {COPY.title}
@@ -29,7 +32,11 @@ export default async function DiscoverPage() {
         <p className="mt-2 text-base text-muted">{COPY.description}</p>
       </header>
 
-      <CreatorDiscovery creators={creators} filterOptions={filterOptions} />
-    </div>
+      <CreatorDiscovery
+        creators={creators}
+        filterOptions={filterOptions}
+        initialSavedIds={savedIds}
+      />
+    </PageContainer>
   );
 }

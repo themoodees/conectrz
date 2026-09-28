@@ -16,6 +16,7 @@ export const mockCreators: Creator[] = [
     // Japanese beauty creator in Tokyo, Instagram with a significant audience
     id: "cr-001",
     displayName: "Yui Tanaka",
+    bio: "Tokyo-based beauty creator sharing honest skincare routines and J-beauty finds. I focus on sensitive skin and everyday makeup.",
     photoUrl: photo("photo-1544005313-94ddf0286df2"),
     country: "Japan",
     prefecture: "Tokyo",
@@ -36,6 +37,7 @@ export const mockCreators: Creator[] = [
     // International creator living in Japan, bilingual
     id: "cr-002",
     displayName: "Emma Collins",
+    bio: "British creator living in Tokyo for six years. I film slow-living lifestyle content and weekend trips around Japan for an international audience.",
     photoUrl: photo("photo-1494790108377-be9c29b29330"),
     country: "Japan",
     prefecture: "Tokyo",
@@ -59,6 +61,7 @@ export const mockCreators: Creator[] = [
     // UGC-only creator — no audience, content for brand channels
     id: "cr-003",
     displayName: "Haruka Mori",
+    bio: "UGC creator in Osaka. I make clean, natural product videos and photos for skincare and home brands — ready for ads and brand channels.",
     photoUrl: photo("photo-1517841905240-472988babdf9"),
     country: "Japan",
     prefecture: "Osaka",
@@ -80,6 +83,7 @@ export const mockCreators: Creator[] = [
     // TikTok-focused creator
     id: "cr-004",
     displayName: "Ren Kobayashi",
+    bio: "Food creator exploring Tokyo's neighbourhood restaurants and cafés. Short, fast-paced TikTok videos with a strong local following.",
     photoUrl: photo("photo-1500648767791-00dcc994a43e"),
     country: "Japan",
     prefecture: "Tokyo",
@@ -99,6 +103,7 @@ export const mockCreators: Creator[] = [
     // Multilingual creator
     id: "cr-005",
     displayName: "Sofia Martínez",
+    bio: "Spanish creator living in Kyoto. I create travel and culture content in Spanish, English and Japanese, and offer voiceover and localization.",
     photoUrl: photo("photo-1524504388940-b1c1722653e1"),
     country: "Japan",
     prefecture: "Kyoto",
@@ -123,6 +128,7 @@ export const mockCreators: Creator[] = [
     // Creator offering several services, cross-platform
     id: "cr-006",
     displayName: "Daiki Sato",
+    bio: "Tech and gaming reviewer in Yokohama. In-depth YouTube reviews, short-form TikToks and UGC for gadgets and accessories.",
     photoUrl: photo("photo-1507003211169-0a1dd7228f2d"),
     country: "Japan",
     prefecture: "Kanagawa",
@@ -148,6 +154,7 @@ export const mockCreators: Creator[] = [
   {
     id: "cr-007",
     displayName: "Aoi Nakamura",
+    bio: "Fukuoka-based fashion and beauty creator. Street style, seasonal lookbooks and makeup tutorials.",
     photoUrl: photo("photo-1534528741775-53994a69daeb"),
     country: "Japan",
     prefecture: "Fukuoka",
@@ -171,6 +178,7 @@ export const mockCreators: Creator[] = [
     // UGC creator with a small personal account (no audience claims)
     id: "cr-008",
     displayName: "Liam Chen",
+    bio: "UGC creator in Tokyo making product demos and unboxing videos for tech and lifestyle brands. English and Mandarin voiceovers.",
     photoUrl: photo("photo-1506794778202-cad84cf45f1d"),
     country: "Japan",
     prefecture: "Tokyo",
@@ -193,6 +201,7 @@ export const mockCreators: Creator[] = [
   {
     id: "cr-009",
     displayName: "Mei Watanabe",
+    bio: "Hokkaido food and travel creator. Seasonal food, onsen trips and local producers from northern Japan.",
     photoUrl: photo("photo-1529626455594-4ff0802cfb7e"),
     country: "Japan",
     prefecture: "Hokkaido",
@@ -211,6 +220,7 @@ export const mockCreators: Creator[] = [
   {
     id: "cr-010",
     displayName: "Chloé Bernard",
+    bio: "French creator in Tokyo covering fashion, design and lifestyle. Available for Reels and event appearances.",
     photoUrl: photo("photo-1438761681033-6461ffad8d80"),
     country: "Japan",
     prefecture: "Tokyo",
@@ -233,6 +243,7 @@ export const mockCreators: Creator[] = [
   {
     id: "cr-011",
     displayName: "Kenta Ishikawa",
+    bio: "Outdoor and fitness creator based in Okinawa. Diving, hiking and active travel on YouTube.",
     photoUrl: photo("photo-1539571696357-5a69c17a67c6"),
     country: "Japan",
     prefecture: "Okinawa",
@@ -255,6 +266,7 @@ export const mockCreators: Creator[] = [
   {
     id: "cr-012",
     displayName: "Rina Fujimoto",
+    bio: "Nagoya-based mom creator sharing home organisation, family life and practical products.",
     photoUrl: photo("photo-1531746020798-e6953c6e8e04"),
     country: "Japan",
     prefecture: "Aichi",
