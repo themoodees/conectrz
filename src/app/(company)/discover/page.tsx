@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { CreatorDiscovery } from "@/components/discovery/CreatorDiscovery";
-import {
-  getDiscoverableCreators,
-  getDiscoveryFilterOptions,
-} from "@/lib/data/creators";
+import { getDiscoverableCreators, getDiscoveryFilterOptions } from "@/lib/data/creators";
 import { getSavedCreatorIds } from "@/lib/data/saved";
 
 export const metadata: Metadata = { title: "Discover creators" };
@@ -12,8 +9,7 @@ export const metadata: Metadata = { title: "Discover creators" };
 /* Page copy — edit freely. */
 const COPY = {
   title: "Find the right creator for your brand",
-  description:
-    "Discover creators by niche, location, language, platform, services and more.",
+  description: "Discover creators by niche, location, language, platform, services and more.",
 };
 
 export default async function DiscoverPage() {

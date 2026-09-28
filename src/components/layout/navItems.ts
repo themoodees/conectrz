@@ -22,21 +22,47 @@ export interface NavItem {
  */
 
 export const COMPANY_NAV: NavItem[] = [
-  { label: "Discover", href: "/discover", icon: CompassIcon, activeFor: ["/discover", "/creators"] },
+  {
+    label: "Discover",
+    href: "/discover",
+    icon: CompassIcon,
+    activeFor: ["/discover", "/creators"],
+  },
   { label: "Saved", href: "/saved", icon: BookmarkIcon, activeFor: ["/saved"] },
   { label: "Messages", href: "/messages", icon: MessageIcon, activeFor: ["/messages"] },
 ];
 
 export const CREATOR_NAV: NavItem[] = [
-  { label: "Messages", href: "/creator/messages", icon: MessageIcon, activeFor: ["/creator/messages"] },
-  { label: "My profile", href: "/creator/profile", icon: UploadIcon, activeFor: ["/creator/profile"] },
+  {
+    label: "Messages",
+    href: "/creator/messages",
+    icon: MessageIcon,
+    activeFor: ["/creator/messages"],
+  },
+  {
+    label: "My profile",
+    href: "/creator/profile",
+    icon: UploadIcon,
+    activeFor: ["/creator/profile"],
+  },
 ];
 
 export const ADMIN_NAV: NavItem[] = [
   { label: "Reports", href: "/admin/reports", icon: FlagIcon, activeFor: ["/admin/reports"] },
-  { label: "Accounts", href: "/admin/accounts", icon: SettingsIcon, activeFor: ["/admin/accounts"] },
-  { label: "Categories", href: "/admin/categories", icon: SlidersIcon, activeFor: ["/admin/categories"] },
+  {
+    label: "Accounts",
+    href: "/admin/accounts",
+    icon: SettingsIcon,
+    activeFor: ["/admin/accounts"],
+  },
+  {
+    label: "Categories",
+    href: "/admin/categories",
+    icon: SlidersIcon,
+    activeFor: ["/admin/categories"],
+  },
   { label: "Plans", href: "/admin/plans", icon: BookmarkIcon, activeFor: ["/admin/plans"] },
+  { label: "Activity", href: "/admin/activity", icon: CompassIcon, activeFor: ["/admin/activity"] },
 ];
 
 export type AppArea = "company" | "creator" | "admin";

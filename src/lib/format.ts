@@ -1,9 +1,4 @@
-import type {
-  Creator,
-  CreatorService,
-  LanguageProficiency,
-  SocialAccount,
-} from "@/types/creator";
+import type { Creator, CreatorService, LanguageProficiency, SocialAccount } from "@/types/creator";
 
 const compactNumber = new Intl.NumberFormat("en", {
   notation: "compact",

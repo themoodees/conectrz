@@ -91,9 +91,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Lifestyle"],
-    services: [
-      { name: "TikTok video", rateType: "starting_from", rateAmountJpy: 90000 },
-    ],
+    services: [{ name: "TikTok video", rateType: "starting_from", rateAmountJpy: 90000 }],
     socialAccounts: [
       { platform: "tiktok", handle: "ren.eats", followerCount: 412000 },
       { platform: "instagram", handle: "ren.eats", followerCount: 27000 },
@@ -120,9 +118,7 @@ export const mockCreators: Creator[] = [
       { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 55000 },
       { name: "Localization & voiceover", rateType: "starting_from", rateAmountJpy: 30000 },
     ],
-    socialAccounts: [
-      { platform: "instagram", handle: "sofia.kyoto", followerCount: 21800 },
-    ],
+    socialAccounts: [{ platform: "instagram", handle: "sofia.kyoto", followerCount: 21800 }],
   },
   {
     // Creator offering several services, cross-platform
@@ -194,9 +190,7 @@ export const mockCreators: Creator[] = [
       { name: "UGC video", rateType: "flat", rateAmountJpy: 32000 },
       { name: "Product review", rateType: "flat", rateAmountJpy: 25000 },
     ],
-    socialAccounts: [
-      { platform: "instagram", handle: "liam.makes", followerCount: null },
-    ],
+    socialAccounts: [{ platform: "instagram", handle: "liam.makes", followerCount: null }],
   },
   {
     id: "cr-009",
@@ -213,9 +207,7 @@ export const mockCreators: Creator[] = [
       { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 45000 },
       { name: "UGC photos", rateType: "flat", rateAmountJpy: 20000 },
     ],
-    socialAccounts: [
-      { platform: "instagram", handle: "mei.hokkaido", followerCount: 46200 },
-    ],
+    socialAccounts: [{ platform: "instagram", handle: "mei.hokkaido", followerCount: 46200 }],
   },
   {
     id: "cr-010",
@@ -236,9 +228,7 @@ export const mockCreators: Creator[] = [
       { name: "Instagram Reel", rateType: "starting_from", rateAmountJpy: 150000 },
       { name: "Event appearance", rateType: "starting_from", rateAmountJpy: 200000 },
     ],
-    socialAccounts: [
-      { platform: "instagram", handle: "chloe.tokyo", followerCount: 132000 },
-    ],
+    socialAccounts: [{ platform: "instagram", handle: "chloe.tokyo", followerCount: 132000 }],
   },
   {
     id: "cr-011",
@@ -278,8 +268,6 @@ export const mockCreators: Creator[] = [
       { name: "UGC video", rateType: "flat", rateAmountJpy: 22000 },
       { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 30000 },
     ],
-    socialAccounts: [
-      { platform: "instagram", handle: "rina.home", followerCount: 8700 },
-    ],
+    socialAccounts: [{ platform: "instagram", handle: "rina.home", followerCount: 8700 }],
   },
 ];

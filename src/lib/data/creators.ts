@@ -80,20 +80,27 @@ function toCreator(row: CreatorRow): Creator {
     socialAccounts: row.social_accounts.flatMap((a): SocialAccount[] => {
       const platform = a.platform.toLowerCase();
       return isKnownPlatform(platform)
-        ? [{ platform, handle: a.handle, profileUrl: a.profile_url, followerCount: a.follower_count }]
+        ? [
+            {
+              platform,
+              handle: a.handle,
+              profileUrl: a.profile_url,
+              followerCount: a.follower_count,
+            },
+          ]
         : [];
     }),
   };
 }
 
-/** Active creators, optionally limited to specific ids. */
-async function fetchCreators(ids?: string[]): Promise<Creator[]> {
+/** Creators (active only by default), optionally limited to specific ids. */
+async function fetchCreators(ids?: string[], { activeOnly = true } = {}): Promise<Creator[]> {
   const { supabase } = await getSupabaseSession();
   let query = supabase
     .from("creator_profiles")
     .select(CREATOR_SELECT)
-    .eq("status", "active")
     .order("created_at", { ascending: false });
+  if (activeOnly) query = query.eq("status", "active");
   if (ids) query = query.in("id", ids);
 
   const { data, error } = await query.overrideTypes<CreatorRow[], { merge: false }>();
@@ -115,35 +122,40 @@ export async function getCreatorsByIds(ids: string[]): Promise<Creator[]> {
   return ids.flatMap((id) => creators.find((creator) => creator.id === id) ?? []);
 }
 
-/** Cached per request (the profile page and its metadata both use it). */
-export const getCreatorProfile = cache(async (id: string): Promise<CreatorProfile | null> => {
-  if (isMockMode) {
-    const creator = mockCreators.find((c) => c.id === id);
-    return creator ? { ...creator, portfolio: mockPortfolio[id] ?? [] } : null;
-  }
+/**
+ * A creator's full profile. Cached per request (the page and its metadata both use it).
+ * `activeOnly: false` lets creators preview their own profile while paused.
+ */
+export const getCreatorProfile = cache(
+  async (id: string, activeOnly: boolean = true): Promise<CreatorProfile | null> => {
+    if (isMockMode) {
+      const creator = mockCreators.find((c) => c.id === id);
+      return creator ? { ...creator, portfolio: mockPortfolio[id] ?? [] } : null;
+    }
 
-  const [creator] = await fetchCreators([id]);
-  if (!creator) return null;
+    const [creator] = await fetchCreators([id], { activeOnly });
+    if (!creator) return null;
 
-  const { supabase } = await getSupabaseSession();
-  const { data, error } = await supabase
-    .from("portfolio_items")
-    .select("id, media_url, media_type, title, description")
-    .eq("creator_id", id)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
+    const { supabase } = await getSupabaseSession();
+    const { data, error } = await supabase
+      .from("portfolio_items")
+      .select("id, media_url, media_type, title, description")
+      .eq("creator_id", id)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
 
-  return {
-    ...creator,
-    portfolio: data.map((item) => ({
-      id: item.id,
-      mediaUrl: item.media_url,
-      mediaType: item.media_type,
-      title: item.title,
-      description: item.description,
-    })),
-  };
-});
+    return {
+      ...creator,
+      portfolio: data.map((item) => ({
+        id: item.id,
+        mediaUrl: item.media_url,
+        mediaType: item.media_type,
+        title: item.title,
+        description: item.description,
+      })),
+    };
+  },
+);
 
 export async function getDiscoveryFilterOptions(): Promise<DiscoveryFilterOptions> {
   if (isMockMode) return mockFilterOptions;

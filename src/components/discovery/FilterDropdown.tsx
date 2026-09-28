@@ -38,9 +38,7 @@ export function FilterDropdown({ label, selectedCount, onClear, children }: Filt
             {selectedCount}
           </span>
         )}
-        <ChevronDownIcon
-          className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
-        />
+        <ChevronDownIcon className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (

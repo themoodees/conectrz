@@ -12,12 +12,7 @@ export type FilterKey =
   | "availability";
 
 /** Filters where several values can be selected at once. */
-export type MultiSelectFilterKey =
-  | "niches"
-  | "locations"
-  | "languages"
-  | "platforms"
-  | "services";
+export type MultiSelectFilterKey = "niches" | "locations" | "languages" | "platforms" | "services";
 
 export type PriceRangeId = "under-30k" | "30k-80k" | "80k-150k" | "150k-plus";
 export type FollowerRangeId = "under-10k" | "10k-50k" | "50k-100k" | "100k-plus";

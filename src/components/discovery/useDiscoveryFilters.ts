@@ -34,17 +34,13 @@ export function useDiscoveryFilters() {
   const toggleValue = useCallback((key: MultiSelectFilterKey, value: string) => {
     setFilters((current) => {
       const values = current[key] as string[];
-      const next = values.includes(value)
-        ? values.filter((v) => v !== value)
-        : [...values, value];
+      const next = values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
       return { ...current, [key]: next };
     });
   }, []);
 
   const clear = useCallback((keys?: FilterKey[]) => {
-    setFilters((current) =>
-      keys ? keys.reduce(resetKey, current) : EMPTY_FILTERS,
-    );
+    setFilters((current) => (keys ? keys.reduce(resetKey, current) : EMPTY_FILTERS));
   }, []);
 
   const actions: FilterActions = useMemo(
@@ -53,8 +49,7 @@ export function useDiscoveryFilters() {
       clear,
       setPrice: (price) => setFilters((current) => ({ ...current, price })),
       setFollowers: (followers) => setFilters((current) => ({ ...current, followers })),
-      setAvailableOnly: (availableOnly) =>
-        setFilters((current) => ({ ...current, availableOnly })),
+      setAvailableOnly: (availableOnly) => setFilters((current) => ({ ...current, availableOnly })),
       removeChip: (chip) =>
         chip.value && isMultiSelectFilter(chip.key)
           ? toggleValue(chip.key, chip.value)

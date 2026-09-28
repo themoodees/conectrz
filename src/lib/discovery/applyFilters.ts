@@ -1,11 +1,6 @@
 import type { Creator } from "@/types/creator";
 import type { DiscoveryFilters, FilterKey, SortOption } from "@/types/discovery";
-import {
-  FILTER_LABELS,
-  FOLLOWER_RANGES,
-  PLATFORM_LABELS,
-  PRICE_RANGES,
-} from "./filterConfig";
+import { FILTER_LABELS, FOLLOWER_RANGES, PLATFORM_LABELS, PRICE_RANGES } from "./filterConfig";
 import { getLargestAudience, getLowestRate } from "@/lib/format";
 
 /*
@@ -39,12 +34,28 @@ function inRange(value: number, range: { min: number; max: number | null }) {
 
 export function matchesFilters(creator: Creator, filters: DiscoveryFilters): boolean {
   if (!includesAny(creator.niches, filters.niches)) return false;
-  if (!includesAny(creator.prefecture ? [creator.prefecture] : [], filters.locations))
+  if (!includesAny(creator.prefecture ? [creator.prefecture] : [], filters.locations)) return false;
+  if (
+    !includesAny(
+      creator.languages.map((l) => l.name),
+      filters.languages,
+    )
+  )
     return false;
-  if (!includesAny(creator.languages.map((l) => l.name), filters.languages)) return false;
-  if (!includesAny(creator.socialAccounts.map((a) => a.platform), filters.platforms))
+  if (
+    !includesAny(
+      creator.socialAccounts.map((a) => a.platform),
+      filters.platforms,
+    )
+  )
     return false;
-  if (!includesAny(creator.services.map((s) => s.name), filters.services)) return false;
+  if (
+    !includesAny(
+      creator.services.map((s) => s.name),
+      filters.services,
+    )
+  )
+    return false;
   if (filters.availableOnly && !creator.isAvailable) return false;
 
   if (filters.price) {
@@ -66,8 +77,7 @@ export function sortCreators(creators: Creator[], sort: SortOption): Creator[] {
   if (sort === "followers") {
     return [...creators].sort(
       (a, b) =>
-        (getLargestAudience(b.socialAccounts) ?? -1) -
-        (getLargestAudience(a.socialAccounts) ?? -1),
+        (getLargestAudience(b.socialAccounts) ?? -1) - (getLargestAudience(a.socialAccounts) ?? -1),
     );
   }
   // "recommended" / "recently-active": keep the order the data arrives in.
@@ -75,8 +85,7 @@ export function sortCreators(creators: Creator[], sort: SortOption): Creator[] {
 }
 
 export function countActiveFilters(filters: DiscoveryFilters, keys?: FilterKey[]): number {
-  return getActiveFilterChips(filters).filter((chip) => !keys || keys.includes(chip.key))
-    .length;
+  return getActiveFilterChips(filters).filter((chip) => !keys || keys.includes(chip.key)).length;
 }
 
 export interface ActiveFilterChip {
@@ -98,7 +107,12 @@ export function getActiveFilterChips(filters: DiscoveryFilters): ActiveFilterChi
 
   multi("niches");
   filters.platforms.forEach((value) =>
-    chips.push({ id: `platforms:${value}`, key: "platforms", value, label: PLATFORM_LABELS[value] }),
+    chips.push({
+      id: `platforms:${value}`,
+      key: "platforms",
+      value,
+      label: PLATFORM_LABELS[value],
+    }),
   );
   multi("services");
   multi("locations");
@@ -110,7 +124,11 @@ export function getActiveFilterChips(filters: DiscoveryFilters): ActiveFilterChi
   }
   if (filters.followers) {
     const label = FOLLOWER_RANGES.find((r) => r.id === filters.followers)?.label;
-    chips.push({ id: "followers", key: "followers", label: `${FILTER_LABELS.followers}: ${label}` });
+    chips.push({
+      id: "followers",
+      key: "followers",
+      label: `${FILTER_LABELS.followers}: ${label}`,
+    });
   }
   if (filters.availableOnly) {
     chips.push({ id: "availability", key: "availability", label: "Available now" });

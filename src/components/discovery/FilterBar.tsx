@@ -1,10 +1,6 @@
 import type { DiscoveryFilterOptions, DiscoveryFilters } from "@/types/discovery";
 import { countActiveFilters } from "@/lib/discovery/applyFilters";
-import {
-  FILTER_LABELS,
-  PRIMARY_FILTERS,
-  SECONDARY_FILTERS,
-} from "@/lib/discovery/filterConfig";
+import { FILTER_LABELS, PRIMARY_FILTERS, SECONDARY_FILTERS } from "@/lib/discovery/filterConfig";
 import { SlidersIcon } from "@/components/ui/icons";
 import { FilterDropdown } from "./FilterDropdown";
 import { FilterSection } from "./FilterSection";

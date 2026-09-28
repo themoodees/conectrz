@@ -37,10 +37,7 @@ export async function getCurrentCompanyAccount(): Promise<CompanyAccount | null>
  * (The profiles row itself is created by the `on_auth_user_created` trigger.)
  * Uses the company name given at sign-up, stored in the user's metadata.
  */
-export async function ensureCompanyProfile(
-  supabase: SupabaseClient<Database>,
-  user: User,
-) {
+export async function ensureCompanyProfile(supabase: SupabaseClient<Database>, user: User) {
   const { data: existing } = await supabase
     .from("company_profiles")
     .select("id")

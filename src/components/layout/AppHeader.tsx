@@ -29,9 +29,7 @@ export function AppHeader({ area, account, areaLabel }: AppHeaderProps) {
           </div>
           <MainNav area={area} />
           <div className="ml-auto">
-            {account && (
-              <AccountMenu area={area} name={account.name} subtitle={account.subtitle} />
-            )}
+            {account && <AccountMenu area={area} name={account.name} subtitle={account.subtitle} />}
           </div>
         </div>
       </header>

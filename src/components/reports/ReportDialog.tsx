@@ -28,7 +28,12 @@ interface ReportDialogProps {
 }
 
 /** "Report" link + dialog. Reports go to the admin panel for review. */
-export function ReportDialog({ targetType, targetId, targetName, triggerClassName }: ReportDialogProps) {
+export function ReportDialog({
+  targetType,
+  targetId,
+  targetName,
+  triggerClassName,
+}: ReportDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, pending] = useActionState<ReportState, FormData>(submitReport, {});
 
@@ -49,9 +54,7 @@ export function ReportDialog({ targetType, targetId, targetName, triggerClassNam
       <Modal title={`Report ${targetName}`} isOpen={isOpen} onClose={() => setIsOpen(false)}>
         {state.done ? (
           <div className="space-y-5">
-            <FormMessage tone="success">
-              Thanks — our team will review your report.
-            </FormMessage>
+            <FormMessage tone="success">Thanks — our team will review your report.</FormMessage>
             <button
               type="button"
               onClick={() => setIsOpen(false)}

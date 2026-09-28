@@ -1,18 +1,8 @@
 import Link from "next/link";
 import type { Creator } from "@/types/creator";
-import {
-  formatFollowers,
-  formatJpy,
-  formatLocation,
-  getLowestRate,
-} from "@/lib/format";
+import { formatFollowers, formatJpy, formatLocation, getLowestRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
-import {
-  BookmarkIcon,
-  LanguageIcon,
-  MapPinIcon,
-  PlatformIcon,
-} from "@/components/ui/icons";
+import { BookmarkIcon, LanguageIcon, MapPinIcon, PlatformIcon } from "@/components/ui/icons";
 import { CreatorImage } from "./CreatorImage";
 
 /* How much to show before collapsing into "+N". */
@@ -49,7 +39,9 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
           type="button"
           onClick={() => onToggleSave(creator.id)}
           aria-pressed={isSaved}
-          aria-label={isSaved ? `Remove ${creator.displayName} from saved` : `Save ${creator.displayName}`}
+          aria-label={
+            isSaved ? `Remove ${creator.displayName} from saved` : `Save ${creator.displayName}`
+          }
           className={`absolute top-3 right-3 z-10 grid size-9 place-items-center rounded-full transition-colors ${
             isSaved
               ? "bg-primary text-white hover:bg-primary-hover"

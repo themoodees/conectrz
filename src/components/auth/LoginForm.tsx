@@ -46,7 +46,10 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
         </p>
         <p>
           Are you a creator?{" "}
-          <Link href="/signup/creator" className="font-semibold text-primary hover:text-primary-hover">
+          <Link
+            href="/signup/creator"
+            className="font-semibold text-primary hover:text-primary-hover"
+          >
             Join as a creator
           </Link>
         </p>

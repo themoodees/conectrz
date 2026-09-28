@@ -1,4 +1,5 @@
 import { mockConversations, type MockConversation } from "./conversations";
+import { mockFilterOptions } from "./filterOptions";
 import { mockPlans, type MockPlan } from "./plans";
 
 /*
@@ -20,7 +21,32 @@ export interface MockReport {
   resolution: "dismissed" | "paused" | "banned" | null;
 }
 
+export interface MockCompany {
+  id: string;
+  name: string;
+  email: string;
+  status: "active" | "paused" | "deleted";
+  planName: string | null;
+  createdAt: string;
+}
+
 interface MockStore {
+  /** Admin view of companies. */
+  companies: MockCompany[];
+  /** Admin-set status per creator id (creators not listed are active). */
+  creatorStatuses: Record<string, "active" | "paused" | "deleted">;
+  categories: Record<
+    "niches" | "languages" | "services",
+    { id: string; name: string; isActive: boolean }[]
+  >;
+  activity: {
+    id: string;
+    actionType: string;
+    targetType: string;
+    targetId: string;
+    details: Record<string, unknown> | null;
+    createdAt: string;
+  }[];
   savedCreatorIds: string[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
@@ -32,7 +58,42 @@ interface MockStore {
 // Kept on globalThis so it survives hot reloads in development.
 const globalForMock = globalThis as unknown as { __conectrzMockStore?: MockStore };
 
+const toCategories = (names: string[]) => names.map((name) => ({ id: name, name, isActive: true }));
+
 export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
+  companies: [
+    {
+      id: "co-001",
+      name: "Hanami Cosmetics",
+      email: "marketing@hanami-cosmetics.jp",
+      status: "active",
+      planName: "Starter",
+      createdAt: "2026-09-10T00:00:00Z",
+    },
+    {
+      id: "co-002",
+      name: "Quick Growth Agency",
+      email: "hello@quickgrowth.example",
+      status: "active",
+      planName: "Free",
+      createdAt: "2026-09-18T00:00:00Z",
+    },
+    {
+      id: "co-003",
+      name: "Tabi Travel Co.",
+      email: "pr@tabi-travel.example",
+      status: "active",
+      planName: "Pro",
+      createdAt: "2026-09-02T00:00:00Z",
+    },
+  ],
+  creatorStatuses: {},
+  categories: {
+    niches: toCategories(mockFilterOptions.niches),
+    languages: toCategories(mockFilterOptions.languages),
+    services: toCategories(mockFilterOptions.services),
+  },
+  activity: [],
   savedCreatorIds: ["cr-002", "cr-007"],
   conversations: structuredClone(mockConversations),
   subscription: {

@@ -12,6 +12,8 @@ const variants = {
   secondary:
     "border border-border bg-white text-ink hover:border-muted/50 hover:bg-surface disabled:text-muted disabled:hover:bg-white",
   ghost: "text-graphite hover:bg-surface hover:text-ink disabled:text-muted/60",
+  /** Destructive actions (ban, cancel). */
+  danger: "text-danger hover:bg-danger-light disabled:text-muted/60",
 };
 
 const sizes = {

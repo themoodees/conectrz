@@ -20,9 +20,7 @@ export function PortfolioGrid({ items }: { items: PortfolioItem[] }) {
         <li key={item.id}>
           <PortfolioMedia item={item} />
           {item.title && <p className="mt-2 truncate text-sm font-medium text-ink">{item.title}</p>}
-          {item.description && (
-            <p className="truncate text-xs text-muted">{item.description}</p>
-          )}
+          {item.description && <p className="truncate text-xs text-muted">{item.description}</p>}
         </li>
       ))}
     </ul>

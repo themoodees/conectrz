@@ -1,10 +1,5 @@
 import type { CreatorProfile } from "@/types/creator";
-import {
-  PROFICIENCY_LABELS,
-  formatFollowers,
-  formatLocation,
-  formatRate,
-} from "@/lib/format";
+import { PROFICIENCY_LABELS, formatFollowers, formatLocation, formatRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { CreatorImage } from "@/components/discovery/CreatorImage";
 import { MapPinIcon, PlatformIcon } from "@/components/ui/icons";

@@ -80,7 +80,10 @@ export default async function PlansPage() {
               {isCurrent ? (
                 <span
                   aria-disabled="true"
-                  className={buttonClass({ variant: "secondary", className: "pointer-events-none mt-6" })}
+                  className={buttonClass({
+                    variant: "secondary",
+                    className: "pointer-events-none mt-6",
+                  })}
                 >
                   Your plan
                 </span>

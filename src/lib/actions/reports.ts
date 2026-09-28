@@ -22,11 +22,17 @@ const REASONS: ReportReason[] = [
 ];
 
 /** Files a report for admins to review. Exactly one target per report. */
-export async function submitReport(_previous: ReportState, formData: FormData): Promise<ReportState> {
+export async function submitReport(
+  _previous: ReportState,
+  formData: FormData,
+): Promise<ReportState> {
   const targetType = String(formData.get("targetType") ?? "") as ReportTargetType;
   const targetId = String(formData.get("targetId") ?? "");
   const reason = String(formData.get("reason") ?? "") as ReportReason;
-  const details = String(formData.get("details") ?? "").trim().slice(0, 2000) || null;
+  const details =
+    String(formData.get("details") ?? "")
+      .trim()
+      .slice(0, 2000) || null;
 
   if (!["creator", "company", "conversation"].includes(targetType) || !targetId) {
     return { error: "Something went wrong. Please try again." };

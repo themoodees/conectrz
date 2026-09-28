@@ -213,8 +213,8 @@ export async function getConversation(
 export async function getConversationIdWithCreator(creatorId: string): Promise<string | null> {
   if (isMockMode) {
     return (
-      mockStore.conversations.find((c) => c.creatorId === creatorId && !c.archivedByCompany)
-        ?.id ?? null
+      mockStore.conversations.find((c) => c.creatorId === creatorId && !c.archivedByCompany)?.id ??
+      null
     );
   }
 

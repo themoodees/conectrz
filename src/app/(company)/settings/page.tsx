@@ -14,10 +14,7 @@ import { formatShortDate } from "@/lib/format";
 export const metadata: Metadata = { title: "Account settings" };
 
 export default async function SettingsPage() {
-  const [account, usage] = await Promise.all([
-    getCurrentCompanyAccount(),
-    getConversationUsage(),
-  ]);
+  const [account, usage] = await Promise.all([getCurrentCompanyAccount(), getConversationUsage()]);
   if (!account) return null;
 
   return (

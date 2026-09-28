@@ -63,9 +63,7 @@ export function FilterSection({
           key={range.id}
           label={range.label}
           isSelected={filters.followers === range.id}
-          onClick={() =>
-            actions.setFollowers(filters.followers === range.id ? null : range.id)
-          }
+          onClick={() => actions.setFollowers(filters.followers === range.id ? null : range.id)}
         />
       ));
     }

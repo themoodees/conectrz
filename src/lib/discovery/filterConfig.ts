@@ -27,20 +27,10 @@ export const FILTER_LABELS: Record<FilterKey, string> = {
 };
 
 /** Shown directly in the desktop toolbar. */
-export const PRIMARY_FILTERS: FilterKey[] = [
-  "niches",
-  "platforms",
-  "services",
-  "locations",
-];
+export const PRIMARY_FILTERS: FilterKey[] = ["niches", "platforms", "services", "locations"];
 
 /** Shown inside "More filters" on desktop. (Mobile shows all filters in one panel.) */
-export const SECONDARY_FILTERS: FilterKey[] = [
-  "languages",
-  "price",
-  "followers",
-  "availability",
-];
+export const SECONDARY_FILTERS: FilterKey[] = ["languages", "price", "followers", "availability"];
 
 export const PLATFORM_LABELS: Record<SocialPlatform, string> = {
   instagram: "Instagram",

@@ -35,13 +35,7 @@ function FormStatus({ state }: { state: SettingsFormState }) {
   return null;
 }
 
-export function CompanyDetailsForm({
-  name,
-  contactEmail,
-}: {
-  name: string;
-  contactEmail: string;
-}) {
+export function CompanyDetailsForm({ name, contactEmail }: { name: string; contactEmail: string }) {
   const [state, formAction, pending] = useActionState(updateCompanyDetails, {});
   return (
     <form action={formAction} className="max-w-md space-y-4">

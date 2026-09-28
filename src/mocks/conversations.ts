@@ -53,7 +53,8 @@ export const mockConversations: MockConversation[] = [
         fromCompany: false,
         createdAt: "2026-09-27T09:15:00Z",
         readAt: null,
-        content: "Sounds great. I've looked at the brief — I have a couple of questions about the Reel format.",
+        content:
+          "Sounds great. I've looked at the brief — I have a couple of questions about the Reel format.",
       },
     ],
   },
@@ -74,7 +75,8 @@ export const mockConversations: MockConversation[] = [
         fromCompany: false,
         createdAt: "2026-09-20T08:12:00Z",
         readAt: "2026-09-20T09:00:00Z",
-        content: "Yes! I can deliver within a week. Scripts in Japanese or English both work for me.",
+        content:
+          "Yes! I can deliver within a week. Scripts in Japanese or English both work for me.",
       },
     ],
   },

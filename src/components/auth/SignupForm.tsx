@@ -83,7 +83,10 @@ export function SignupForm({ role }: { role: "company" | "creator" }) {
         </p>
         <p>
           {copy.switchText}{" "}
-          <Link href={copy.switchHref} className="font-semibold text-primary hover:text-primary-hover">
+          <Link
+            href={copy.switchHref}
+            className="font-semibold text-primary hover:text-primary-hover"
+          >
             {copy.switchLink}
           </Link>
         </p>

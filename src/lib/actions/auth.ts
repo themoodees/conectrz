@@ -70,10 +70,7 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
     password,
     options: {
       // "role" is read by the on_auth_user_created trigger (only company/creator are accepted).
-      data:
-        role === "company"
-          ? { role, company_name: name }
-          : { role, display_name: name },
+      data: role === "company" ? { role, company_name: name } : { role, display_name: name },
       emailRedirectTo: `${origin}/auth/confirm`,
     },
   });

@@ -14,7 +14,10 @@ export function MobileTabBar({ area }: { area: AppArea }) {
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+      <ul
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      >
         {items.map(({ label, href, icon: Icon, activeFor }) => {
           const isActive = isNavItemActive(pathname, activeFor);
           return (

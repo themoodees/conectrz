@@ -105,7 +105,11 @@ export async function setConversationArchived(
     // RLS limits this to participants; a DB trigger stops users changing the other side's flag.
     const { error } = await supabase
       .from("conversations")
-      .update(viewer === "company" ? { archived_by_company: archived } : { archived_by_creator: archived })
+      .update(
+        viewer === "company"
+          ? { archived_by_company: archived }
+          : { archived_by_creator: archived },
+      )
       .eq("id", conversationId);
     if (error) {
       // one_active_conversation_per_pair: a newer open conversation already exists.

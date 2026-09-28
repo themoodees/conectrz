@@ -31,7 +31,10 @@ export function ArchivedConversations({
         <ul className="flex-1 overflow-y-auto py-2">
           {conversations.map((conversation) => (
             <li key={conversation.id}>
-              <ConversationRow conversation={conversation} href={`${basePath}/${conversation.id}`} />
+              <ConversationRow
+                conversation={conversation}
+                href={`${basePath}/${conversation.id}`}
+              />
             </li>
           ))}
         </ul>

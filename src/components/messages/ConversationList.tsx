@@ -92,9 +92,7 @@ export function ConversationRow({
           )}
         </span>
         <span className="mt-0.5 flex items-center gap-2">
-          <span
-            className={`truncate text-sm ${hasUnread ? "font-medium text-ink" : "text-muted"}`}
-          >
+          <span className={`truncate text-sm ${hasUnread ? "font-medium text-ink" : "text-muted"}`}>
             {lastMessage
               ? `${lastMessage.isMine ? "You: " : ""}${lastMessage.content}`
               : "No messages yet"}

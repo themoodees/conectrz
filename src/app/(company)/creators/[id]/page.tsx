@@ -9,9 +9,7 @@ import { getCreatorProfile } from "@/lib/data/creators";
 import { getConversationIdWithCreator, getConversationUsage } from "@/lib/data/messages";
 import { getSavedCreatorIds } from "@/lib/data/saved";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/creators/[id]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/creators/[id]">): Promise<Metadata> {
   const { id } = await params;
   const creator = await getCreatorProfile(id);
   return { title: creator?.displayName ?? "Creator" };

@@ -7,11 +7,7 @@ import Link from "next/link";
  */
 export function Logo({ href = "/discover" }: { href?: string }) {
   return (
-    <Link
-      href={href}
-      className="flex items-center gap-2 rounded-md"
-      aria-label="Conectrz home"
-    >
+    <Link href={href} className="flex items-center gap-2 rounded-md" aria-label="Conectrz home">
       <span
         aria-hidden="true"
         className="bg-brand-gradient grid size-7 place-items-center rounded-lg"

@@ -87,7 +87,11 @@ export function CreatorDiscovery({
         />
       </div>
 
-      <ActiveFilters chips={chips} onRemove={actions.removeChip} onClearAll={() => actions.clear()} />
+      <ActiveFilters
+        chips={chips}
+        onRemove={actions.removeChip}
+        onClearAll={() => actions.clear()}
+      />
 
       {/* Results */}
       <div className="flex items-center justify-between gap-4 pt-1">

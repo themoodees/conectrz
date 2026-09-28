@@ -7,7 +7,14 @@ interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement>
 }
 
 /** Labelled multi-line text input used in forms. */
-export function TextAreaField({ label, name, hint, id, className = "", ...props }: TextAreaFieldProps) {
+export function TextAreaField({
+  label,
+  name,
+  hint,
+  id,
+  className = "",
+  ...props
+}: TextAreaFieldProps) {
   const inputId = id ?? name;
   const hintId = hint ? `${inputId}-hint` : undefined;
   return (
