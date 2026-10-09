@@ -2,7 +2,7 @@ import type { LegalDocument } from "./types";
 
 /*
  * DRAFT — structure only, organised around Japan's Act on the Protection of
- * Personal Information (APPI / 個人情報保護法). Have the final text written/reviewed
+ * Personal Information (APPI). Have the final text written/reviewed
  * by a lawyer. Text in [brackets] is a placeholder.
  */
 export const privacyPolicy: LegalDocument = {

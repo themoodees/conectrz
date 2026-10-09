@@ -31,7 +31,7 @@ export const termsOfService: LegalDocument = {
     {
       heading: "4. Plans and fees",
       body: [
-        "[Free plan: a one-time allowance of new conversations. Paid plans: price, number of new conversations per billing period, how plans are started, changed and cancelled, refunds (if any), and tax (消費税).]",
+        "[Free plan: a one-time allowance of new conversations. Paid plans: price, number of new conversations per billing period, how plans are started, changed and cancelled, refunds (if any), and tax.]",
       ],
     },
     {
@@ -55,7 +55,7 @@ export const termsOfService: LegalDocument = {
     {
       heading: "8. Disclaimers and limitation of liability",
       body: [
-        "[Service provided “as is”, no guarantee of results from creator collaborations, limits of our liability as permitted by the Consumer Contract Act (消費者契約法) and other applicable law.]",
+        "[Service provided “as is”, no guarantee of results from creator collaborations, limits of our liability as permitted by the Consumer Contract Act and other applicable law.]",
       ],
     },
     {

@@ -10,7 +10,7 @@ const PUBLIC_PATHS = [
   "/auth",
   "/terms",
   "/privacy",
-  "/legal",
+  "/legal-notice",
 ];
 const isPublicPath = (pathname: string) =>
   pathname === "/" || PUBLIC_PATHS.some((path) => pathname.startsWith(path));

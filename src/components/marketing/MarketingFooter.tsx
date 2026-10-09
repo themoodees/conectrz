@@ -26,8 +26,8 @@ export function MarketingFooter() {
           <Link href="/privacy" className="hover:text-ink">
             Privacy
           </Link>
-          <Link href="/legal/tokushoho" className="hover:text-ink">
-            特定商取引法に基づく表記
+          <Link href="/legal-notice" className="hover:text-ink">
+            Legal notice
           </Link>
           <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-ink">
             Contact

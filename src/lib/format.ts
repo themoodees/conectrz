@@ -5,7 +5,8 @@ const compactNumber = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
-const yen = new Intl.NumberFormat("ja-JP", {
+// English formatting ("¥35,000", not the full-width "￥" used by ja-JP).
+const yen = new Intl.NumberFormat("en", {
   style: "currency",
   currency: "JPY",
   maximumFractionDigits: 0,
