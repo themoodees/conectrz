@@ -87,7 +87,10 @@ editing it, redeploy with the Supabase CLI: `supabase functions deploy notify-ne
 4. Back in **Supabase → Authentication → URL Configuration**:
    - Site URL: `https://yourdomain.com`
    - Redirect URLs: add `https://yourdomain.com/auth/confirm` (keep the localhost one for testing)
-5. Update the `APP_URL` edge function secret to `https://yourdomain.com`.
+5. **⚠️ Don't forget:** change the `APP_URL` edge function secret from
+   `http://localhost:3000` to `https://conectrz.com`
+   (Supabase → Edge Functions → Secrets). Otherwise links in notification emails
+   point to localhost.
 
 ---
 
@@ -111,5 +114,6 @@ editing it, redeploy with the Supabase CLI: `supabase functions deploy notify-ne
 - [ ] All checks in step 1 pass on the deployed site
 - [ ] Emails arrive (sign-up confirmation, password reset, new message) and don't land in spam
 - [ ] Legal pages finalised (the "Draft" banner disappears once `lastUpdated` is a real date)
+- [ ] `APP_URL` secret changed to `https://conectrz.com`
 - [ ] Supabase project on a plan that doesn't pause
 - [ ] First creators invited, so Discover isn't empty
