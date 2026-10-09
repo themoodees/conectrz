@@ -105,6 +105,8 @@ Added as migrations in this project (see Supabase → Database → Migrations):
 - `conversation_quota` — each new conversation counts against the plan's
   `conversation_quota` for the current subscription period; `start_conversation` creates
   the conversation and first message together; `my_conversation_usage` powers the UI.
+- `free_plan_lifetime_allowance` — Free plans (¥0) are a one-time allowance: they count
+  every conversation the company has ever started, so the count never resets.
 - `admin_manages_company_status` and `only_admins_change_account_status` — admins can
   pause/ban companies and creators; users can't change their own status.
 - `seed_placeholder_plans_and_categories` — **placeholder** plans (Free/Starter/Pro) and
