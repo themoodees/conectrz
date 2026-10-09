@@ -4,14 +4,17 @@ import { ensureCompanyProfile } from "@/lib/data/account";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
- * Landing URL for the sign-up confirmation email.
+ * Landing URL for auth emails (sign-up confirmation, password reset).
  * Supports both the PKCE `code` flow and the `token_hash` email template flow.
+ * `next` (an in-app path) says where to go afterwards, e.g. /reset-password.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
+  const nextParam = searchParams.get("next") ?? "";
+  const next = /^\/(?![/\\])/.test(nextParam) ? nextParam : "/home";
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = code
@@ -21,9 +24,10 @@ export async function GET(request: NextRequest) {
       : { data: { user: null }, error: new Error("Missing confirmation token") };
 
   if (error || !data.user) {
-    return NextResponse.redirect(new URL("/login?error=confirmation", origin));
+    const reason = next === "/reset-password" ? "reset" : "confirmation";
+    return NextResponse.redirect(new URL(`/login?error=${reason}`, origin));
   }
 
   await ensureCompanyProfile(supabase, data.user);
-  return NextResponse.redirect(new URL("/home", origin));
+  return NextResponse.redirect(new URL(next, origin));
 }

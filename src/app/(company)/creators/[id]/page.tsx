@@ -8,6 +8,7 @@ import { ArrowLeftIcon } from "@/components/ui/icons";
 import { getCreatorProfile } from "@/lib/data/creators";
 import { getConversationIdWithCreator, getConversationUsage } from "@/lib/data/messages";
 import { getSavedCreatorIds } from "@/lib/data/saved";
+import { getPlans } from "@/lib/data/plans";
 
 export async function generateMetadata({ params }: PageProps<"/creators/[id]">): Promise<Metadata> {
   const { id } = await params;
@@ -17,12 +18,17 @@ export async function generateMetadata({ params }: PageProps<"/creators/[id]">):
 
 export default async function CreatorProfilePage({ params }: PageProps<"/creators/[id]">) {
   const { id } = await params;
-  const [creator, savedIds, conversationId, usage] = await Promise.all([
+  const [creator, savedIds, conversationId, usage, plans] = await Promise.all([
     getCreatorProfile(id),
     getSavedCreatorIds(),
     getConversationIdWithCreator(id),
     getConversationUsage(),
+    getPlans(),
   ]);
+  // Paid plans offering more conversations than the current one.
+  const upgradePlans = plans.filter(
+    (plan) => plan.monthlyPriceJpy > 0 && plan.conversationQuota > (usage?.quota ?? 0),
+  );
   if (!creator) notFound();
 
   return (
@@ -44,6 +50,7 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
             isSaved={savedIds.includes(creator.id)}
             conversationId={conversationId}
             usage={usage}
+            upgradePlans={upgradePlans}
           />
         }
       />

@@ -232,25 +232,33 @@ export async function getConversationIdWithCreator(creatorId: string): Promise<s
   return data?.id ?? null;
 }
 
-/** Plan, limit and usage for the signed-in company's current period. */
+/** Plan, limit and usage for the signed-in company. */
 export interface ConversationUsage {
   planName: string;
   quota: number;
   used: number;
   periodEnd: string;
+  /**
+   * Free plans (¥0) are a one-time allowance: the count never resets.
+   * Paid plans count per billing period.
+   */
+  isFree: boolean;
 }
 
 export async function getConversationUsage(): Promise<ConversationUsage | null> {
   if (isMockMode) {
-    const periodStart = mockStore.subscription.periodStart;
-    const startedThisPeriod = mockStore.conversations.filter(
+    const plan = mockStore.plans.find((p) => p.name === mockStore.subscription.planName);
+    const isFree = plan?.monthlyPriceJpy === 0;
+    const periodStart = isFree ? "" : mockStore.subscription.periodStart;
+    const used = mockStore.conversations.filter(
       (c) => (c.messages[0]?.createdAt ?? "") >= periodStart,
     ).length;
     return {
       planName: mockStore.subscription.planName,
       quota: mockStore.subscription.quota,
-      used: startedThisPeriod,
+      used,
       periodEnd: mockStore.subscription.periodEnd,
+      isFree,
     };
   }
 
@@ -258,7 +266,19 @@ export async function getConversationUsage(): Promise<ConversationUsage | null> 
   const { data, error } = await supabase.rpc("my_conversation_usage");
   if (error) throw error;
   const row = data[0];
-  return row
-    ? { planName: row.tier_name, quota: row.quota, used: row.used, periodEnd: row.period_end }
-    : null;
+  if (!row) return null;
+
+  const { data: tier } = await supabase
+    .from("subscription_tiers")
+    .select("monthly_price_jpy")
+    .eq("name", row.tier_name)
+    .maybeSingle();
+
+  return {
+    planName: row.tier_name,
+    quota: row.quota,
+    used: row.used,
+    periodEnd: row.period_end,
+    isFree: tier?.monthly_price_jpy === 0,
+  };
 }

@@ -25,13 +25,21 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
         required
         defaultValue={state.values?.email}
       />
-      <TextField
-        label="Password"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        required
-      />
+      <div>
+        <TextField
+          label="Password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+        />
+        <Link
+          href="/forgot-password"
+          className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover"
+        >
+          Forgot password?
+        </Link>
+      </div>
 
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
         {pending ? "Signing in…" : "Sign in"}

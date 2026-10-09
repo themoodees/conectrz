@@ -73,6 +73,17 @@ export function SignupForm({ role }: { role: "company" | "creator" }) {
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
         {pending ? "Creating account…" : "Create account"}
       </button>
+      <p className="text-center text-xs text-muted">
+        By creating an account, you agree to our{" "}
+        <Link href="/terms" className="underline hover:text-ink">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline hover:text-ink">
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       <div className="space-y-1.5 text-center text-sm text-muted">
         <p>

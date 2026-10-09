@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { startConversation, type StartConversationState } from "@/lib/actions/messages";
 import type { ConversationUsage } from "@/lib/data/messages";
+import type { Plan } from "@/types/plans";
+import { UpgradeSuggestion } from "@/components/plans/UpgradeSuggestion";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { MessageIcon } from "@/components/ui/icons";
@@ -14,13 +16,21 @@ interface ContactCreatorProps {
   creatorId: string;
   creatorName: string;
   usage: ConversationUsage | null;
+  /** Paid plans to suggest when the company runs out of conversations. */
+  upgradePlans: Plan[];
 }
 
 /**
  * "Contact creator" button + first-message dialog.
- * Each new conversation uses one of the plan's conversations for the period.
+ * Each new conversation uses one of the plan's conversations: once in total on
+ * Free, per billing period on paid plans.
  */
-export function ContactCreator({ creatorId, creatorName, usage }: ContactCreatorProps) {
+export function ContactCreator({
+  creatorId,
+  creatorName,
+  usage,
+  upgradePlans,
+}: ContactCreatorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, pending] = useActionState<StartConversationState, FormData>(
     startConversation,
@@ -43,26 +53,26 @@ export function ContactCreator({ creatorId, creatorName, usage }: ContactCreator
         Contact creator
       </button>
 
-      <p id="contact-usage" className="mt-2 text-xs text-muted">
-        {!usage ? (
-          <>
-            No active plan.{" "}
-            <Link href="/plans" className="font-medium text-primary hover:text-primary-hover">
-              See plans
-            </Link>
-          </>
-        ) : atLimit ? (
-          <>
-            You&apos;ve used all {usage.quota} conversations on your {usage.planName} plan this
-            period.{" "}
-            <Link href="/plans" className="font-medium text-primary hover:text-primary-hover">
-              Upgrade
-            </Link>
-          </>
-        ) : (
-          `${remaining} of ${usage.quota} new conversations left this period.`
-        )}
-      </p>
+      {usage && atLimit ? (
+        <div id="contact-usage">
+          <UpgradeSuggestion isFree={usage.isFree} quota={usage.quota} plans={upgradePlans} />
+        </div>
+      ) : (
+        <p id="contact-usage" className="mt-2 text-xs text-muted">
+          {!usage ? (
+            <>
+              No active plan.{" "}
+              <Link href="/plans" className="font-medium text-primary hover:text-primary-hover">
+                See plans
+              </Link>
+            </>
+          ) : usage.isFree ? (
+            `${remaining} of ${usage.quota} free ${usage.quota === 1 ? "conversation" : "conversations"} left.`
+          ) : (
+            `${remaining} of ${usage.quota} new conversations left this period.`
+          )}
+        </p>
+      )}
 
       <Modal title={`Message ${creatorName}`} isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <form action={formAction} className="space-y-4">
@@ -77,8 +87,8 @@ export function ContactCreator({ creatorId, creatorName, usage }: ContactCreator
             placeholder="Introduce your brand and what you'd like to work on together."
           />
           <p className="text-xs text-muted">
-            Starting this conversation uses 1 of your {remaining} remaining conversations. Replies
-            are unlimited.
+            Starting this conversation uses 1 of your {remaining} remaining
+            {usage?.isFree ? " free" : ""} conversations. Replies are unlimited.
           </p>
           <div className="flex justify-end gap-2">
             <button

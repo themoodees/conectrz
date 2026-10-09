@@ -33,8 +33,8 @@ export default async function PlansPage() {
       <header className="pt-7 pb-6 md:pt-10 md:pb-8">
         <h1 className="text-[1.75rem] leading-tight font-semibold text-ink md:text-4xl">Plans</h1>
         <p className="mt-2 max-w-xl text-base text-muted">
-          Plans set how many new conversations you can start each month. Replies are always
-          unlimited.
+          Start free with a one-time allowance, then choose a plan for new conversations every
+          month. Replies are always unlimited.
         </p>
       </header>
 
@@ -60,13 +60,14 @@ export default async function PlansPage() {
                 <span className="font-display text-3xl font-semibold text-ink">
                   {formatJpy(plan.monthlyPriceJpy)}
                 </span>
-                <span className="text-sm text-muted"> / month</span>
+                {plan.monthlyPriceJpy > 0 && <span className="text-sm text-muted"> / month</span>}
               </p>
               <ul className="mt-5 flex-1 space-y-2 text-sm text-graphite">
                 <li className="flex gap-2">
                   <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
                   {plan.conversationQuota} new{" "}
-                  {plan.conversationQuota === 1 ? "conversation" : "conversations"} per month
+                  {plan.conversationQuota === 1 ? "conversation" : "conversations"}{" "}
+                  {plan.monthlyPriceJpy === 0 ? "in total (doesn't reset)" : "per month"}
                 </li>
                 <li className="flex gap-2">
                   <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -105,7 +106,9 @@ export default async function PlansPage() {
 
       <p className="mt-6 text-sm text-muted">
         Plan changes are handled by our team — requests open an email to {SUPPORT_EMAIL}.
-        {usage && ` Your current period ends on ${formatShortDate(usage.periodEnd)}.`}
+        {usage &&
+          !usage.isFree &&
+          ` Your current period ends on ${formatShortDate(usage.periodEnd)}.`}
       </p>
     </PageContainer>
   );

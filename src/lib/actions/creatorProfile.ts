@@ -318,15 +318,13 @@ export async function saveLanguages(rows: CreatorEditorData["languages"]): Promi
     if (error) return { error: "Couldn't save. Please try again." };
   }
   if (toAdd.length) {
-    const { error } = await supabase
-      .from("creator_languages")
-      .insert(
-        toAdd.map((l) => ({
-          creator_id: user.id,
-          language_id: l.languageId,
-          proficiency: l.proficiency,
-        })),
-      );
+    const { error } = await supabase.from("creator_languages").insert(
+      toAdd.map((l) => ({
+        creator_id: user.id,
+        language_id: l.languageId,
+        proficiency: l.proficiency,
+      })),
+    );
     if (error) return { error: "Couldn't save. Please try again." };
   }
 

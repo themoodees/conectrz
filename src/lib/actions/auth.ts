@@ -20,7 +20,8 @@ const MIN_PASSWORD_LENGTH = 8;
 /** Only allow redirects to paths inside this app. /home picks the area by account type. */
 function safeNextPath(value: FormDataEntryValue | null) {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/home";
+  // Must start with a single "/" (not "//" or "/\", which browsers treat as another site).
+  return /^\/(?![/\\])/.test(next) ? next : "/home";
 }
 
 export async function logIn(_previous: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -93,4 +94,48 @@ export async function signOut() {
     await supabase.auth.signOut();
   }
   redirect("/login");
+}
+
+/**
+ * Sends a password-reset email. Always shows the same message, so the form
+ * can't be used to find out which emails have accounts.
+ */
+export async function requestPasswordReset(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { error: "Enter your email address." };
+
+  const notice = `If an account exists for ${email}, we've sent a link to reset your password.`;
+  if (isMockMode) return { notice };
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createSupabaseServerClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/confirm?next=/reset-password`,
+  });
+  return { notice };
+}
+
+/** Sets a new password after following the reset link (the link signs the user in). */
+export async function resetPassword(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.` };
+  }
+  if (password !== confirm) return { error: "The passwords don't match." };
+  if (isMockMode) redirect(HOME_PATHS.company);
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return { error: "Your reset link has expired. Request a new one from the sign-in page." };
+  }
+  redirect("/home");
 }

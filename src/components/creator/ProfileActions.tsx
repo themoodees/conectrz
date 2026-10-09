@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ConversationUsage } from "@/lib/data/messages";
+import type { Plan } from "@/types/plans";
 import { ReportDialog } from "@/components/reports/ReportDialog";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { BookmarkIcon, MessageIcon } from "@/components/ui/icons";
@@ -15,6 +16,7 @@ interface ProfileActionsProps {
   /** Set when the company already has an open conversation with this creator. */
   conversationId: string | null;
   usage: ConversationUsage | null;
+  upgradePlans: Plan[];
 }
 
 /** Contact / Save / Report actions on the Creator Profile. */
@@ -24,6 +26,7 @@ export function ProfileActions({
   isSaved,
   conversationId,
   usage,
+  upgradePlans,
 }: ProfileActionsProps) {
   const { savedIds, toggleSave } = useSavedCreators(isSaved ? [creatorId] : []);
   const saved = savedIds.has(creatorId);
@@ -36,7 +39,12 @@ export function ProfileActions({
           Open conversation
         </Link>
       ) : (
-        <ContactCreator creatorId={creatorId} creatorName={creatorName} usage={usage} />
+        <ContactCreator
+          creatorId={creatorId}
+          creatorName={creatorName}
+          usage={usage}
+          upgradePlans={upgradePlans}
+        />
       )}
 
       <button

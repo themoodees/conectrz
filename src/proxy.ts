@@ -3,7 +3,15 @@ import { isMockMode } from "@/lib/config";
 import { updateSession } from "@/lib/supabase/proxy";
 
 /** Pages anyone can open without signing in (prefixes; "/" is matched exactly). */
-const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/auth",
+  "/terms",
+  "/privacy",
+  "/legal",
+];
 const isPublicPath = (pathname: string) =>
   pathname === "/" || PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 

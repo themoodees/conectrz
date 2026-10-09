@@ -28,15 +28,16 @@ export default async function SettingsPage() {
       <div className="max-w-3xl space-y-5">
         <SettingsSection
           title="Plan"
-          description="Your plan sets how many new conversations you can start each period."
+          description="Your plan sets how many new conversations you can start."
         >
           {usage ? (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="font-semibold text-ink">{usage.planName}</p>
                 <p className="mt-0.5 text-sm text-muted">
-                  {usage.used} of {usage.quota} conversations used · renews{" "}
-                  {formatShortDate(usage.periodEnd)}
+                  {usage.isFree
+                    ? `${usage.used} of ${usage.quota} free conversations used (doesn't reset)`
+                    : `${usage.used} of ${usage.quota} conversations used · renews ${formatShortDate(usage.periodEnd)}`}
                 </p>
               </div>
               <Link href="/plans" className={buttonClass({ variant: "secondary", size: "sm" })}>

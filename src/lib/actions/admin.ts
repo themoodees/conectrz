@@ -282,13 +282,22 @@ export async function grantPlan(
       .eq("status", "active");
     if (cancelError) return { error: "Couldn't update the subscription." };
 
+    // Free plans never expire (same as the default subscription created at sign-up);
+    // their conversation allowance is counted over the company's whole history.
+    const { data: tier } = await supabase
+      .from("subscription_tiers")
+      .select("monthly_price_jpy")
+      .eq("id", tierId)
+      .single();
+    const isFree = tier?.monthly_price_jpy === 0;
+
     const start = new Date();
     const { error } = await supabase.from("subscriptions").insert({
       company_id: companyId,
       tier_id: tierId,
       status: "active",
       current_period_start: start.toISOString(),
-      current_period_end: addMonths(start, months).toISOString(),
+      current_period_end: addMonths(start, isFree ? 1200 : months).toISOString(),
     });
     if (error) return { error: "Couldn't create the subscription." };
   }
