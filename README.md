@@ -5,6 +5,8 @@ Companies discover, evaluate, save and contact creators living in Japan.
 
 Built with Next.js (App Router), TypeScript, Tailwind CSS v4, ESLint and Supabase.
 
+**Going live?** Follow [`docs/LAUNCH.md`](docs/LAUNCH.md) — testing, email, deployment and placeholders.
+
 ## Run locally
 
 ```bash
@@ -107,6 +109,10 @@ Added as migrations in this project (see Supabase → Database → Migrations):
   the conversation and first message together; `my_conversation_usage` powers the UI.
 - `free_plan_lifetime_allowance` — Free plans (¥0) are a one-time allowance: they count
   every conversation the company has ever started, so the count never resets.
+- `notify_new_message` — when a message arrives, creates a notification for the other
+  person (once per conversation until they read it) and calls the `notify-new-message`
+  edge function (`supabase/functions/`), which emails it via Resend. Opening a
+  conversation marks its notification read.
 - `admin_manages_company_status` and `only_admins_change_account_status` — admins can
   pause/ban companies and creators; users can't change their own status.
 - `seed_placeholder_plans_and_categories` — **placeholder** plans (Free/Starter/Pro) and

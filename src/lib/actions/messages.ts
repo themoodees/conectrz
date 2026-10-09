@@ -84,6 +84,16 @@ export async function markConversationRead(conversationId: string, viewer: Viewe
       .neq("sender_id", user.id)
       .is("read_at", null);
     if (error) return;
+
+    // Clear the new-message notification so the next message emails again
+    // (the database sends one email per conversation until it's read).
+    await supabase
+      .from("notifications")
+      .update({ read_at: now })
+      .eq("user_id", user.id)
+      .eq("type", "new_message")
+      .eq("payload->>conversation_id", conversationId)
+      .is("read_at", null);
   }
 
   revalidateInboxes();
