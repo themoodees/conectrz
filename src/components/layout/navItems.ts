@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 import {
   BookmarkIcon,
+  BriefcaseIcon,
   CompassIcon,
   FlagIcon,
   MessageIcon,
@@ -28,11 +29,18 @@ export const COMPANY_NAV: NavItem[] = [
     icon: CompassIcon,
     activeFor: ["/discover", "/creators"],
   },
+  { label: "Projects", href: "/projects", icon: BriefcaseIcon, activeFor: ["/projects"] },
   { label: "Saved", href: "/saved", icon: BookmarkIcon, activeFor: ["/saved"] },
   { label: "Messages", href: "/messages", icon: MessageIcon, activeFor: ["/messages"] },
 ];
 
 export const CREATOR_NAV: NavItem[] = [
+  {
+    label: "Projects",
+    href: "/creator/projects",
+    icon: BriefcaseIcon,
+    activeFor: ["/creator/projects"],
+  },
   {
     label: "Messages",
     href: "/creator/messages",
