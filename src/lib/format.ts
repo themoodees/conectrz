@@ -116,3 +116,9 @@ const longDateFormat = new Intl.DateTimeFormat("en", {
 
 /** "Oct 1, 2026" */
 export const formatShortDate = (iso: string) => longDateFormat.format(new Date(iso));
+
+/** "2026-12-15" → "Dec 15, 2026" (date only, no time zone shift). */
+export const formatDeadline = (isoDate: string) =>
+  new Intl.DateTimeFormat("en", { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" }).format(
+    new Date(`${isoDate}T00:00:00Z`),
+  );

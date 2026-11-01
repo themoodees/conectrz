@@ -121,6 +121,36 @@ export type Database = {
         Update: { created_at?: string; id?: string; role?: Database["public"]["Enums"]["user_role"] }
         Relationships: []
       }
+      projects: {
+        Row: { budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
+        Insert: { budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
+        Update: { budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
+        Relationships: []
+      }
+      project_applications: {
+        Row: { created_at: string; creator_id: string; id: string; message: string; project_id: string; proposed_amount_usd_cents: number; status: Database["public"]["Enums"]["application_status"]; updated_at: string }
+        Insert: { created_at?: string; creator_id: string; id?: string; message: string; project_id: string; proposed_amount_usd_cents: number; status?: Database["public"]["Enums"]["application_status"]; updated_at?: string }
+        Update: { created_at?: string; creator_id?: string; id?: string; message?: string; project_id?: string; proposed_amount_usd_cents?: number; status?: Database["public"]["Enums"]["application_status"]; updated_at?: string }
+        Relationships: []
+      }
+      project_services: {
+        Row: { project_id: string; service_id: string }
+        Insert: { project_id: string; service_id: string }
+        Update: { project_id?: string; service_id?: string }
+        Relationships: []
+      }
+      project_niches: {
+        Row: { niche_id: string; project_id: string }
+        Insert: { niche_id: string; project_id: string }
+        Update: { niche_id?: string; project_id?: string }
+        Relationships: []
+      }
+      project_languages: {
+        Row: { language_id: string; project_id: string }
+        Insert: { language_id: string; project_id: string }
+        Update: { language_id?: string; project_id?: string }
+        Relationships: []
+      }
       reports: {
         Row: { created_at: string; details: string | null; id: string; reason: Database["public"]["Enums"]["report_reason"]; reporter_id: string; resolution: Database["public"]["Enums"]["report_resolution"] | null; resolved_at: string | null; resolved_by: string | null; status: Database["public"]["Enums"]["report_status"]; target_company_id: string | null; target_conversation_id: string | null; target_creator_id: string | null }
         Insert: { created_at?: string; details?: string | null; id?: string; reason: Database["public"]["Enums"]["report_reason"]; reporter_id: string; resolution?: Database["public"]["Enums"]["report_resolution"] | null; resolved_at?: string | null; resolved_by?: string | null; status?: Database["public"]["Enums"]["report_status"]; target_company_id?: string | null; target_conversation_id?: string | null; target_creator_id?: string | null }
@@ -173,6 +203,14 @@ export type Database = {
       }
     }
     Views: {
+      project_applicants: {
+        Row: { created_at: string | null; creator_id: string | null; creator_status: Database["public"]["Enums"]["account_status"] | null; first_name: string | null; id: string | null; last_name: string | null; message: string | null; photo_url: string | null; project_id: string | null; proposed_amount_usd_cents: number | null; status: Database["public"]["Enums"]["application_status"] | null }
+        Relationships: []
+      }
+      project_listings: {
+        Row: { budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
+        Relationships: []
+      }
       conversation_creators: {
         Row: { first_name: string | null; id: string | null; last_name: string | null; photo_url: string | null; status: Database["public"]["Enums"]["account_status"] | null }
         Relationships: []
@@ -213,6 +251,8 @@ export type Database = {
         | "category_updated"
         | "category_removed"
         | "project_closed"
+      application_status: "submitted" | "declined" | "withdrawn"
+      project_status: "open" | "closed"
       language_proficiency: "native" | "fluent" | "conversational"
       notification_type: "new_message" | "report_outcome" | "new_application" | "application_declined" | "new_matching_project"
       rate_type: "flat" | "starting_from"
