@@ -42,10 +42,10 @@ export async function getReports(): Promise<AdminReport[]> {
     .from("reports")
     .select(
       `id, reason, details, created_at, status, resolution, reporter_id,
-       creator_profiles ( id, display_name ),
+       creator_profiles ( id, first_name, last_name ),
        company_profiles ( id, name ),
        conversations ( id, creator_id, company_id,
-         creator_profiles ( display_name ), company_profiles ( name ) )`,
+         creator_profiles ( first_name, last_name ), company_profiles ( name ) )`,
     )
     .order("status")
     .order("created_at", { ascending: false });
@@ -58,18 +58,18 @@ export async function getReports(): Promise<AdminReport[]> {
     let actionTarget: AdminReport["actionTarget"] = null;
 
     if (r.creator_profiles) {
-      targetLabel = `Creator: ${r.creator_profiles.display_name}`;
+      targetLabel = `Creator: ${nameOf(r.creator_profiles)}`;
       actionTarget = {
         kind: "creator",
         id: r.creator_profiles.id,
-        name: r.creator_profiles.display_name,
+        name: nameOf(r.creator_profiles),
       };
     } else if (r.company_profiles) {
       targetLabel = `Company: ${r.company_profiles.name}`;
       actionTarget = { kind: "company", id: r.company_profiles.id, name: r.company_profiles.name };
     } else if (r.conversations) {
       const c = r.conversations;
-      const creatorName = c.creator_profiles?.display_name ?? "Creator";
+      const creatorName = c.creator_profiles ? nameOf(c.creator_profiles) : "Creator";
       const companyName = c.company_profiles?.name ?? "Company";
       targetLabel = `Conversation: ${companyName} ↔ ${creatorName}`;
       // Actions apply to the participant who didn't file the report.
@@ -93,6 +93,9 @@ export async function getReports(): Promise<AdminReport[]> {
   });
 }
 
+const nameOf = (c: { first_name: string; last_name: string }) =>
+  `${c.first_name} ${c.last_name}`.trim();
+
 /** Display names for a set of user ids (creators or companies). */
 async function getAccountNames(ids: string[]): Promise<Map<string, string>> {
   const unique = [...new Set(ids)];
@@ -101,10 +104,10 @@ async function getAccountNames(ids: string[]): Promise<Map<string, string>> {
 
   const { supabase } = await getSupabaseSession();
   const [creators, companies] = await Promise.all([
-    supabase.from("creator_profiles").select("id, display_name").in("id", unique),
+    supabase.from("creator_profiles").select("id, first_name, last_name").in("id", unique),
     supabase.from("company_profiles").select("id, name").in("id", unique),
   ]);
-  creators.data?.forEach((c) => names.set(c.id, c.display_name));
+  creators.data?.forEach((c) => names.set(c.id, nameOf(c)));
   companies.data?.forEach((c) => names.set(c.id, c.name));
   return names;
 }
@@ -143,7 +146,7 @@ export async function getAccounts(): Promise<{
   const [creators, companies] = await Promise.all([
     supabase
       .from("creator_profiles")
-      .select("id, display_name, city, prefecture, country, status, created_at")
+      .select("id, first_name, last_name, city, prefecture, country, status, created_at")
       .order("created_at", { ascending: false }),
     supabase
       .from("company_profiles")
@@ -159,7 +162,7 @@ export async function getAccounts(): Promise<{
     creators: creators.data.map((c) => ({
       id: c.id,
       kind: "creator",
-      name: c.display_name,
+      name: nameOf(c),
       detail: formatLocation(c),
       status: c.status,
       createdAt: c.created_at,

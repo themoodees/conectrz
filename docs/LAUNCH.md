@@ -19,7 +19,7 @@ Work through these in order. Each step says where to click.
    | As | Check |
    | --- | --- |
    | Creator | `/signup/creator` → confirm email → onboarding → add photo, services, social accounts, portfolio → **Preview profile** |
-   | Company | `/signup` → confirm email → **Discover** shows the creator → open profile → **Save** → **Contact creator** (uses the 1 free conversation) |
+   | Company | `/signup` → confirm email → **Discover** shows the creator → open profile → **Save** → **Contact creator** (needs a paid plan: Free can browse but not start conversations, so grant Pro from /admin first) |
    | Creator | **Messages** shows the company's message → reply |
    | Company | Reply arrives; try **Contact** on a second creator → see the upgrade suggestion |
    | Either | **Forgot password?** on the sign-in page → email → set a new password |
@@ -29,7 +29,7 @@ Work through these in order. Each step says where to click.
    update public.profiles set role = 'admin'
    where id = (select id from auth.users where email = 'you@example.com');
    ```
-   Then open `/admin`: resolve the report, switch the company to **Starter**, check **Activity**.
+   Then open `/admin`: resolve the report, switch the company to **Pro**, check **Activity**.
 
 If something fails, note the page and what you clicked — and check
 **Supabase → Logs** (Postgres / Auth / Edge Functions).

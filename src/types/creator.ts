@@ -25,12 +25,13 @@ export interface CreatorLanguage {
 export interface CreatorService {
   name: string;
   rateType: RateType;
-  rateAmountJpy: number;
+  rateAmountUsd: number;
 }
 
 export interface SocialAccount {
   platform: SocialPlatform;
-  handle: string;
+  /** Hidden (null) for companies on the Free plan. */
+  handle: string | null;
   profileUrl?: string | null;
   /** Nullable: UGC-focused creators may not report an audience. */
   followerCount: number | null;

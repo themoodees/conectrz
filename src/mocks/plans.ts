@@ -1,22 +1,39 @@
 /*
- * MOCK DATA — plans (mirrors the placeholder rows in `subscription_tiers`).
+ * MOCK DATA — plans (mirrors `subscription_tiers`). Prices in whole US dollars.
  */
 export interface MockPlan {
   id: string;
   name: string;
-  monthlyPriceJpy: number;
-  conversationQuota: number;
+  monthlyPriceUsd: number;
+  /** `null` = unlimited. */
+  conversationQuota: number | null;
+  dailyNewConversationLimit: number | null;
   isActive: boolean;
 }
 
 export const mockPlans: MockPlan[] = [
-  { id: "tier-free", name: "Free", monthlyPriceJpy: 0, conversationQuota: 1, isActive: true },
   {
-    id: "tier-starter",
-    name: "Starter",
-    monthlyPriceJpy: 9800,
-    conversationQuota: 10,
+    id: "tier-free",
+    name: "Free",
+    monthlyPriceUsd: 0,
+    conversationQuota: 0,
+    dailyNewConversationLimit: null,
     isActive: true,
   },
-  { id: "tier-pro", name: "Pro", monthlyPriceJpy: 29800, conversationQuota: 50, isActive: true },
+  {
+    id: "tier-pro",
+    name: "Pro",
+    monthlyPriceUsd: 39,
+    conversationQuota: 10,
+    dailyNewConversationLimit: null,
+    isActive: true,
+  },
+  {
+    id: "tier-business",
+    name: "Business",
+    monthlyPriceUsd: 99,
+    conversationQuota: null,
+    dailyNewConversationLimit: 10,
+    isActive: true,
+  },
 ];

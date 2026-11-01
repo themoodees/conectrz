@@ -6,12 +6,15 @@ import type {
   Message,
   Viewer,
 } from "@/types/messages";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
 import { mockStore } from "@/mocks/store";
 import type { MockConversation } from "@/mocks/conversations";
 import { getSupabaseSession } from "./session";
+import { signMedia } from "./storage";
 
 /*
  * Conversations for the signed-in user. `viewer` says which side they're on:
@@ -20,17 +23,16 @@ import { getSupabaseSession } from "./session";
 
 const MESSAGE_COLUMNS = "id, content, sender_id, created_at, read_at";
 const CONVERSATION_SELECT = `
-  id, archived_by_company, archived_by_creator,
-  creator_profiles ( id, display_name, photo_url ),
+  id, creator_id, archived_by_company, archived_by_creator,
   company_profiles ( id, name ),
   messages ( ${MESSAGE_COLUMNS} )
 `;
 
 interface ConversationRow {
   id: string;
+  creator_id: string;
   archived_by_company: boolean;
   archived_by_creator: boolean;
-  creator_profiles: { id: string; display_name: string; photo_url: string | null } | null;
   company_profiles: { id: string; name: string } | null;
   messages: {
     id: string;
@@ -45,18 +47,46 @@ const archivedColumn = (viewer: Viewer) =>
   viewer === "company" ? "archived_by_company" : "archived_by_creator";
 const ownerColumn = (viewer: Viewer) => (viewer === "company" ? "company_id" : "creator_id");
 
-function toCounterpart(row: ConversationRow, viewer: Viewer): Counterpart | null {
-  if (viewer === "company") {
-    const creator = row.creator_profiles;
-    return creator
-      ? {
-          id: creator.id,
-          name: creator.display_name,
-          photoUrl: creator.photo_url,
-          profileHref: `/creators/${creator.id}`,
-        }
-      : null;
-  }
+/**
+ * Creators as a company sees them in conversations (first name only on Free).
+ * Read through the `conversation_creators` view, which has no foreign keys,
+ * so it's loaded separately and merged.
+ */
+async function loadCreatorCounterparts(
+  supabase: SupabaseClient<Database>,
+  ids: string[],
+): Promise<Map<string, Counterpart>> {
+  const result = new Map<string, Counterpart>();
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return result;
+  const { data, error } = await supabase
+    .from("conversation_creators")
+    .select("id, first_name, last_name, photo_url")
+    .in("id", unique);
+  if (error) throw error;
+  const photos = await signMedia(
+    supabase,
+    "creator-photos",
+    data.map((c) => c.photo_url),
+  );
+  data.forEach((c, index) => {
+    if (!c.id) return;
+    result.set(c.id, {
+      id: c.id,
+      name: [c.first_name, c.last_name].filter(Boolean).join(" ") || "Creator",
+      photoUrl: photos[index],
+      profileHref: `/creators/${c.id}`,
+    });
+  });
+  return result;
+}
+
+function toCounterpart(
+  row: ConversationRow,
+  viewer: Viewer,
+  creators: Map<string, Counterpart>,
+): Counterpart | null {
+  if (viewer === "company") return creators.get(row.creator_id) ?? null;
   const company = row.company_profiles;
   return company ? { id: company.id, name: company.name, photoUrl: null, profileHref: null } : null;
 }
@@ -149,9 +179,17 @@ export async function getConversations(
     .overrideTypes<ConversationRow[], { merge: false }>();
   if (error) throw error;
 
+  const creators =
+    viewer === "company"
+      ? await loadCreatorCounterparts(
+          supabase,
+          data.map((row) => row.creator_id),
+        )
+      : new Map<string, Counterpart>();
+
   return data
     .flatMap((row) => {
-      const counterpart = toCounterpart(row, viewer);
+      const counterpart = toCounterpart(row, viewer, creators);
       if (!counterpart) return [];
       const messages = row.messages.map((m) => toMessage(m, user.id));
       return [summarize(row.id, counterpart, messages)];
@@ -198,7 +236,11 @@ export async function getConversation(
   if (error) throw error;
   if (!data) return null;
 
-  const counterpart = toCounterpart(data, viewer);
+  const creators =
+    viewer === "company"
+      ? await loadCreatorCounterparts(supabase, [data.creator_id])
+      : new Map<string, Counterpart>();
+  const counterpart = toCounterpart(data, viewer, creators);
   if (!counterpart) return null;
 
   return {
@@ -235,21 +277,19 @@ export async function getConversationIdWithCreator(creatorId: string): Promise<s
 /** Plan, limit and usage for the signed-in company. */
 export interface ConversationUsage {
   planName: string;
-  quota: number;
+  /** New conversations allowed per period; null = unlimited. Free has 0. */
+  quota: number | null;
   used: number;
   periodEnd: string;
-  /**
-   * Free plans (¥0) are a one-time allowance: the count never resets.
-   * Paid plans count per billing period.
-   */
+  /** Free plan ($0): cannot start conversations. */
   isFree: boolean;
 }
 
 export async function getConversationUsage(): Promise<ConversationUsage | null> {
   if (isMockMode) {
     const plan = mockStore.plans.find((p) => p.name === mockStore.subscription.planName);
-    const isFree = plan?.monthlyPriceJpy === 0;
-    const periodStart = isFree ? "" : mockStore.subscription.periodStart;
+    const isFree = plan?.monthlyPriceUsd === 0;
+    const periodStart = mockStore.subscription.periodStart;
     const used = mockStore.conversations.filter(
       (c) => (c.messages[0]?.createdAt ?? "") >= periodStart,
     ).length;
@@ -270,7 +310,7 @@ export async function getConversationUsage(): Promise<ConversationUsage | null> 
 
   const { data: tier } = await supabase
     .from("subscription_tiers")
-    .select("monthly_price_jpy")
+    .select("monthly_price_usd_cents")
     .eq("name", row.tier_name)
     .maybeSingle();
 
@@ -279,6 +319,6 @@ export async function getConversationUsage(): Promise<ConversationUsage | null> 
     quota: row.quota,
     used: row.used,
     periodEnd: row.period_end,
-    isFree: tier?.monthly_price_jpy === 0,
+    isFree: tier?.monthly_price_usd_cents === 0,
   };
 }

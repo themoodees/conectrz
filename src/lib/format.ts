@@ -5,18 +5,22 @@ const compactNumber = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
-// English formatting ("¥35,000", not the full-width "￥" used by ja-JP).
-const yen = new Intl.NumberFormat("en", {
+// English formatting ("$250"). Whole dollars; cents are only used for storage.
+const usd = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "JPY",
+  currency: "USD",
   maximumFractionDigits: 0,
 });
 
 /** 248000 → "248K" */
 export const formatFollowers = (count: number) => compactNumber.format(count);
 
-/** 35000 → "¥35,000" */
-export const formatJpy = (amount: number) => yen.format(amount);
+/** 250 → "$250" */
+export const formatUsd = (amount: number) => usd.format(amount);
+
+/** Database stores USD cents; the app works in dollars. */
+export const centsToUsd = (cents: number) => cents / 100;
+export const usdToCents = (dollars: number) => Math.round(dollars * 100);
 
 /** "Shibuya, Tokyo" — falls back gracefully when parts are missing. */
 export function formatLocation(creator: Pick<Creator, "city" | "prefecture" | "country">) {
@@ -28,7 +32,7 @@ export function formatLocation(creator: Pick<Creator, "city" | "prefecture" | "c
 
 export function getLowestRate(services: CreatorService[]): number | null {
   if (services.length === 0) return null;
-  return Math.min(...services.map((service) => service.rateAmountJpy));
+  return Math.min(...services.map((service) => service.rateAmountUsd));
 }
 
 export function getLargestAudience(accounts: SocialAccount[]): number | null {
@@ -53,9 +57,9 @@ export const PROFICIENCY_LABELS: Record<LanguageProficiency, string> = {
   conversational: "Conversational",
 };
 
-/** "¥35,000" for flat rates, "From ¥35,000" for starting-from rates. */
+/** "$250" for flat rates, "From $250" for starting-from rates. */
 export function formatRate(service: CreatorService) {
-  const amount = formatJpy(service.rateAmountJpy);
+  const amount = formatUsd(service.rateAmountUsd);
   return service.rateType === "starting_from" ? `From ${amount}` : amount;
 }
 

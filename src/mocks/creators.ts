@@ -25,8 +25,8 @@ export const mockCreators: Creator[] = [
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Beauty", "Skincare"],
     services: [
-      { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 120000 },
-      { name: "Instagram Reel", rateType: "starting_from", rateAmountJpy: 180000 },
+      { name: "Instagram post", rateType: "starting_from", rateAmountUsd: 800 },
+      { name: "Instagram Reel", rateType: "starting_from", rateAmountUsd: 1200 },
     ],
     socialAccounts: [
       { platform: "instagram", handle: "yui.beauty", followerCount: 248000 },
@@ -49,8 +49,8 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Lifestyle", "Travel"],
     services: [
-      { name: "UGC video", rateType: "starting_from", rateAmountJpy: 35000 },
-      { name: "Instagram Reel", rateType: "starting_from", rateAmountJpy: 60000 },
+      { name: "UGC video", rateType: "starting_from", rateAmountUsd: 235 },
+      { name: "Instagram Reel", rateType: "starting_from", rateAmountUsd: 400 },
     ],
     socialAccounts: [
       { platform: "instagram", handle: "emmaintokyo", followerCount: 38500 },
@@ -73,9 +73,9 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Skincare", "Home & Interior"],
     services: [
-      { name: "UGC video", rateType: "flat", rateAmountJpy: 28000 },
-      { name: "UGC photos", rateType: "flat", rateAmountJpy: 18000 },
-      { name: "Product photography", rateType: "starting_from", rateAmountJpy: 40000 },
+      { name: "UGC video", rateType: "flat", rateAmountUsd: 185 },
+      { name: "UGC photos", rateType: "flat", rateAmountUsd: 120 },
+      { name: "Product photography", rateType: "starting_from", rateAmountUsd: 265 },
     ],
     socialAccounts: [],
   },
@@ -91,7 +91,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Lifestyle"],
-    services: [{ name: "TikTok video", rateType: "starting_from", rateAmountJpy: 90000 }],
+    services: [{ name: "TikTok video", rateType: "starting_from", rateAmountUsd: 600 }],
     socialAccounts: [
       { platform: "tiktok", handle: "ren.eats", followerCount: 412000 },
       { platform: "instagram", handle: "ren.eats", followerCount: 27000 },
@@ -114,9 +114,9 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Travel", "Culture"],
     services: [
-      { name: "UGC video", rateType: "starting_from", rateAmountJpy: 40000 },
-      { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 55000 },
-      { name: "Localization & voiceover", rateType: "starting_from", rateAmountJpy: 30000 },
+      { name: "UGC video", rateType: "starting_from", rateAmountUsd: 265 },
+      { name: "Instagram post", rateType: "starting_from", rateAmountUsd: 365 },
+      { name: "Localization & voiceover", rateType: "starting_from", rateAmountUsd: 200 },
     ],
     socialAccounts: [{ platform: "instagram", handle: "sofia.kyoto", followerCount: 21800 }],
   },
@@ -136,10 +136,10 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Tech", "Gaming"],
     services: [
-      { name: "YouTube integration", rateType: "starting_from", rateAmountJpy: 250000 },
-      { name: "TikTok video", rateType: "starting_from", rateAmountJpy: 80000 },
-      { name: "UGC video", rateType: "starting_from", rateAmountJpy: 45000 },
-      { name: "Product review", rateType: "starting_from", rateAmountJpy: 60000 },
+      { name: "YouTube integration", rateType: "starting_from", rateAmountUsd: 1665 },
+      { name: "TikTok video", rateType: "starting_from", rateAmountUsd: 535 },
+      { name: "UGC video", rateType: "starting_from", rateAmountUsd: 300 },
+      { name: "Product review", rateType: "starting_from", rateAmountUsd: 400 },
     ],
     socialAccounts: [
       { platform: "youtube", handle: "DaikiTech", followerCount: 186000 },
@@ -162,8 +162,8 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Fashion", "Beauty"],
     services: [
-      { name: "Instagram Reel", rateType: "starting_from", rateAmountJpy: 70000 },
-      { name: "TikTok video", rateType: "starting_from", rateAmountJpy: 65000 },
+      { name: "Instagram Reel", rateType: "starting_from", rateAmountUsd: 465 },
+      { name: "TikTok video", rateType: "starting_from", rateAmountUsd: 435 },
     ],
     socialAccounts: [
       { platform: "instagram", handle: "aoi.style", followerCount: 89000 },
@@ -187,8 +187,8 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Tech", "Lifestyle"],
     services: [
-      { name: "UGC video", rateType: "flat", rateAmountJpy: 32000 },
-      { name: "Product review", rateType: "flat", rateAmountJpy: 25000 },
+      { name: "UGC video", rateType: "flat", rateAmountUsd: 215 },
+      { name: "Product review", rateType: "flat", rateAmountUsd: 165 },
     ],
     socialAccounts: [{ platform: "instagram", handle: "liam.makes", followerCount: null }],
   },
@@ -204,8 +204,8 @@ export const mockCreators: Creator[] = [
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Travel"],
     services: [
-      { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 45000 },
-      { name: "UGC photos", rateType: "flat", rateAmountJpy: 20000 },
+      { name: "Instagram post", rateType: "starting_from", rateAmountUsd: 300 },
+      { name: "UGC photos", rateType: "flat", rateAmountUsd: 135 },
     ],
     socialAccounts: [{ platform: "instagram", handle: "mei.hokkaido", followerCount: 46200 }],
   },
@@ -225,8 +225,8 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Fashion", "Lifestyle"],
     services: [
-      { name: "Instagram Reel", rateType: "starting_from", rateAmountJpy: 150000 },
-      { name: "Event appearance", rateType: "starting_from", rateAmountJpy: 200000 },
+      { name: "Instagram Reel", rateType: "starting_from", rateAmountUsd: 1000 },
+      { name: "Event appearance", rateType: "starting_from", rateAmountUsd: 1335 },
     ],
     socialAccounts: [{ platform: "instagram", handle: "chloe.tokyo", followerCount: 132000 }],
   },
@@ -245,8 +245,8 @@ export const mockCreators: Creator[] = [
     ],
     niches: ["Fitness", "Travel"],
     services: [
-      { name: "YouTube integration", rateType: "starting_from", rateAmountJpy: 110000 },
-      { name: "UGC video", rateType: "starting_from", rateAmountJpy: 38000 },
+      { name: "YouTube integration", rateType: "starting_from", rateAmountUsd: 735 },
+      { name: "UGC video", rateType: "starting_from", rateAmountUsd: 255 },
     ],
     socialAccounts: [
       { platform: "youtube", handle: "KentaOutdoors", followerCount: 73000 },
@@ -265,8 +265,8 @@ export const mockCreators: Creator[] = [
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Parenting", "Home & Interior"],
     services: [
-      { name: "UGC video", rateType: "flat", rateAmountJpy: 22000 },
-      { name: "Instagram post", rateType: "starting_from", rateAmountJpy: 30000 },
+      { name: "UGC video", rateType: "flat", rateAmountUsd: 145 },
+      { name: "Instagram post", rateType: "starting_from", rateAmountUsd: 200 },
     ],
     socialAccounts: [{ platform: "instagram", handle: "rina.home", followerCount: 8700 }],
   },

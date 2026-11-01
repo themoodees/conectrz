@@ -5,6 +5,7 @@ import type { AccountStatus } from "@/types/account";
 import type { AccountKind, CategoryTable } from "@/types/admin";
 import type { Database, Json } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
+import { usdToCents } from "@/lib/format";
 import { getCurrentRole, requireSupabaseUser } from "@/lib/data/session";
 import { mockStore } from "@/mocks/store";
 
@@ -198,17 +199,29 @@ export async function updateCategory(
 export async function savePlan(plan: {
   id?: string;
   name: string;
-  monthlyPriceJpy: number;
-  conversationQuota: number;
+  monthlyPriceUsd: number;
+  /** null = unlimited */
+  conversationQuota: number | null;
+  /** null = no daily cap */
+  dailyNewConversationLimit: number | null;
   isActive: boolean;
 }): Promise<AdminResult> {
   const name = plan.name.trim().slice(0, 40);
   if (!name) return { error: "Enter a plan name." };
-  if (!Number.isInteger(plan.monthlyPriceJpy) || plan.monthlyPriceJpy < 0) {
-    return { error: "Price must be a whole number of yen." };
+  if (!Number.isInteger(plan.monthlyPriceUsd) || plan.monthlyPriceUsd < 0) {
+    return { error: "Price must be a whole number of US dollars." };
   }
-  if (!Number.isInteger(plan.conversationQuota) || plan.conversationQuota < 0) {
-    return { error: "Conversation limit must be a whole number." };
+  if (
+    plan.conversationQuota !== null &&
+    (!Number.isInteger(plan.conversationQuota) || plan.conversationQuota < 0)
+  ) {
+    return { error: "Conversation limit must be a whole number, or empty for unlimited." };
+  }
+  if (
+    plan.dailyNewConversationLimit !== null &&
+    (!Number.isInteger(plan.dailyNewConversationLimit) || plan.dailyNewConversationLimit < 1)
+  ) {
+    return { error: "Daily limit must be a whole number of 1 or more, or empty for none." };
   }
 
   let id = plan.id;
@@ -223,8 +236,9 @@ export async function savePlan(plan: {
     const { supabase } = await requireAdmin();
     const values = {
       name,
-      monthly_price_jpy: plan.monthlyPriceJpy,
+      monthly_price_usd_cents: usdToCents(plan.monthlyPriceUsd),
       conversation_quota: plan.conversationQuota,
+      daily_new_conversation_limit: plan.dailyNewConversationLimit,
       is_active: plan.isActive,
     };
     const { data, error } = plan.id
@@ -242,8 +256,9 @@ export async function savePlan(plan: {
 
   await logAction("subscription_tier_changed", "subscription_tier", id!, {
     name,
-    monthly_price_jpy: plan.monthlyPriceJpy,
+    monthly_price_usd: plan.monthlyPriceUsd,
     conversation_quota: plan.conversationQuota,
+    daily_new_conversation_limit: plan.dailyNewConversationLimit,
     is_active: plan.isActive,
   });
   revalidatePath("/admin/plans");
@@ -283,13 +298,13 @@ export async function grantPlan(
     if (cancelError) return { error: "Couldn't update the subscription." };
 
     // Free plans never expire (same as the default subscription created at sign-up);
-    // their conversation allowance is counted over the company's whole history.
+    // they have no conversations of their own.
     const { data: tier } = await supabase
       .from("subscription_tiers")
-      .select("monthly_price_jpy")
+      .select("monthly_price_usd_cents")
       .eq("id", tierId)
       .single();
-    const isFree = tier?.monthly_price_jpy === 0;
+    const isFree = tier?.monthly_price_usd_cents === 0;
 
     const start = new Date();
     const { error } = await supabase.from("subscriptions").insert({

@@ -27,7 +27,10 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
   ]);
   // Paid plans offering more conversations than the current one.
   const upgradePlans = plans.filter(
-    (plan) => plan.monthlyPriceJpy > 0 && plan.conversationQuota > (usage?.quota ?? 0),
+    (plan) =>
+      plan.monthlyPriceUsd > 0 &&
+      usage?.quota !== null &&
+      (plan.conversationQuota === null || plan.conversationQuota > (usage?.quota ?? 0)),
   );
   if (!creator) notFound();
 

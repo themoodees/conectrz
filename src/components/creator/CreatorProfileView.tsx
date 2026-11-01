@@ -89,7 +89,9 @@ export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps
                         <span className="block font-medium text-ink">
                           {PLATFORM_LABELS[account.platform]}
                         </span>
-                        {account.profileUrl ? (
+                        {account.handle === null ? (
+                          <span className="text-muted">Handle and link on paid plans</span>
+                        ) : account.profileUrl ? (
                           <a
                             href={account.profileUrl}
                             target="_blank"
@@ -129,7 +131,7 @@ export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps
                     </li>
                   ))}
                 </ul>
-                <p className="mt-2 text-xs text-muted">Rates are set by the creator, in JPY.</p>
+                <p className="mt-2 text-xs text-muted">Rates are set by the creator, in US dollars.</p>
               </ProfileSection>
             )}
           </div>
