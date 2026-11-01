@@ -22,8 +22,8 @@ interface ContactCreatorProps {
 
 /**
  * "Contact creator" button + first-message dialog.
- * Each new conversation uses one of the plan's conversations: once in total on
- * Free, per billing period on paid plans.
+ * Each new conversation uses one of the plan's conversations per billing period.
+ * Free has none; Business is unlimited.
  */
 export function ContactCreator({
   creatorId,
@@ -37,7 +37,12 @@ export function ContactCreator({
     {},
   );
 
-  const remaining = usage ? Math.max(usage.quota - usage.used, 0) : 0;
+  const unlimited = usage?.quota === null;
+  const remaining = usage
+    ? usage.quota === null
+      ? Infinity
+      : Math.max(usage.quota - usage.used, 0)
+    : 0;
   const atLimit = remaining === 0;
 
   return (
@@ -55,7 +60,7 @@ export function ContactCreator({
 
       {usage && atLimit ? (
         <div id="contact-usage">
-          <UpgradeSuggestion isFree={usage.isFree} quota={usage.quota} plans={upgradePlans} />
+          <UpgradeSuggestion isFree={usage.isFree} plans={upgradePlans} />
         </div>
       ) : (
         <p id="contact-usage" className="mt-2 text-xs text-muted">
@@ -66,8 +71,8 @@ export function ContactCreator({
                 See plans
               </Link>
             </>
-          ) : usage.isFree ? (
-            `${remaining} of ${usage.quota} free ${usage.quota === 1 ? "conversation" : "conversations"} left.`
+          ) : unlimited ? (
+            "Unlimited new conversations on your plan."
           ) : (
             `${remaining} of ${usage.quota} new conversations left this period.`
           )}

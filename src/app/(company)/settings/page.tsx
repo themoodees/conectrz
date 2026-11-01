@@ -36,8 +36,10 @@ export default async function SettingsPage() {
                 <p className="font-semibold text-ink">{usage.planName}</p>
                 <p className="mt-0.5 text-sm text-muted">
                   {usage.isFree
-                    ? `${usage.used} of ${usage.quota} free conversations used (doesn't reset)`
-                    : `${usage.used} of ${usage.quota} conversations used · renews ${formatShortDate(usage.periodEnd)}`}
+                    ? "Free plan: upgrade to start conversations with creators"
+                    : usage.quota === null
+                      ? `${usage.used} new conversations this period · unlimited · renews ${formatShortDate(usage.periodEnd)}`
+                      : `${usage.used} of ${usage.quota} conversations used · renews ${formatShortDate(usage.periodEnd)}`}
                 </p>
               </div>
               <Link href="/plans" className={buttonClass({ variant: "secondary", size: "sm" })}>

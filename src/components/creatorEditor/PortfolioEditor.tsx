@@ -12,7 +12,7 @@ import { rowInputClass } from "./EditorSection";
 import { useSave } from "./useSave";
 
 const MAX_ITEMS = 20;
-const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_BYTES = 100 * 1024 * 1024;
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime"];
 
 /**
@@ -37,7 +37,7 @@ export function PortfolioEditor({
     if (!file) return setResult({ error: "Choose a file first." });
     if (!ACCEPTED.includes(file.type))
       return setResult({ error: "Use JPG, PNG, WebP, MP4 or MOV." });
-    if (file.size > MAX_BYTES) return setResult({ error: "Files can be up to 50 MB." });
+    if (file.size > MAX_BYTES) return setResult({ error: "Files can be up to 100 MB." });
 
     save(async () => {
       const supabase = createSupabaseBrowserClient();
@@ -48,9 +48,8 @@ export function PortfolioEditor({
         .upload(path, file, { contentType: file.type });
       if (error) return { error: "Upload failed. Please try again." };
 
-      const { data } = supabase.storage.from("portfolio").getPublicUrl(path);
       const result = await addPortfolioItem({
-        mediaUrl: data.publicUrl,
+        mediaPath: path,
         mediaType: file.type,
         title,
         description,

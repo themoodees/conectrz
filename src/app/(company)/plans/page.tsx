@@ -6,7 +6,7 @@ import { SUPPORT_EMAIL } from "@/lib/config";
 import { getCurrentCompanyAccount } from "@/lib/data/account";
 import { getConversationUsage } from "@/lib/data/messages";
 import { getPlans } from "@/lib/data/plans";
-import { formatJpy, formatShortDate } from "@/lib/format";
+import { formatUsd, formatShortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Plans" };
 
@@ -33,8 +33,8 @@ export default async function PlansPage() {
       <header className="pt-7 pb-6 md:pt-10 md:pb-8">
         <h1 className="text-[1.75rem] leading-tight font-semibold text-ink md:text-4xl">Plans</h1>
         <p className="mt-2 max-w-xl text-base text-muted">
-          Start free with a one-time allowance, then choose a plan for new conversations every
-          month. Replies are always unlimited.
+          Browse creators for free, then choose a plan to start new conversations. Replies are
+          always unlimited.
         </p>
       </header>
 
@@ -58,16 +58,18 @@ export default async function PlansPage() {
               </div>
               <p className="mt-4">
                 <span className="font-display text-3xl font-semibold text-ink">
-                  {formatJpy(plan.monthlyPriceJpy)}
+                  {formatUsd(plan.monthlyPriceUsd)}
                 </span>
-                {plan.monthlyPriceJpy > 0 && <span className="text-sm text-muted"> / month</span>}
+                {plan.monthlyPriceUsd > 0 && <span className="text-sm text-muted"> / month</span>}
               </p>
               <ul className="mt-5 flex-1 space-y-2 text-sm text-graphite">
                 <li className="flex gap-2">
                   <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-                  {plan.conversationQuota} new{" "}
-                  {plan.conversationQuota === 1 ? "conversation" : "conversations"}{" "}
-                  {plan.monthlyPriceJpy === 0 ? "in total (doesn't reset)" : "per month"}
+                  {plan.conversationQuota === null
+                    ? "Unlimited new conversations"
+                    : plan.conversationQuota === 0
+                      ? "No new conversations"
+                      : `${plan.conversationQuota} new conversations per month`}
                 </li>
                 <li className="flex gap-2">
                   <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -92,7 +94,7 @@ export default async function PlansPage() {
                 <a
                   href={requestHref(plan.name)}
                   className={buttonClass({
-                    variant: plan.monthlyPriceJpy > 0 ? "primary" : "secondary",
+                    variant: plan.monthlyPriceUsd > 0 ? "primary" : "secondary",
                     className: "mt-6",
                   })}
                 >

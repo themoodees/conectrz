@@ -64,7 +64,7 @@ export default async function CreatorProfileEditorPage({
         </EditorSection>
         <EditorSection
           title="Services & rates"
-          description="What brands can book you for. Rates are in yen."
+          description="What brands can book you for. Rates are in US dollars."
         >
           <ServicesEditor options={options.services} initialRows={data.services} />
         </EditorSection>

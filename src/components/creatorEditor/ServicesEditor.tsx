@@ -11,7 +11,7 @@ import { useSave } from "./useSave";
 
 type Row = CreatorEditorData["services"][number];
 
-/** Services the creator offers, with a flat or "starting from" rate in yen. */
+/** Services the creator offers, with a flat or "starting from" rate in US dollars. */
 export function ServicesEditor({
   options,
   initialRows,
@@ -64,17 +64,17 @@ export function ServicesEditor({
               <option value="flat">Flat rate</option>
             </select>
             <label className="relative">
-              <span className="sr-only">Rate in yen</span>
+              <span className="sr-only">Rate in US dollars</span>
               <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted">
-                ¥
+                $
               </span>
               <input
                 type="number"
                 inputMode="numeric"
                 min={1}
                 step={1}
-                value={row.rateAmountJpy || ""}
-                onChange={(e) => update(index, { rateAmountJpy: Number(e.target.value) })}
+                value={row.rateAmountUsd || ""}
+                onChange={(e) => update(index, { rateAmountUsd: Number(e.target.value) })}
                 placeholder="30000"
                 className={`${rowInputClass} pl-7`}
               />
@@ -87,7 +87,7 @@ export function ServicesEditor({
         onClick={() =>
           setRows((current) => [
             ...current,
-            { serviceId: "", rateType: "starting_from", rateAmountJpy: 0 },
+            { serviceId: "", rateType: "starting_from", rateAmountUsd: 0 },
           ])
         }
         className={buttonClass({ variant: "ghost", size: "sm", className: "mt-3 -ml-3" })}

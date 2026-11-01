@@ -10,6 +10,8 @@ import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
 
 export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
+  const [suggestedFirstName, ...rest] = suggestedName.trim().split(/\s+/);
+  const suggestedLastName = rest.join(" ");
   const [result, formAction, pending] = useActionState<SaveResult, FormData>(
     createCreatorProfile,
     {},
@@ -18,14 +20,24 @@ export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
   return (
     <form action={formAction} className="space-y-5">
       {result.error && <FormMessage tone="error">{result.error}</FormMessage>}
-      <TextField
-        label="Display name"
-        name="displayName"
-        defaultValue={suggestedName}
-        required
-        maxLength={80}
-        hint="Shown to brands on your profile."
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextField
+          label="First name"
+          name="firstName"
+          defaultValue={suggestedFirstName}
+          required
+          maxLength={60}
+          hint="Shown to every brand."
+        />
+        <TextField
+          label="Last name"
+          name="lastName"
+          defaultValue={suggestedLastName}
+          required
+          maxLength={60}
+          hint="Shown to brands on paid plans."
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label="Prefecture"

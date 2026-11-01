@@ -1,6 +1,8 @@
 /*
- * Generated from the Supabase schema — do not edit by hand.
- * Regenerate after schema changes (Supabase CLI: `supabase gen types typescript`).
+ * Mirrors the Supabase schema (Conectrz project). Updated 2026-11-01 for: first/last names,
+ * USD cents pricing, nullable (unlimited) quota, restricted views, Projects-related enums.
+ * Projects tables are not listed yet; add them (or regenerate with
+ * `supabase gen types typescript`) when the Projects screens are built.
  */
 export type Json =
   | string
@@ -60,17 +62,17 @@ export type Database = {
         ]
       }
       creator_profiles: {
-        Row: { bio: string | null; city: string | null; country: string; created_at: string; display_name: string; id: string; is_available: boolean; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
-        Insert: { bio?: string | null; city?: string | null; country: string; created_at?: string; display_name: string; id: string; is_available?: boolean; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
-        Update: { bio?: string | null; city?: string | null; country?: string; created_at?: string; display_name?: string; id?: string; is_available?: boolean; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Row: { bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
+        Insert: { bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Update: { bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
         Relationships: [
           { foreignKeyName: "creator_profiles_id_fkey"; columns: ["id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
       creator_services: {
-        Row: { created_at: string; creator_id: string; id: string; rate_amount_jpy: number; rate_type: Database["public"]["Enums"]["rate_type"]; service_id: string; updated_at: string }
-        Insert: { created_at?: string; creator_id: string; id?: string; rate_amount_jpy: number; rate_type: Database["public"]["Enums"]["rate_type"]; service_id: string; updated_at?: string }
-        Update: { created_at?: string; creator_id?: string; id?: string; rate_amount_jpy?: number; rate_type?: Database["public"]["Enums"]["rate_type"]; service_id?: string; updated_at?: string }
+        Row: { created_at: string; creator_id: string; id: string; rate_amount_usd_cents: number; rate_type: Database["public"]["Enums"]["rate_type"]; service_id: string; updated_at: string }
+        Insert: { created_at?: string; creator_id: string; id?: string; rate_amount_usd_cents: number; rate_type: Database["public"]["Enums"]["rate_type"]; service_id: string; updated_at?: string }
+        Update: { created_at?: string; creator_id?: string; id?: string; rate_amount_usd_cents?: number; rate_type?: Database["public"]["Enums"]["rate_type"]; service_id?: string; updated_at?: string }
         Relationships: [
           { foreignKeyName: "creator_services_creator_id_fkey"; columns: ["creator_id"]; isOneToOne: false; referencedRelation: "creator_profiles"; referencedColumns: ["id"] },
           { foreignKeyName: "creator_services_service_id_fkey"; columns: ["service_id"]; isOneToOne: false; referencedRelation: "services"; referencedColumns: ["id"] },
@@ -155,9 +157,9 @@ export type Database = {
         ]
       }
       subscription_tiers: {
-        Row: { conversation_quota: number; id: string; is_active: boolean; monthly_price_jpy: number; name: string }
-        Insert: { conversation_quota: number; id?: string; is_active?: boolean; monthly_price_jpy: number; name: string }
-        Update: { conversation_quota?: number; id?: string; is_active?: boolean; monthly_price_jpy?: number; name?: string }
+        Row: { conversation_quota: number | null; daily_new_conversation_limit: number | null; id: string; is_active: boolean; monthly_price_usd_cents: number; name: string }
+        Insert: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents: number; name: string }
+        Update: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents?: number; name?: string }
         Relationships: []
       }
       subscriptions: {
@@ -170,12 +172,27 @@ export type Database = {
         ]
       }
     }
-    Views: { [_ in never]: never }
+    Views: {
+      conversation_creators: {
+        Row: { first_name: string | null; id: string | null; last_name: string | null; photo_url: string | null; status: Database["public"]["Enums"]["account_status"] | null }
+        Relationships: []
+      }
+      creator_directory: {
+        Row: { bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Relationships: []
+      }
+      creator_social_directory: {
+        Row: { creator_id: string | null; follower_count: number | null; handle: string | null; id: string | null; platform: string | null; profile_url: string | null }
+        Relationships: []
+      }
+    }
     Functions: {
+      creator_is_published: { Args: { p_creator_id: string }; Returns: boolean }
+      has_paid_plan: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       my_conversation_usage: {
         Args: never
-        Returns: { period_end: string; quota: number; tier_name: string; used: number }[]
+        Returns: { period_end: string; quota: number | null; tier_name: string; used: number }[]
       }
       start_conversation: {
         Args: { p_creator_id: string; p_message: string }
@@ -195,8 +212,9 @@ export type Database = {
         | "category_created"
         | "category_updated"
         | "category_removed"
+        | "project_closed"
       language_proficiency: "native" | "fluent" | "conversational"
-      notification_type: "new_message" | "report_outcome"
+      notification_type: "new_message" | "report_outcome" | "new_application" | "application_declined" | "new_matching_project"
       rate_type: "flat" | "starting_from"
       report_reason: "fake_profile" | "spam" | "inappropriate_content" | "harassment" | "no_response" | "other"
       report_resolution: "dismissed" | "paused" | "banned"

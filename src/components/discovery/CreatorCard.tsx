@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Creator } from "@/types/creator";
-import { formatFollowers, formatJpy, formatLocation, getLowestRate } from "@/lib/format";
+import { formatFollowers, formatUsd, formatLocation, getLowestRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { BookmarkIcon, LanguageIcon, MapPinIcon, PlatformIcon } from "@/components/ui/icons";
 import { CreatorImage } from "./CreatorImage";
@@ -126,7 +126,7 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
             {lowestRate !== null && (
               <p className="shrink-0 text-right text-sm leading-tight">
                 {showsFrom && <span className="block text-xs text-muted">From</span>}
-                <span className="font-semibold text-ink">{formatJpy(lowestRate)}</span>
+                <span className="font-semibold text-ink">{formatUsd(lowestRate)}</span>
               </p>
             )}
           </div>

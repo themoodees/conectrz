@@ -40,8 +40,7 @@ export function PhotoUploader({
       .upload(path, file, { contentType: file.type });
     if (error) return setStatus({ error: "Upload failed. Please try again." });
 
-    const { data } = supabase.storage.from("creator-photos").getPublicUrl(path);
-    const result = await setProfilePhoto(data.publicUrl);
+    const result = await setProfilePhoto(path);
     setStatus({ error: result.error });
   }
 

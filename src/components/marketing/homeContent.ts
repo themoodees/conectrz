@@ -38,7 +38,7 @@ export const CREATOR_BENEFITS = [
   },
   {
     title: "Your rates, your terms",
-    text: "List your services and prices in yen, and reply to the brands you want to work with.",
+    text: "List your services and prices in US dollars, and reply to the brands you want to work with.",
   },
 ];
 

@@ -157,8 +157,12 @@ export async function startConversation(
 
   if (isMockMode) {
     const usage = await getConversationUsage();
-    if (usage && usage.used >= usage.quota) {
-      return { error: "You've reached your plan's conversation limit for this period." };
+    if (usage && usage.quota !== null && usage.used >= usage.quota) {
+      return {
+        error: usage.isFree
+          ? "Your Free plan can't start new conversations. Upgrade to contact creators."
+          : "You've reached your plan's conversation limit for this period.",
+      };
     }
     conversationId = `cv-${Date.now()}`;
     mockStore.conversations.push({
@@ -182,6 +186,9 @@ export async function startConversation(
     });
     if (error || !data) {
       const message = error?.message ?? "";
+      if (message.includes("daily_limit_reached")) {
+        return { error: "You've reached today's limit for new conversations. Try again tomorrow." };
+      }
       if (message.includes("conversation_quota_reached")) {
         return { error: "You've reached your plan's conversation limit for this period." };
       }

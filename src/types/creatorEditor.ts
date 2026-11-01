@@ -12,6 +12,8 @@ export interface CreatorEditorData {
   id: string;
   status: AccountStatus;
   displayName: string;
+  firstName: string;
+  lastName: string;
   bio: string;
   prefecture: string;
   city: string;
@@ -19,7 +21,7 @@ export interface CreatorEditorData {
   photoUrl: string | null;
   nicheIds: string[];
   languages: { languageId: string; proficiency: LanguageProficiency }[];
-  services: { serviceId: string; rateType: RateType; rateAmountJpy: number }[];
+  services: { serviceId: string; rateType: RateType; rateAmountUsd: number }[];
   socialAccounts: {
     id?: string;
     platform: SocialPlatform;

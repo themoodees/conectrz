@@ -18,13 +18,24 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
 
   return (
     <form action={formAction} className="space-y-4">
-      <TextField
-        label="Display name"
-        name="displayName"
-        defaultValue={data.displayName}
-        required
-        maxLength={80}
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextField
+          label="First name"
+          name="firstName"
+          defaultValue={data.firstName}
+          required
+          maxLength={60}
+          hint="Shown to every brand."
+        />
+        <TextField
+          label="Last name"
+          name="lastName"
+          defaultValue={data.lastName}
+          required
+          maxLength={60}
+          hint="Shown to brands on paid plans."
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label="Prefecture"

@@ -8,7 +8,9 @@ import { rowInputClass } from "@/components/creatorEditor/EditorSection";
 
 type Draft = Omit<Plan, "id"> & { id?: string };
 
-const EMPTY: Draft = { name: "", monthlyPriceJpy: 0, conversationQuota: 0, isActive: true };
+const EMPTY: Draft = { name: "", monthlyPriceUsd: 0, conversationQuota: 0,
+  dailyNewConversationLimit: null,
+  isActive: true };
 
 /** Editable row for a plan (or a blank row to add one). */
 export function PlanEditor({ plan }: { plan?: Plan }) {
@@ -19,7 +21,7 @@ export function PlanEditor({ plan }: { plan?: Plan }) {
   const set = (patch: Partial<Draft>) => setDraft((current) => ({ ...current, ...patch }));
 
   return (
-    <li className="grid grid-cols-2 items-end gap-3 py-4 sm:grid-cols-[1fr_9rem_9rem_6rem_auto]">
+    <li className="grid grid-cols-2 items-end gap-3 py-4 sm:grid-cols-[1fr_8rem_8rem_8rem_6rem_auto]">
       <label className="col-span-2 text-xs font-medium text-muted sm:col-span-1">
         Name
         <input
@@ -30,12 +32,12 @@ export function PlanEditor({ plan }: { plan?: Plan }) {
         />
       </label>
       <label className="text-xs font-medium text-muted">
-        ¥ / month
+        $ / month
         <input
           type="number"
           min={0}
-          value={draft.monthlyPriceJpy}
-          onChange={(e) => set({ monthlyPriceJpy: Number(e.target.value) })}
+          value={draft.monthlyPriceUsd}
+          onChange={(e) => set({ monthlyPriceUsd: Number(e.target.value) })}
           className={`${rowInputClass} mt-1`}
         />
       </label>
@@ -44,8 +46,26 @@ export function PlanEditor({ plan }: { plan?: Plan }) {
         <input
           type="number"
           min={0}
-          value={draft.conversationQuota}
-          onChange={(e) => set({ conversationQuota: Number(e.target.value) })}
+          value={draft.conversationQuota ?? ""}
+          placeholder="Unlimited"
+          onChange={(e) =>
+            set({ conversationQuota: e.target.value === "" ? null : Number(e.target.value) })
+          }
+          className={`${rowInputClass} mt-1`}
+        />
+      </label>
+      <label className="text-xs font-medium text-muted">
+        New per day
+        <input
+          type="number"
+          min={1}
+          value={draft.dailyNewConversationLimit ?? ""}
+          placeholder="No cap"
+          onChange={(e) =>
+            set({
+              dailyNewConversationLimit: e.target.value === "" ? null : Number(e.target.value),
+            })
+          }
           className={`${rowInputClass} mt-1`}
         />
       </label>

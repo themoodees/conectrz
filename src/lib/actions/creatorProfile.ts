@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { LanguageProficiency, RateType, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData } from "@/types/creatorEditor";
-import { isMockMode, supabaseConfig } from "@/lib/config";
+import { isMockMode } from "@/lib/config";
+import { usdToCents } from "@/lib/format";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { PREFECTURES } from "@/lib/prefectures";
@@ -24,7 +25,7 @@ export interface SaveResult {
 
 const PROFICIENCIES: LanguageProficiency[] = ["native", "fluent", "conversational"];
 const RATE_TYPES: RateType[] = ["flat", "starting_from"];
-const MAX_RATE_JPY = 100_000_000;
+const MAX_RATE_USD = 100_000_000;
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const allUuids = (ids: string[]) => ids.every((id) => UUID_PATTERN.test(id));
@@ -41,9 +42,12 @@ function revalidateCreator(creatorId: string) {
 
 function readBasics(formData: FormData) {
   return {
-    displayName: String(formData.get("displayName") ?? "")
+    firstName: String(formData.get("firstName") ?? "")
       .trim()
-      .slice(0, 80),
+      .slice(0, 60),
+    lastName: String(formData.get("lastName") ?? "")
+      .trim()
+      .slice(0, 60),
     bio: String(formData.get("bio") ?? "")
       .trim()
       .slice(0, 1500),
@@ -56,7 +60,8 @@ function readBasics(formData: FormData) {
 }
 
 function validateBasics(basics: ReturnType<typeof readBasics>): string | null {
-  if (!basics.displayName) return "Enter your name.";
+  if (!basics.firstName) return "Enter your first name.";
+  if (!basics.lastName) return "Enter your last name.";
   if (!PREFECTURES.includes(basics.prefecture)) return "Choose your prefecture.";
   return null;
 }
@@ -74,7 +79,8 @@ export async function createCreatorProfile(
   const { supabase, user } = await requireSupabaseUser();
   const { error } = await supabase.from("creator_profiles").insert({
     id: user.id,
-    display_name: basics.displayName,
+    first_name: basics.firstName,
+    last_name: basics.lastName,
     bio: basics.bio || null,
     country: "Japan",
     prefecture: basics.prefecture,
@@ -98,7 +104,7 @@ export async function updateCreatorBasics(
   if (isMockMode) {
     const creator = mockCreator();
     Object.assign(creator, {
-      displayName: basics.displayName,
+      displayName: `${basics.firstName} ${basics.lastName}`,
       bio: basics.bio || null,
       prefecture: basics.prefecture,
       city: basics.city || null,
@@ -112,7 +118,8 @@ export async function updateCreatorBasics(
   const { error } = await supabase
     .from("creator_profiles")
     .update({
-      display_name: basics.displayName,
+      first_name: basics.firstName,
+      last_name: basics.lastName,
       bio: basics.bio || null,
       prefecture: basics.prefecture,
       city: basics.city || null,
@@ -128,19 +135,19 @@ export async function updateCreatorBasics(
 
 /* ── Uploaded media ───────────────────────────────────────────────────────── */
 
-/** Only accept files uploaded to this project's bucket, inside the creator's own folder. */
-function isOwnStorageUrl(url: string, bucket: string, userId: string) {
-  return url.startsWith(`${supabaseConfig.url}/storage/v1/object/public/${bucket}/${userId}/`);
+/**
+ * Buckets are private, so we store storage PATHS ("<user-id>/<file>").
+ * Only accept paths inside the creator's own folder.
+ */
+function isOwnStoragePath(path: string, userId: string) {
+  return path.startsWith(`${userId}/`) && !path.includes("..");
 }
 
-const storagePath = (url: string, bucket: string) =>
-  url.split(`/storage/v1/object/public/${bucket}/`)[1];
-
-export async function setProfilePhoto(photoUrl: string): Promise<SaveResult> {
+export async function setProfilePhoto(photoPath: string): Promise<SaveResult> {
   if (isMockMode) return { error: "Uploads are available in Supabase mode." };
 
   const { supabase, user } = await requireSupabaseUser();
-  if (!isOwnStorageUrl(photoUrl, "creator-photos", user.id)) return { error: "Invalid photo." };
+  if (!isOwnStoragePath(photoPath, user.id)) return { error: "Invalid photo." };
 
   const { data: current } = await supabase
     .from("creator_profiles")
@@ -150,15 +157,13 @@ export async function setProfilePhoto(photoUrl: string): Promise<SaveResult> {
 
   const { error } = await supabase
     .from("creator_profiles")
-    .update({ photo_url: photoUrl, updated_at: new Date().toISOString() })
+    .update({ photo_url: photoPath, updated_at: new Date().toISOString() })
     .eq("id", user.id);
   if (error) return { error: "Couldn't save your photo. Please try again." };
 
   // Clean up the previous photo file.
-  if (current?.photo_url && isOwnStorageUrl(current.photo_url, "creator-photos", user.id)) {
-    await supabase.storage
-      .from("creator-photos")
-      .remove([storagePath(current.photo_url, "creator-photos")]);
+  if (current?.photo_url && current.photo_url !== photoPath && isOwnStoragePath(current.photo_url, user.id)) {
+    await supabase.storage.from("creator-photos").remove([current.photo_url]);
   }
 
   revalidateCreator(user.id);
@@ -166,7 +171,7 @@ export async function setProfilePhoto(photoUrl: string): Promise<SaveResult> {
 }
 
 export async function addPortfolioItem(item: {
-  mediaUrl: string;
+  mediaPath: string;
   mediaType: string;
   title: string;
   description: string;
@@ -174,17 +179,17 @@ export async function addPortfolioItem(item: {
   if (isMockMode) return { error: "Uploads are available in Supabase mode." };
 
   const { supabase, user } = await requireSupabaseUser();
-  if (!isOwnStorageUrl(item.mediaUrl, "portfolio", user.id)) return { error: "Invalid file." };
+  if (!isOwnStoragePath(item.mediaPath, user.id)) return { error: "Invalid file." };
 
   const { error } = await supabase.from("portfolio_items").insert({
     creator_id: user.id,
-    media_url: item.mediaUrl,
+    media_url: item.mediaPath,
     media_type: item.mediaType.startsWith("video") ? "video" : "image",
     title: item.title.trim().slice(0, 120) || null,
     description: item.description.trim().slice(0, 500) || null,
   });
   if (error) {
-    await supabase.storage.from("portfolio").remove([storagePath(item.mediaUrl, "portfolio")]);
+    await supabase.storage.from("portfolio").remove([item.mediaPath]);
     return {
       error: error.message.includes("limit")
         ? "You can have up to 20 portfolio items. Remove one to add another."
@@ -220,8 +225,8 @@ export async function deletePortfolioItem(itemId: string): Promise<SaveResult> {
     .eq("creator_id", user.id);
   if (error) return { error: "Couldn't remove this item. Please try again." };
 
-  if (isOwnStorageUrl(item.media_url, "portfolio", user.id)) {
-    await supabase.storage.from("portfolio").remove([storagePath(item.media_url, "portfolio")]);
+  if (isOwnStoragePath(item.media_url, user.id)) {
+    await supabase.storage.from("portfolio").remove([item.media_url]);
   }
 
   revalidateCreator(user.id);
@@ -340,11 +345,11 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
   for (const service of services) {
     if (!RATE_TYPES.includes(service.rateType)) return { error: "Choose a rate type." };
     if (
-      !Number.isInteger(service.rateAmountJpy) ||
-      service.rateAmountJpy <= 0 ||
-      service.rateAmountJpy > MAX_RATE_JPY
+      !Number.isInteger(service.rateAmountUsd) ||
+      service.rateAmountUsd <= 0 ||
+      service.rateAmountUsd > MAX_RATE_USD
     ) {
-      return { error: "Enter a rate in yen for each service." };
+      return { error: "Enter a rate in US dollars for each service." };
     }
   }
 
@@ -352,7 +357,7 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
     mockCreator().services = services.map((s) => ({
       name: s.serviceId,
       rateType: s.rateType,
-      rateAmountJpy: s.rateAmountJpy,
+      rateAmountUsd: s.rateAmountUsd,
     }));
     revalidateCreator(MOCK_CREATOR_ID);
     return { success: "Saved." };
@@ -367,7 +372,7 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
         creator_id: user.id,
         service_id: s.serviceId,
         rate_type: s.rateType,
-        rate_amount_jpy: s.rateAmountJpy,
+        rate_amount_usd_cents: usdToCents(s.rateAmountUsd),
         updated_at: new Date().toISOString(),
       })),
       { onConflict: "creator_id,service_id" },

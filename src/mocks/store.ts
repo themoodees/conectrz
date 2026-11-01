@@ -50,7 +50,7 @@ interface MockStore {
   savedCreatorIds: string[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
-  subscription: { planName: string; quota: number; periodStart: string; periodEnd: string };
+  subscription: { planName: string; quota: number | null; periodStart: string; periodEnd: string };
   plans: MockPlan[];
   reports: MockReport[];
 }
@@ -67,7 +67,7 @@ export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
       name: "Hanami Cosmetics",
       email: "marketing@hanami-cosmetics.jp",
       status: "active",
-      planName: "Starter",
+      planName: "Pro",
       createdAt: "2026-09-10T00:00:00Z",
     },
     {
@@ -97,7 +97,7 @@ export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
   savedCreatorIds: ["cr-002", "cr-007"],
   conversations: structuredClone(mockConversations),
   subscription: {
-    planName: "Starter",
+    planName: "Pro",
     quota: 10,
     periodStart: "2026-09-01T00:00:00Z",
     periodEnd: "2026-10-01T00:00:00Z",

@@ -1,31 +1,29 @@
 import Link from "next/link";
 import type { Plan } from "@/types/plans";
-import { formatJpy } from "@/lib/format";
+import { formatUsd } from "@/lib/format";
 import { buttonClass } from "@/components/ui/buttonStyles";
 
 /**
- * Shown when a company has used its conversations: suggests the paid plans.
- * Copy is written for Free (one-time allowance) but also works for paid plans.
+ * Shown when a company can't start more conversations: suggests the paid plans.
+ * Free has no conversations at all; paid plans run out per billing period.
  */
 export function UpgradeSuggestion({
   isFree,
-  quota,
   plans,
 }: {
   isFree: boolean;
-  quota: number;
   plans: Plan[];
 }) {
   return (
     <div className="mt-3 max-w-md rounded-card border border-border p-4">
       <p className="text-sm font-semibold text-ink">
         {isFree
-          ? `You've used your ${quota === 1 ? "free conversation" : `${quota} free conversations`}`
+          ? "The Free plan can't start conversations"
           : "You've reached this period's limit"}
       </p>
       <p className="mt-1 text-sm text-graphite">
         {isFree
-          ? "Upgrade to keep contacting creators every month."
+          ? "Upgrade to contact creators and start new conversations."
           : "Upgrade for more conversations, or wait for your plan to renew."}
       </p>
       {plans.length > 0 && (
@@ -37,8 +35,11 @@ export function UpgradeSuggestion({
             >
               <span className="font-medium text-ink">{plan.name}</span>
               <span className="text-graphite">
-                {plan.conversationQuota} conversations / month ·{" "}
-                <span className="font-semibold text-ink">{formatJpy(plan.monthlyPriceJpy)}</span>
+                {plan.conversationQuota === null
+                  ? "Unlimited conversations"
+                  : `${plan.conversationQuota} conversations / month`}{" "}
+                ·{" "}
+                <span className="font-semibold text-ink">{formatUsd(plan.monthlyPriceUsd)}</span>
               </span>
             </li>
           ))}
