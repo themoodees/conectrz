@@ -8,8 +8,8 @@ alter table public.subscription_tiers
   add column if not exists stripe_price_id text unique;
 
 -- SANDBOX price ids. Replace with the live ids when going live (admin SQL or a new migration).
-update public.subscription_tiers set stripe_price_id = 'price_1UXMokK0324rxOr5VnPhvi4Y' where name = 'Pro';
-update public.subscription_tiers set stripe_price_id = 'price_1UXMpEK0324rxOr5R4NdwJ28' where name = 'Business';
+update public.subscription_tiers set stripe_price_id = 'price_1UXM5OK3H3mcvAby91E0gmxS' where name = 'Pro';
+update public.subscription_tiers set stripe_price_id = 'price_1UXM5lK3H3mcvAbyneuNtZpU' where name = 'Business';
 
 create table if not exists public.billing_customers (
   company_id         uuid primary key references public.company_profiles(id) on delete cascade,
