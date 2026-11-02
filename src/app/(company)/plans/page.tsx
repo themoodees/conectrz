@@ -4,22 +4,30 @@ import { buttonClass } from "@/components/ui/buttonStyles";
 import { CheckIcon } from "@/components/ui/icons";
 import { SUPPORT_EMAIL } from "@/lib/config";
 import { getCurrentCompanyAccount } from "@/lib/data/account";
+import { getBillingStatus } from "@/lib/data/billing";
 import { getConversationUsage } from "@/lib/data/messages";
+import { openBillingPortal, startCheckout } from "@/lib/actions/billing";
 import { getPlans } from "@/lib/data/plans";
 import { formatUsd, formatShortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Plans" };
 
 /**
- * Plans are upgraded manually for now: "Request" opens an email to the team,
+ * With Stripe configured, "Subscribe" opens Stripe checkout and the plan switches
+ * automatically. Without it (or in mock mode), "Request" opens an email to the team
  * and an admin switches the plan in the admin panel.
  */
-export default async function PlansPage() {
-  const [plans, usage, account] = await Promise.all([
+export default async function PlansPage({ searchParams }: PageProps<"/plans">) {
+  const { billing: billingResult } = await searchParams;
+  const [plans, usage, account, billing] = await Promise.all([
     getPlans(),
     getConversationUsage(),
     getCurrentCompanyAccount(),
+    getBillingStatus(),
   ]);
+  const currentIsPaid = plans.some(
+    (plan) => plan.name === usage?.planName && plan.monthlyPriceUsd > 0,
+  );
 
   const requestHref = (planName: string) =>
     `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
@@ -37,6 +45,15 @@ export default async function PlansPage() {
           always unlimited.
         </p>
       </header>
+
+      {billingResult === "error" && (
+        <p
+          role="alert"
+          className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger"
+        >
+          Something went wrong starting the payment. Please try again, or email {SUPPORT_EMAIL}.
+        </p>
+      )}
 
       <ul className="grid gap-4 md:grid-cols-3">
         {plans.map((plan) => {
@@ -90,6 +107,19 @@ export default async function PlansPage() {
                 >
                   Your plan
                 </span>
+              ) : billing.enabled && plan.monthlyPriceUsd > 0 && !currentIsPaid ? (
+                <form action={startCheckout} className="mt-6 flex flex-col">
+                  <input type="hidden" name="planId" value={plan.id} />
+                  <button type="submit" className={buttonClass()}>
+                    Subscribe to {plan.name}
+                  </button>
+                </form>
+              ) : billing.enabled && billing.hasCustomer ? (
+                <form action={openBillingPortal} className="mt-6 flex flex-col">
+                  <button type="submit" className={buttonClass({ variant: "secondary" })}>
+                    {plan.monthlyPriceUsd > 0 ? `Switch to ${plan.name}` : "Manage or cancel plan"}
+                  </button>
+                </form>
               ) : (
                 <a
                   href={requestHref(plan.name)}
@@ -107,7 +137,9 @@ export default async function PlansPage() {
       </ul>
 
       <p className="mt-6 text-sm text-muted">
-        Plan changes are handled by our team — requests open an email to {SUPPORT_EMAIL}.
+        {billing.enabled
+          ? `Payments are handled securely by Stripe. Questions? Email ${SUPPORT_EMAIL}.`
+          : `Plan changes are handled by our team — requests open an email to ${SUPPORT_EMAIL}.`}
         {usage &&
           !usage.isFree &&
           ` Your current period ends on ${formatShortDate(usage.periodEnd)}.`}

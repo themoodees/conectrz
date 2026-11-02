@@ -121,6 +121,12 @@ export type Database = {
         Update: { created_at?: string; id?: string; role?: Database["public"]["Enums"]["user_role"] }
         Relationships: []
       }
+      billing_customers: {
+        Row: { company_id: string; created_at: string; stripe_customer_id: string }
+        Insert: { company_id: string; created_at?: string; stripe_customer_id: string }
+        Update: { company_id?: string; created_at?: string; stripe_customer_id?: string }
+        Relationships: []
+      }
       projects: {
         Row: { budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
         Insert: { budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
@@ -187,9 +193,9 @@ export type Database = {
         ]
       }
       subscription_tiers: {
-        Row: { conversation_quota: number | null; daily_new_conversation_limit: number | null; id: string; is_active: boolean; monthly_price_usd_cents: number; name: string }
-        Insert: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents: number; name: string }
-        Update: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents?: number; name?: string }
+        Row: { conversation_quota: number | null; daily_new_conversation_limit: number | null; id: string; is_active: boolean; monthly_price_usd_cents: number; name: string; stripe_price_id: string | null }
+        Insert: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents: number; name: string; stripe_price_id?: string | null }
+        Update: { conversation_quota?: number | null; daily_new_conversation_limit?: number | null; id?: string; is_active?: boolean; monthly_price_usd_cents?: number; name?: string; stripe_price_id?: string | null }
         Relationships: []
       }
       subscriptions: {
