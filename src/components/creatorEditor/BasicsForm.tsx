@@ -8,6 +8,7 @@ import { SelectField } from "@/components/ui/SelectField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
 import { SaveRow } from "./EditorSection";
+import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 /** Name, location, bio and availability. */
 export function BasicsForm({ data }: { data: CreatorEditorData }) {
@@ -53,6 +54,7 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
           placeholder="e.g. Shibuya"
         />
       </div>
+      <PersonalDetailsFields birthDate={data.birthDate} gender={data.gender} />
       <TextAreaField
         label="About you"
         name="bio"

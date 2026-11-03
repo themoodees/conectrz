@@ -206,3 +206,9 @@ export const BriefcaseIcon = (props: IconProps) => (
     <path d="M3 13h18" />
   </Icon>
 );
+
+export const StarIcon = ({ filled = false, ...props }: IconProps & { filled?: boolean }) => (
+  <Icon {...props} fill={filled ? "currentColor" : "none"}>
+    <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8L3.5 9.7l5.9-.9L12 3.5Z" />
+  </Icon>
+);

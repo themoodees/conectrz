@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { LanguageProficiency, RateType, SocialPlatform } from "@/types/creator";
+import type { Gender, LanguageProficiency, RateType, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
 import { usdToCents } from "@/lib/format";
@@ -12,6 +12,7 @@ import { PREFECTURES } from "@/lib/prefectures";
 import { MOCK_CREATOR_ID } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
 import { mockPortfolio } from "@/mocks/portfolio";
+import { mockStore } from "@/mocks/store";
 
 /*
  * Actions for the signed-in creator's own profile.
@@ -23,6 +24,8 @@ export interface SaveResult {
   success?: string;
 }
 
+const GENDERS: Gender[] = ["woman", "man", "other"];
+const MIN_AGE = 18;
 const PROFICIENCIES: LanguageProficiency[] = ["native", "fluent", "conversational"];
 const RATE_TYPES: RateType[] = ["flat", "starting_from"];
 const MAX_RATE_USD = 100_000_000;
@@ -56,13 +59,34 @@ function readBasics(formData: FormData) {
       .trim()
       .slice(0, 80),
     isAvailable: formData.get("isAvailable") === "on",
+    birthDate: String(formData.get("birthDate") ?? "").trim(),
+    gender: String(formData.get("gender") ?? ""),
   };
+}
+
+/** Whole years between a yyyy-mm-dd birth date and today. */
+function ageOn(birthDate: string): number {
+  const born = new Date(`${birthDate}T00:00:00Z`);
+  const now = new Date();
+  const age = now.getUTCFullYear() - born.getUTCFullYear();
+  const hadBirthday =
+    now.getUTCMonth() > born.getUTCMonth() ||
+    (now.getUTCMonth() === born.getUTCMonth() && now.getUTCDate() >= born.getUTCDate());
+  return hadBirthday ? age : age - 1;
 }
 
 function validateBasics(basics: ReturnType<typeof readBasics>): string | null {
   if (!basics.firstName) return "Enter your first name.";
   if (!basics.lastName) return "Enter your last name.";
   if (!PREFECTURES.includes(basics.prefecture)) return "Choose your prefecture.";
+  if (basics.birthDate) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(basics.birthDate) || Number.isNaN(Date.parse(basics.birthDate)))
+      return "Enter a valid birth date.";
+    const age = ageOn(basics.birthDate);
+    if (age < MIN_AGE) return `You must be at least ${MIN_AGE} to join Conectrz.`;
+    if (age > 110) return "Enter a valid birth date.";
+  }
+  if (basics.gender && !GENDERS.includes(basics.gender as Gender)) return "Choose a valid gender.";
   return null;
 }
 
@@ -86,6 +110,8 @@ export async function createCreatorProfile(
     prefecture: basics.prefecture,
     city: basics.city || null,
     is_available: true,
+    birth_date: basics.birthDate || null,
+    gender: basics.gender || null,
   });
   if (error) return { error: "Couldn't create your profile. Please try again." };
 
@@ -109,7 +135,11 @@ export async function updateCreatorBasics(
       prefecture: basics.prefecture,
       city: basics.city || null,
       isAvailable: basics.isAvailable,
+      gender: (basics.gender || null) as Gender | null,
+      age: basics.birthDate ? ageOn(basics.birthDate) : null,
     });
+    if (basics.birthDate) mockStore.creatorBirthDates[creator.id] = basics.birthDate;
+    else delete mockStore.creatorBirthDates[creator.id];
     revalidateCreator(creator.id);
     return { success: "Saved." };
   }
@@ -124,6 +154,8 @@ export async function updateCreatorBasics(
       prefecture: basics.prefecture,
       city: basics.city || null,
       is_available: basics.isAvailable,
+      birth_date: basics.birthDate || null,
+      gender: basics.gender || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

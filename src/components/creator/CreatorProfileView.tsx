@@ -3,7 +3,10 @@ import { PROFICIENCY_LABELS, formatFollowers, formatLocation, formatRate } from 
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { CreatorImage } from "@/components/discovery/CreatorImage";
 import { MapPinIcon, PlatformIcon } from "@/components/ui/icons";
+import { GENDER_LABELS } from "@/lib/discovery/filterConfig";
 import { PortfolioGrid } from "./PortfolioGrid";
+import { RatingSummary } from "./RatingSummary";
+import { ReviewsSection } from "./ReviewsSection";
 
 interface CreatorProfileViewProps {
   creator: CreatorProfile;
@@ -12,13 +15,15 @@ interface CreatorProfileViewProps {
    * previews their own profile.
    */
   actions?: React.ReactNode;
+  /** Company-only review form, shown above the reviews. */
+  reviewForm?: React.ReactNode;
 }
 
 /**
  * Full Creator Profile. Layout: photo left (sticky on desktop), details right,
  * portfolio full-width below. On phones everything stacks.
  */
-export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps) {
+export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProfileViewProps) {
   return (
     <>
       <div className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
@@ -37,6 +42,13 @@ export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps
             <MapPinIcon className="size-4 shrink-0" />
             {formatLocation(creator)}
           </p>
+          {(creator.age != null || creator.gender || creator.reviewCount) && (
+            <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+              {creator.age != null && <span>{creator.age} years old</span>}
+              {creator.gender && <span>{GENDER_LABELS[creator.gender]}</span>}
+              <RatingSummary average={creator.ratingAverage} count={creator.reviewCount} />
+            </p>
+          )}
 
           {actions && <div className="mt-6">{actions}</div>}
 
@@ -144,6 +156,8 @@ export function CreatorProfileView({ creator, actions }: CreatorProfileViewProps
         </h2>
         <PortfolioGrid items={creator.portfolio} />
       </section>
+
+      <ReviewsSection reviews={creator.reviews} form={reviewForm} />
     </>
   );
 }

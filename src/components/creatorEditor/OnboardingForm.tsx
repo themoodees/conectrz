@@ -8,6 +8,7 @@ import { FormMessage } from "@/components/ui/FormMessage";
 import { SelectField } from "@/components/ui/SelectField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
+import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
   const [suggestedFirstName, ...rest] = suggestedName.trim().split(/\s+/);
@@ -49,6 +50,7 @@ export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
         />
         <TextField label="City or area" name="city" maxLength={80} placeholder="e.g. Shibuya" />
       </div>
+      <PersonalDetailsFields birthDate="" gender="" />
       <TextAreaField
         label="About you (optional)"
         name="bio"

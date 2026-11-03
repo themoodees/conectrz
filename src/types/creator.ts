@@ -17,6 +17,9 @@ export type RateType = "flat" | "starting_from";
  */
 export type SocialPlatform = "instagram" | "tiktok" | "youtube" | "x";
 
+/** Mirrors the `creator_profiles.gender` values. */
+export type Gender = "woman" | "man" | "other";
+
 export interface CreatorLanguage {
   name: string;
   proficiency: LanguageProficiency;
@@ -50,6 +53,23 @@ export interface Creator {
   niches: string[];
   services: CreatorService[];
   socialAccounts: SocialAccount[];
+  /** Optional, chosen by the creator. */
+  gender?: Gender | null;
+  /** Calculated from the creator's birth date; the birth date itself is never shown. */
+  age?: number | null;
+  /** Average of visible reviews (1-5), null when there are none. */
+  ratingAverage?: number | null;
+  reviewCount?: number;
+}
+
+export interface CreatorReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  companyName: string;
+  createdAt: string;
+  /** The signed-in company wrote this review. */
+  isMine: boolean;
 }
 
 export interface PortfolioItem {
@@ -64,4 +84,5 @@ export interface PortfolioItem {
 /** Everything shown on the Creator Profile page. */
 export interface CreatorProfile extends Creator {
   portfolio: PortfolioItem[];
+  reviews: CreatorReview[];
 }

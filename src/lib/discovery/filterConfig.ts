@@ -1,11 +1,10 @@
-import type { SocialPlatform } from "@/types/creator";
+import type { Gender, SocialPlatform } from "@/types/creator";
 import type {
   DiscoveryFilterOptions,
   DiscoveryFilters,
   FilterKey,
   FollowerRangeId,
   MultiSelectFilterKey,
-  PriceRangeId,
   SortOption,
 } from "@/types/discovery";
 
@@ -22,6 +21,8 @@ export const FILTER_LABELS: Record<FilterKey, string> = {
   platforms: "Platform",
   services: "Services",
   price: "Price",
+  age: "Age",
+  gender: "Gender",
   followers: "Followers",
   availability: "Availability",
 };
@@ -30,7 +31,14 @@ export const FILTER_LABELS: Record<FilterKey, string> = {
 export const PRIMARY_FILTERS: FilterKey[] = ["niches", "platforms", "services", "locations"];
 
 /** Shown inside "More filters" on desktop. (Mobile shows all filters in one panel.) */
-export const SECONDARY_FILTERS: FilterKey[] = ["languages", "price", "followers", "availability"];
+export const SECONDARY_FILTERS: FilterKey[] = [
+  "languages",
+  "price",
+  "age",
+  "gender",
+  "followers",
+  "availability",
+];
 
 export const PLATFORM_LABELS: Record<SocialPlatform, string> = {
   instagram: "Instagram",
@@ -49,13 +57,18 @@ interface Range<Id extends string> {
   max: number | null;
 }
 
-/** Matched against a creator's lowest listed rate. */
-export const PRICE_RANGES: Range<PriceRangeId>[] = [
-  { id: "under-200", label: "Under $200", min: 0, max: 200 },
-  { id: "200-500", label: "$200 – $500", min: 200, max: 500 },
-  { id: "500-1000", label: "$500 – $1,000", min: 500, max: 1000 },
-  { id: "1000-plus", label: "$1,000+", min: 1000, max: null },
-];
+/** Price slider. Matched against a creator's lowest listed rate; the top stop means "and above". */
+export const PRICE_SLIDER = { min: 0, max: 3000, step: 50 };
+
+/** Age slider (the top stop means "and above"). Creators must be 18 or older. */
+export const AGE_SLIDER = { min: 18, max: 65, step: 1 };
+
+export const GENDER_LABELS: Record<Gender, string> = {
+  woman: "Woman",
+  man: "Man",
+  other: "Other",
+};
+export const GENDER_OPTIONS = Object.keys(GENDER_LABELS) as Gender[];
 
 /** Matched against a creator's largest reported audience on any platform. */
 export const FOLLOWER_RANGES: Range<FollowerRangeId>[] = [
@@ -79,6 +92,8 @@ export const EMPTY_FILTERS: DiscoveryFilters = {
   platforms: [],
   services: [],
   price: null,
+  age: null,
+  genders: [],
   followers: null,
   availableOnly: false,
 };
