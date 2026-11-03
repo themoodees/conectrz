@@ -231,6 +231,7 @@ export type Database = {
       }
     }
     Functions: {
+      delete_my_creator_account: { Args: never; Returns: undefined }
       creator_is_published: { Args: { p_creator_id: string }; Returns: boolean }
       has_paid_plan: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }

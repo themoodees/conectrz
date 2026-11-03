@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { mockCompanyAccount } from "@/mocks/account";
@@ -55,4 +57,36 @@ export async function changePassword(
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: error.message };
   return { success: "Password updated." };
+}
+
+/**
+ * Deletes the signed-in creator's account: removes their uploaded files, then the database
+ * function erases personal details and closes the login while keeping conversation history
+ * (shown as "Deleted creator"). The person must type DELETE to confirm.
+ */
+export async function deleteCreatorAccount(
+  _previous: SettingsFormState,
+  formData: FormData,
+): Promise<SettingsFormState> {
+  if (String(formData.get("confirm") ?? "").trim() !== "DELETE") {
+    return { error: "Type DELETE to confirm." };
+  }
+  if (isMockMode) redirect("/login");
+
+  const { supabase, user } = await requireSupabaseUser();
+
+  // Uploaded files live under a folder named after the user id in both buckets.
+  for (const bucket of ["creator-photos", "portfolio"]) {
+    const { data: files } = await supabase.storage.from(bucket).list(user.id, { limit: 1000 });
+    if (files?.length) {
+      await supabase.storage.from(bucket).remove(files.map((f) => `${user.id}/${f.name}`));
+    }
+  }
+
+  const { error } = await supabase.rpc("delete_my_creator_account");
+  if (error) return { error: "We couldn't delete your account. Please try again or contact support." };
+
+  const server = await createSupabaseServerClient();
+  await server.auth.signOut();
+  redirect("/login?deleted=1");
 }
