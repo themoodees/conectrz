@@ -83,10 +83,8 @@ export const termsOfService: LegalDocument = {
       ],
     },
     {
-      heading: "11. Governing law and jurisdiction",
-      body: [
-        "These Terms are governed by the laws of Japan. Any dispute relating to them or to the Service will be subject to the exclusive jurisdiction of the court of first instance that covers the location of our head office in Japan, unless mandatory law gives you the right to bring a claim elsewhere.",
-      ],
+      heading: "11. Governing law",
+      body: ["These Terms are governed by the laws of Japan."],
     },
     {
       heading: "12. Contact",
