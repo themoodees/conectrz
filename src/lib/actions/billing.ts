@@ -26,6 +26,10 @@ async function siteOrigin() {
   return `${proto}://${host}`;
 }
 
+/** Stripe's own error text (safe to show), shortened for the page. */
+const errorDetail = (error: unknown) =>
+  encodeURIComponent((error instanceof Error ? error.message : "").slice(0, 200));
+
 const done = (path: string): never => {
   revalidatePath("/plans");
   revalidatePath("/settings");
@@ -160,6 +164,11 @@ export async function changePlan(formData: FormData): Promise<void> {
       });
     } else if (target.monthly_price_usd_cents < currentPrice) {
       // → cheaper paid plan: switch at the end of the period.
+      // A subscription that is already set to cancel must be cleared BEFORE it gets a
+      // schedule; Stripe refuses to edit it once a schedule manages it.
+      if (sub.cancel_at_period_end) {
+        await stripe.subscriptions.update(sub.id, { cancel_at_period_end: false });
+      }
       const scheduleRef = sub.schedule;
       const schedule = scheduleRef
         ? typeof scheduleRef === "string"
@@ -181,11 +190,10 @@ export async function changePlan(formData: FormData): Promise<void> {
           },
         ],
       });
-      await stripe.subscriptions.update(sub.id, { cancel_at_period_end: false });
     }
   } catch (error) {
     console.error("Stripe plan change failed", error);
-    redirect("/plans?billing=error");
+    redirect(`/plans?billing=error&detail=${errorDetail(error)}`);
   }
 
   done("/plans?billing=changed");
