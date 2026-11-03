@@ -127,6 +127,51 @@ export async function deleteAccount(kind: AccountKind, accountId: string): Promi
   return { success: "Account deleted." };
 }
 
+/* ── Several accounts at once ─────────────────────────────────────────────── */
+
+export type BulkAccountAction = "pause" | "reactivate" | "ban" | "delete";
+
+const MAX_BULK = 50;
+
+export interface BulkResult extends AdminResult {
+  done: number;
+  failed: number;
+}
+
+/** Applies one action to the selected accounts, one by one, and reports how many worked. */
+export async function bulkAccountAction(
+  kind: AccountKind,
+  accountIds: string[],
+  action: BulkAccountAction,
+): Promise<BulkResult> {
+  const ids = [...new Set(accountIds)];
+  if (ids.length === 0) return { done: 0, failed: 0, error: "Select at least one account." };
+  if (ids.length > MAX_BULK) {
+    return { done: 0, failed: 0, error: `Select up to ${MAX_BULK} accounts at a time.` };
+  }
+  if (!isMockMode) await requireAdmin();
+
+  let done = 0;
+  let firstError: string | undefined;
+  for (const id of ids) {
+    const result =
+      action === "delete"
+        ? await deleteAccount(kind, id)
+        : await setAccountStatus(
+            kind,
+            id,
+            action === "pause" ? "paused" : action === "ban" ? "deleted" : "active",
+          );
+    if (result.error) firstError ??= result.error;
+    else done += 1;
+  }
+
+  const failed = ids.length - done;
+  return failed > 0
+    ? { done, failed, error: `${failed} of ${ids.length} couldn't be updated. ${firstError ?? ""}`.trim() }
+    : { done, failed, success: `${done} ${done === 1 ? "account" : "accounts"} updated.` };
+}
+
 /* ── Reports ──────────────────────────────────────────────────────────────── */
 
 export async function resolveReport(
