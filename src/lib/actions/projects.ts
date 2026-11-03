@@ -39,6 +39,19 @@ const todayIso = () => new Date().toISOString().slice(0, 10);
 
 /* ── Company: post and manage projects ────────────────────────────────────── */
 
+const MAX_REFERENCE_LINKS = 5;
+const MAX_REFERENCE_IMAGES = 6;
+
+function isWebLink(value: string) {
+  if (value.length > 500) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 export async function createProject(
   _previous: ProjectActionState,
   formData: FormData,
@@ -51,6 +64,11 @@ export async function createProject(
   const nicheIds = formData.getAll("nicheIds").map(String);
   const languageIds = formData.getAll("languageIds").map(String);
   const paymentMethods = parsePaymentMethods(formData.getAll("paymentMethods").map(String));
+  const referenceLinks = formData
+    .getAll("referenceLinks")
+    .map((v) => String(v).trim())
+    .filter(Boolean);
+  const referenceImages = formData.getAll("referenceImages").map(String).filter(Boolean);
 
   if (!title) return { error: "Enter a title." };
   if (title.length > MAX_TITLE) return { error: `Titles can be up to ${MAX_TITLE} characters.` };
@@ -60,6 +78,14 @@ export async function createProject(
   }
   if (!Number.isInteger(budget) || budget <= 0 || budget > MAX_AMOUNT_USD) {
     return { error: "Enter a budget in whole US dollars." };
+  }
+  if (referenceLinks.length > MAX_REFERENCE_LINKS || referenceImages.length > MAX_REFERENCE_IMAGES) {
+    return {
+      error: `You can add up to ${MAX_REFERENCE_LINKS} links and ${MAX_REFERENCE_IMAGES} images.`,
+    };
+  }
+  if (!referenceLinks.every(isWebLink)) {
+    return { error: "Reference links must be full web addresses starting with http:// or https://." };
   }
   if (paymentMethods.length === 0) {
     return { error: "Choose at least one way you will pay the creator." };
@@ -86,12 +112,17 @@ export async function createProject(
       niches: nicheIds,
       languages: languageIds,
       paymentMethods,
+      referenceLinks,
     });
   } else {
     if (![...serviceIds, ...nicheIds, ...languageIds].every((id) => UUID_PATTERN.test(id))) {
       return { error: "Invalid selection." };
     }
     const { supabase, user } = await requireSupabaseUser();
+    // Images were uploaded from the browser into the company's own folder; accept nothing else.
+    if (!referenceImages.every((path) => path.startsWith(`${user.id}/`) && !path.includes(".."))) {
+      return { error: "Invalid image." };
+    }
     const { data, error } = await supabase
       .from("projects")
       .insert({
@@ -122,6 +153,12 @@ export async function createProject(
         ? supabase
             .from("project_languages")
             .insert(languageIds.map((language_id) => ({ project_id: projectId, language_id })))
+        : null,
+      referenceLinks.length + referenceImages.length > 0
+        ? supabase.from("project_references").insert([
+            ...referenceLinks.map((url) => ({ project_id: projectId, kind: "link", url })),
+            ...referenceImages.map((url) => ({ project_id: projectId, kind: "image", url })),
+          ])
         : null,
     ]);
     if (results.some((result) => result?.error)) {

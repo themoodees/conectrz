@@ -17,6 +17,7 @@ export interface MockProject {
   niches: string[];
   languages: string[];
   paymentMethods: PaymentMethod[];
+  referenceLinks?: string[];
 }
 
 export interface MockApplication {
@@ -45,6 +46,7 @@ export const mockProjects: MockProject[] = [
     niches: ["Beauty", "Skincare"],
     languages: ["Japanese", "English"],
     paymentMethods: ["bank_transfer", "wise"],
+    referenceLinks: ["https://www.instagram.com/hanami.cosmetics/", "https://hanami-cosmetics.example/autumn-moodboard"],
   },
   {
     id: "pj-002",

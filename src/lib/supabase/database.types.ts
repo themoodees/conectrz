@@ -178,6 +178,14 @@ export type Database = {
           { foreignKeyName: "creator_reviews_company_id_fkey"; columns: ["company_id"]; isOneToOne: false; referencedRelation: "company_profiles"; referencedColumns: ["id"] },
         ]
       }
+      project_references: {
+        Row: { created_at: string; id: string; kind: string; project_id: string; url: string }
+        Insert: { created_at?: string; id?: string; kind: string; project_id: string; url: string }
+        Update: { created_at?: string; id?: string; kind?: string; project_id?: string; url?: string }
+        Relationships: [
+          { foreignKeyName: "project_references_project_id_fkey"; columns: ["project_id"]; isOneToOne: false; referencedRelation: "projects"; referencedColumns: ["id"] },
+        ]
+      }
       saved_creators: {
         Row: { company_id: string; created_at: string; creator_id: string }
         Insert: { company_id: string; created_at?: string; creator_id: string }

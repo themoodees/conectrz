@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplicantList } from "@/components/projects/ApplicantList";
 import { ProjectStatusBadge, TagList } from "@/components/projects/ProjectBadges";
+import { ProjectReferences } from "@/components/projects/ProjectReferences";
 import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { ProjectStatusButton } from "@/components/projects/ProjectStatusButton";
 import { ArrowLeftIcon } from "@/components/ui/icons";
@@ -61,6 +62,7 @@ export default async function ProjectDetailPage({ params }: PageProps<"/projects
             <TagList label="Niches" items={project.niches} />
             <TagList label="Languages" items={project.languages} />
           </dl>
+          <ProjectReferences references={project.references} />
           <div className="mt-6">
             <h2 className="mb-2 text-sm font-semibold text-ink">How you will pay</h2>
             <PaymentMethodTags methods={project.paymentMethods} />
