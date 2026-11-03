@@ -56,7 +56,14 @@ interface MockStore {
   savedCreatorIds: string[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
-  subscription: { planName: string; quota: number | null; periodStart: string; periodEnd: string };
+  subscription: {
+    planName: string;
+    quota: number | null;
+    periodStart: string;
+    periodEnd: string;
+    /** A downgrade that starts when the current period ends. */
+    pendingPlanName?: string | null;
+  };
   plans: MockPlan[];
   projects: MockProject[];
   applications: MockApplication[];
