@@ -308,7 +308,7 @@ export type Database = {
       application_status: "submitted" | "declined" | "withdrawn"
       project_status: "open" | "closed"
       language_proficiency: "native" | "fluent" | "conversational"
-      notification_type: "new_message" | "report_outcome" | "new_application" | "application_declined" | "new_matching_project"
+      notification_type: "new_message" | "report_outcome" | "new_application" | "application_declined" | "new_matching_project" | "new_creator_review" | "new_company_review"
       rate_type: "flat" | "starting_from"
       report_reason: "fake_profile" | "spam" | "inappropriate_content" | "harassment" | "no_response" | "other"
       report_resolution: "dismissed" | "paused" | "banned"

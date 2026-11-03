@@ -7,15 +7,23 @@ import { getSupabaseSession } from "./session";
 
 /*
  * The bell in the header. Rows come from the `notifications` table, which database triggers fill:
- *   company: new_application, new_message
- *   creator: new_matching_project, application_declined, new_message
+ *   company: new_application, new_message, new_company_review
+ *   creator: new_matching_project, application_declined, new_message, new_creator_review
  * (report_outcome rows exist but have nowhere to link to yet, so they are not listed.)
  */
 
 const LIMIT = 15;
-const LISTED_TYPES = ["new_message", "new_application", "application_declined", "new_matching_project"];
+const LISTED_TYPES = [
+  "new_message",
+  "new_application",
+  "application_declined",
+  "new_matching_project",
+  "new_creator_review",
+  "new_company_review",
+];
 
-const inboxHref = (area: NotificationArea) => (area === "company" ? "/messages" : "/creator/messages");
+const inboxHref = (area: NotificationArea) =>
+  area === "company" ? "/messages" : "/creator/messages";
 const projectHref = (area: NotificationArea, id: string) =>
   area === "company" ? `/projects/${id}` : `/creator/projects/${id}`;
 
@@ -27,7 +35,14 @@ interface Row {
   created_at: string;
 }
 
-function describe(row: Row, area: NotificationArea, titles: Map<string, string>): AppNotification | null {
+const stars = (n: unknown) =>
+  typeof n === "number" ? `${"★".repeat(n)}${"☆".repeat(5 - n)}` : null;
+
+function describe(
+  row: Row,
+  area: NotificationArea,
+  titles: Map<string, string>,
+): AppNotification | null {
   const base = { id: row.id, createdAt: row.created_at, isRead: Boolean(row.read_at) };
   const payload = row.payload ?? {};
   const projectId = typeof payload.project_id === "string" ? payload.project_id : null;
@@ -37,7 +52,12 @@ function describe(row: Row, area: NotificationArea, titles: Map<string, string>)
     case "new_message": {
       const conversationId =
         typeof payload.conversation_id === "string" ? `/${payload.conversation_id}` : "";
-      return { ...base, title: "New message", body: null, href: `${inboxHref(area)}${conversationId}` };
+      return {
+        ...base,
+        title: "New message",
+        body: null,
+        href: `${inboxHref(area)}${conversationId}`,
+      };
     }
     case "new_application":
       return projectId
@@ -45,12 +65,36 @@ function describe(row: Row, area: NotificationArea, titles: Map<string, string>)
         : null;
     case "application_declined":
       return projectId
-        ? { ...base, title: "Application not selected", body: project, href: projectHref(area, projectId) }
+        ? {
+            ...base,
+            title: "Application not selected",
+            body: project,
+            href: projectHref(area, projectId),
+          }
         : null;
     case "new_matching_project":
       return projectId
-        ? { ...base, title: "New project for you", body: project, href: projectHref(area, projectId) }
+        ? {
+            ...base,
+            title: "New project for you",
+            body: project,
+            href: projectHref(area, projectId),
+          }
         : null;
+    case "new_creator_review":
+      return {
+        ...base,
+        title: "You received a new review",
+        body: stars(payload.rating),
+        href: "/creator/profile/preview",
+      };
+    case "new_company_review":
+      return {
+        ...base,
+        title: "You received a new review",
+        body: stars(payload.rating),
+        href: "/settings",
+      };
     default:
       return null;
   }
@@ -88,6 +132,32 @@ function mockFeed(area: NotificationArea): NotificationFeed {
           payload: { project_id: p.id },
           read_at: read.has(`n-${p.id}`) ? "x" : null,
           created_at: p.createdAt,
+        }),
+      );
+  }
+
+  if (area === "company") {
+    mockStore.companyReviews
+      .filter((r) => r.companyId === mockCompanyAccount.id)
+      .forEach((r) =>
+        rows.push({
+          id: `n-${r.id}`,
+          type: "new_company_review",
+          payload: { rating: r.rating },
+          read_at: read.has(`n-${r.id}`) ? "x" : null,
+          created_at: r.createdAt,
+        }),
+      );
+  } else {
+    mockStore.reviews
+      .filter((r) => r.creatorId === MOCK_CREATOR_ID)
+      .forEach((r) =>
+        rows.push({
+          id: `n-${r.id}`,
+          type: "new_creator_review",
+          payload: { rating: r.rating },
+          read_at: read.has(`n-${r.id}`) ? "x" : null,
+          created_at: r.createdAt,
         }),
       );
   }
@@ -142,7 +212,9 @@ export async function getNotificationFeed(area: NotificationArea): Promise<Notif
 
   const projectIds = [
     ...new Set(
-      list.data.flatMap((r) => (typeof r.payload?.project_id === "string" ? [r.payload.project_id] : [])),
+      list.data.flatMap((r) =>
+        typeof r.payload?.project_id === "string" ? [r.payload.project_id] : [],
+      ),
     ),
   ];
   const titles = new Map<string, string>();
