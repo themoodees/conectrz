@@ -4,6 +4,7 @@ import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { CreatorImage } from "@/components/discovery/CreatorImage";
 import { MapPinIcon, PlatformIcon } from "@/components/ui/icons";
 import { GENDER_LABELS } from "@/lib/discovery/filterConfig";
+import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { PortfolioGrid } from "./PortfolioGrid";
 import { RatingSummary } from "./RatingSummary";
 import { ReviewsSection } from "./ReviewsSection";
@@ -127,6 +128,13 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
                     </li>
                   ))}
                 </ul>
+              </ProfileSection>
+            )}
+
+            {creator.paymentMethods && creator.paymentMethods.length > 0 && (
+              <ProfileSection title="Accepted payment methods">
+                <PaymentMethodTags methods={creator.paymentMethods} />
+                <PaymentNotice className="mt-2" />
               </ProfileSection>
             )}
 

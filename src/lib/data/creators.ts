@@ -10,6 +10,7 @@ import type {
 import type { DiscoveryFilterOptions } from "@/types/discovery";
 import { isMockMode } from "@/lib/config";
 import { centsToUsd } from "@/lib/format";
+import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
@@ -48,6 +49,7 @@ interface BaseRow {
   birth_date?: string | null;
   rating_avg?: number | null;
   review_count?: number | null;
+  payment_methods?: string[] | null;
 }
 
 interface SocialRow {
@@ -79,8 +81,8 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
   const { supabase } = await getSupabaseSession();
   const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, is_available";
   // Companies get a calculated age and rating; the creator's own view reads the birth date.
-  const ownColumns = `${columns}, gender, birth_date`;
-  const directoryColumns = `${columns}, gender, age, rating_avg, review_count`;
+  const ownColumns = `${columns}, gender, birth_date, payment_methods`;
+  const directoryColumns = `${columns}, gender, age, rating_avg, review_count, payment_methods`;
 
   let rows: BaseRow[];
   if (own) {
@@ -149,6 +151,7 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     age: row.age ?? ageFromBirthDate(row.birth_date),
     ratingAverage: row.rating_avg ?? null,
     reviewCount: row.review_count ?? 0,
+    paymentMethods: parsePaymentMethods(row.payment_methods),
     languages: byCreator(languages.data!, row.id).flatMap((l) => {
       const language = l.languages as { name: string } | null;
       return language ? [{ name: language.name, proficiency: l.proficiency }] : [];

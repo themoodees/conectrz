@@ -24,6 +24,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 29,
+    paymentMethods: ["paypal", "wise"],
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Beauty", "Skincare"],
     services: [
@@ -47,6 +48,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 34,
+    paymentMethods: ["bank_transfer", "paypal"],
     languages: [
       { name: "English", proficiency: "native" },
       { name: "Japanese", proficiency: "conversational" },
@@ -73,6 +75,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 26,
+    paymentMethods: ["bank_transfer"],
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "conversational" },
@@ -97,6 +100,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "man",
     age: 31,
+    paymentMethods: ["paypal", "stripe"],
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Lifestyle"],
     services: [{ name: "TikTok video", rateType: "starting_from", rateAmountUsd: 600 }],
@@ -117,6 +121,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 38,
+    paymentMethods: ["wise", "paypal"],
     languages: [
       { name: "Spanish", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -142,6 +147,7 @@ export const mockCreators: Creator[] = [
     isAvailable: false,
     gender: "man",
     age: 27,
+    paymentMethods: ["bank_transfer", "wise"],
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -170,6 +176,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 23,
+    paymentMethods: ["paypal"],
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "Korean", proficiency: "conversational" },
@@ -196,6 +203,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "man",
     age: 30,
+    paymentMethods: ["wise", "stripe"],
     languages: [
       { name: "English", proficiency: "native" },
       { name: "Mandarin Chinese", proficiency: "native" },
@@ -219,6 +227,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 41,
+    paymentMethods: ["bank_transfer", "paypal"],
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Travel"],
     services: [
@@ -238,6 +247,7 @@ export const mockCreators: Creator[] = [
     isAvailable: false,
     gender: "woman",
     age: 33,
+    paymentMethods: ["wise"],
     languages: [
       { name: "French", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -261,6 +271,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "man",
     age: 36,
+    paymentMethods: ["bank_transfer", "other"],
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "conversational" },
@@ -286,6 +297,7 @@ export const mockCreators: Creator[] = [
     isAvailable: true,
     gender: "woman",
     age: 24,
+    paymentMethods: ["paypal", "bank_transfer"],
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Parenting", "Home & Interior"],
     services: [

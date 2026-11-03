@@ -1,5 +1,7 @@
 "use client";
 
+import { PaymentMethodTags } from "@/components/payments/PaymentInfo";
+import type { PaymentMethod } from "@/lib/payments";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import type { Applicant } from "@/types/projects";
@@ -13,10 +15,12 @@ function ApplicantCard({
   applicant,
   projectId,
   canDecline,
+  projectMethods,
 }: {
   applicant: Applicant;
   projectId: string;
   canDecline: boolean;
+  projectMethods: PaymentMethod[];
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
@@ -45,6 +49,10 @@ function ApplicantCard({
         </p>
       </div>
       <p className="mt-3 text-sm whitespace-pre-line text-graphite">{applicant.message}</p>
+      <div className="mt-3">
+        <p className="mb-1.5 text-xs font-medium text-muted">Accepts payment by</p>
+        <PaymentMethodTags methods={applicant.paymentMethods} highlight={projectMethods} />
+      </div>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <Link
           href={`/creators/${applicant.creatorId}`}
@@ -82,8 +90,10 @@ export function ApplicantList({
   applicants,
   projectId,
   projectIsOpen,
+  projectMethods,
 }: {
   applicants: Applicant[];
+  projectMethods: PaymentMethod[];
   projectId: string;
   projectIsOpen: boolean;
 }) {
@@ -95,6 +105,7 @@ export function ApplicantList({
           applicant={applicant}
           projectId={projectId}
           canDecline={projectIsOpen}
+          projectMethods={projectMethods}
         />
       ))}
     </ul>

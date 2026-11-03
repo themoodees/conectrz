@@ -5,6 +5,8 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplyPanel } from "@/components/projects/ApplyPanel";
 import { ProjectStatusBadge, TagList } from "@/components/projects/ProjectBadges";
 import { ArrowLeftIcon } from "@/components/ui/icons";
+import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
+import { getOwnCreatorEditorData } from "@/lib/data/creatorAccount";
 import { getCreatorProject } from "@/lib/data/projects";
 import { formatDeadline, formatShortDate, formatUsd } from "@/lib/format";
 
@@ -20,7 +22,7 @@ export default async function CreatorProjectPage({
   params,
 }: PageProps<"/creator/projects/[id]">) {
   const { id } = await params;
-  const project = await getCreatorProject(id);
+  const [project, me] = await Promise.all([getCreatorProject(id), getOwnCreatorEditorData()]);
   if (!project) notFound();
 
   return (
@@ -61,6 +63,14 @@ export default async function CreatorProjectPage({
             <TagList label="Niches" items={project.niches} />
             <TagList label="Languages" items={project.languages} />
           </dl>
+          <div className="mt-6">
+            <h2 className="mb-2 text-sm font-semibold text-ink">How the company will pay</h2>
+            <PaymentMethodTags
+              methods={project.paymentMethods}
+              highlight={me?.paymentMethods ?? []}
+            />
+            <PaymentNotice className="mt-2" />
+          </div>
         </section>
 
         <aside>
@@ -69,6 +79,8 @@ export default async function CreatorProjectPage({
             isOpen={project.status === "open"}
             application={project.application}
             budgetUsd={project.budgetUsd}
+            projectMethods={project.paymentMethods}
+            myMethods={me?.paymentMethods ?? []}
           />
         </aside>
       </div>

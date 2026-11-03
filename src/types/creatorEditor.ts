@@ -1,3 +1,4 @@
+import type { PaymentMethod } from "@/lib/payments";
 import type { AccountStatus } from "./account";
 import type { Gender, LanguageProficiency, RateType, SocialPlatform } from "./creator";
 
@@ -21,6 +22,7 @@ export interface CreatorEditorData {
   prefecture: string;
   city: string;
   isAvailable: boolean;
+  paymentMethods: PaymentMethod[];
   photoUrl: string | null;
   nicheIds: string[];
   languages: { languageId: string; proficiency: LanguageProficiency }[];

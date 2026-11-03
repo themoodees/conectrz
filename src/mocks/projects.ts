@@ -1,3 +1,4 @@
+import type { PaymentMethod } from "@/lib/payments";
 import type { ApplicationStatus, ProjectStatus } from "@/types/projects";
 
 /* MOCK DATA — projects and applications for design work (mock mode). */
@@ -15,6 +16,7 @@ export interface MockProject {
   services: string[];
   niches: string[];
   languages: string[];
+  paymentMethods: PaymentMethod[];
 }
 
 export interface MockApplication {
@@ -42,6 +44,7 @@ export const mockProjects: MockProject[] = [
     services: ["UGC video"],
     niches: ["Beauty", "Skincare"],
     languages: ["Japanese", "English"],
+    paymentMethods: ["bank_transfer", "wise"],
   },
   {
     id: "pj-002",
@@ -56,6 +59,7 @@ export const mockProjects: MockProject[] = [
     services: ["Product photography"],
     niches: ["Beauty"],
     languages: ["Japanese"],
+    paymentMethods: ["bank_transfer", "wise"],
   },
   {
     id: "pj-003",
@@ -71,6 +75,7 @@ export const mockProjects: MockProject[] = [
     services: ["Instagram Reel"],
     niches: ["Travel", "Lifestyle"],
     languages: ["English"],
+    paymentMethods: ["bank_transfer", "wise"],
   },
   {
     id: "pj-004",
@@ -85,6 +90,7 @@ export const mockProjects: MockProject[] = [
     services: ["TikTok video"],
     niches: ["Home & Interior"],
     languages: ["Japanese"],
+    paymentMethods: ["bank_transfer", "wise"],
   },
 ];
 
