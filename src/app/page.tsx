@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { HeroCollage } from "@/components/marketing/HeroCollage";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import {
   BRAND_STEPS,
   CLOSING,
   CREATOR_STEPS,
-  FAQ,
   HERO,
   PAIN,
   WHY,
@@ -23,7 +23,6 @@ import { buttonClass } from "@/components/ui/buttonStyles";
 import {
   BriefcaseIcon,
   CheckIcon,
-  ChevronDownIcon,
   MapPinIcon,
   MessageIcon,
   SearchIcon,
@@ -31,6 +30,7 @@ import {
 } from "@/components/ui/icons";
 import { isMockMode } from "@/lib/config";
 import { getSupabaseSession } from "@/lib/data/session";
+import { mockCreators } from "@/mocks/creators";
 
 const WHY_ICONS = {
   map: MapPinIcon,
@@ -57,6 +57,8 @@ const creatorPreviews = [
 /** Public homepage. Copy lives in components/marketing/homeContent.ts. */
 export default async function HomePage() {
   const isSignedIn = isMockMode ? false : Boolean((await getSupabaseSession()).user);
+  // PLACEHOLDER imagery: mock creator photos.
+  const photos = mockCreators.slice(0, 6).map((c) => ({ src: c.photoUrl, name: c.displayName }));
 
   return (
     <>
@@ -69,7 +71,7 @@ export default async function HomePage() {
             aria-hidden="true"
             className="bg-brand-gradient absolute -top-40 -right-40 size-[28rem] rounded-full opacity-20 blur-3xl"
           />
-          <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-[1fr_1.05fr] lg:px-8">
+          <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-2 lg:px-8">
             <div>
               <p className="text-sm font-semibold text-primary">{HERO.eyebrow}</p>
               <h1 className="mt-3 text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl lg:text-[3.5rem]">
@@ -94,7 +96,7 @@ export default async function HomePage() {
                 </Link>
               </p>
             </div>
-            <DiscoverPreview />
+            <HeroCollage photos={photos} />
           </div>
         </section>
 
@@ -187,24 +189,6 @@ export default async function HomePage() {
                 );
               })}
             </ul>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="border-t border-border">
-          <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
-            <h2 className="text-3xl font-semibold text-ink md:text-4xl">Questions</h2>
-            <div className="mt-8 divide-y divide-border rounded-card border border-border">
-              {FAQ.map((item) => (
-                <details key={item.q} className="group px-5 py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <ChevronDownIcon className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180" />
-                  </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-graphite">{item.a}</p>
-                </details>
-              ))}
-            </div>
           </div>
         </section>
 
