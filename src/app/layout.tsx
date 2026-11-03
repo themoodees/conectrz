@@ -21,12 +21,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://conectrz.com"),
   title: {
     default: "Conectrz",
     template: "%s · Conectrz",
   },
   description:
     "Discover and connect with creators living in Japan — UGC, influencer and content creators.",
+  openGraph: {
+    type: "website",
+    siteName: "Conectrz",
+    title: "Conectrz",
+    description:
+      "Discover and connect with creators living in Japan — UGC, influencer and content creators.",
+    images: [{ url: "/logo.png" }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
