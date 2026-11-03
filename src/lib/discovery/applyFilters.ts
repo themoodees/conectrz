@@ -24,6 +24,8 @@ export function matchesSearch(creator: Creator, query: string): boolean {
     creator.city ?? "",
     creator.prefecture ?? "",
     ...creator.niches,
+    ...creator.languages.map((language) => language.name),
+    ...creator.services.map((service) => service.name),
     ...creator.socialAccounts.map((account) => account.handle),
   ]
     .join(" ")

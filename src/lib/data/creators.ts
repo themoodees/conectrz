@@ -13,6 +13,7 @@ import { centsToUsd } from "@/lib/format";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
+import { PREFECTURES } from "@/lib/prefectures";
 import { mockPortfolio } from "@/mocks/portfolio";
 import { mockStore } from "@/mocks/store";
 import { getSupabaseSession } from "./session";
@@ -274,18 +275,13 @@ export async function getDiscoveryFilterOptions(): Promise<DiscoveryFilterOption
     return data.map((row) => row.name);
   };
 
-  const [niches, languages, services, prefectures] = await Promise.all([
+  const [niches, languages, services] = await Promise.all([
     activeNames("niches"),
     activeNames("languages"),
     activeNames("services"),
-    supabase.from("creator_directory").select("prefecture"),
   ]);
-  if (prefectures.error) throw prefectures.error;
 
-  // Locations: the prefectures active creators actually live in.
-  const locations = [
-    ...new Set(prefectures.data.flatMap((row) => (row.prefecture ? [row.prefecture] : []))),
-  ].sort();
-
+  // Locations: every prefecture, so the filter works even before creators exist there.
+  const locations = [...PREFECTURES];
   return { niches, languages, services, locations };
 }
