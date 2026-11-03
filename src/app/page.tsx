@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeroCollage } from "@/components/marketing/HeroCollage";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import {
   BRAND_STEPS,
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/icons";
 import { isMockMode } from "@/lib/config";
 import { getSupabaseSession } from "@/lib/data/session";
+import { mockCreators } from "@/mocks/creators";
 
 const WHY_ICONS = {
   map: MapPinIcon,
@@ -55,6 +57,8 @@ const creatorPreviews = [
 /** Public homepage. Copy lives in components/marketing/homeContent.ts. */
 export default async function HomePage() {
   const isSignedIn = isMockMode ? false : Boolean((await getSupabaseSession()).user);
+  // PLACEHOLDER imagery: mock creator photos.
+  const photos = mockCreators.slice(0, 6).map((c) => ({ src: c.photoUrl, name: c.displayName }));
 
   return (
     <>
@@ -67,7 +71,7 @@ export default async function HomePage() {
             aria-hidden="true"
             className="bg-brand-gradient absolute -top-40 -right-40 size-[28rem] rounded-full opacity-20 blur-3xl"
           />
-          <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-[1fr_1.05fr] lg:px-8">
+          <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-2 lg:px-8">
             <div>
               <p className="text-sm font-semibold text-primary">{HERO.eyebrow}</p>
               <h1 className="mt-3 text-4xl leading-[1.1] font-semibold text-ink sm:text-5xl lg:text-[3.5rem]">
@@ -92,7 +96,7 @@ export default async function HomePage() {
                 </Link>
               </p>
             </div>
-            <DiscoverPreview />
+            <HeroCollage photos={photos} />
           </div>
         </section>
 
@@ -185,21 +189,6 @@ export default async function HomePage() {
                 );
               })}
             </ul>
-          </div>
-        </section>
-
-        {/* FAQ link */}
-        <section className="border-t border-border">
-          <div className="mx-auto flex max-w-page flex-col items-start gap-4 px-4 py-12 md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
-            <div>
-              <h2 className="text-2xl font-semibold text-ink">Have questions?</h2>
-              <p className="mt-1 text-graphite">
-                How payments work, what&apos;s free, how to get started. It&apos;s all in the FAQ.
-              </p>
-            </div>
-            <Link href="/faq" className={buttonClass({ variant: "secondary" })}>
-              Read the FAQ
-            </Link>
           </div>
         </section>
 
