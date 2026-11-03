@@ -45,7 +45,18 @@ export default async function CreatorProjectPage({
           <h1 className="mt-3 text-[1.75rem] leading-tight font-semibold text-ink md:text-3xl">
             {project.title}
           </h1>
-          <p className="mt-1 text-sm text-muted">{project.companyName}</p>
+          <p className="mt-1 text-sm text-muted">
+            {project.companyId ? (
+              <Link
+                href={`/creator/companies/${project.companyId}`}
+                className="hover:text-primary hover:underline"
+              >
+                {project.companyName}
+              </Link>
+            ) : (
+              project.companyName
+            )}
+          </p>
           <dl className="mt-5 grid grid-cols-2 gap-4 sm:max-w-md">
             <div>
               <dt className="text-xs font-medium text-muted">Budget</dt>

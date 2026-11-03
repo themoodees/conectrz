@@ -1,23 +1,27 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { deleteReview, saveReview, type ReviewResult } from "@/lib/actions/reviews";
+import type { ReviewResult } from "@/lib/actions/reviews";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { StarIcon } from "@/components/ui/icons";
 
-/** A company rates a creator it has messaged (1-5 stars + optional comment). */
+/**
+ * A 1-5 star rating with an optional comment. Used by companies reviewing creators and by
+ * creators reviewing brands: the page passes the matching save and delete actions.
+ */
 export function ReviewForm({
-  creatorId,
   existing,
+  save,
+  remove,
+  placeholder = "How was it to work with this creator?",
 }: {
-  creatorId: string;
   existing: { rating: number; comment: string | null } | null;
+  save: (previous: ReviewResult, formData: FormData) => Promise<ReviewResult>;
+  remove: () => Promise<ReviewResult>;
+  placeholder?: string;
 }) {
-  const [state, formAction, pending] = useActionState<ReviewResult, FormData>(
-    saveReview.bind(null, creatorId),
-    {},
-  );
+  const [state, formAction, pending] = useActionState<ReviewResult, FormData>(save, {});
   const [rating, setRating] = useState(existing?.rating ?? 0);
   const [removing, startRemoving] = useTransition();
 
@@ -64,7 +68,7 @@ export function ReviewForm({
           rows={3}
           maxLength={1000}
           defaultValue={existing?.comment ?? ""}
-          placeholder="How was it to work with this creator?"
+          placeholder={placeholder}
           className="mt-1.5 w-full rounded-control border border-border p-3 text-sm font-normal text-ink"
         />
       </label>
@@ -77,7 +81,7 @@ export function ReviewForm({
           <button
             type="button"
             disabled={removing}
-            onClick={() => startRemoving(async () => void (await deleteReview(creatorId)))}
+            onClick={() => startRemoving(async () => void (await remove()))}
             className={buttonClass({ variant: "ghost" })}
           >
             {removing ? "Deleting…" : "Delete my review"}

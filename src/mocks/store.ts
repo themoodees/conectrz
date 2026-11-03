@@ -37,6 +37,16 @@ export interface MockReview {
   createdAt: string;
 }
 
+export interface MockCompanyReview {
+  id: string;
+  companyId: string;
+  creatorId: string;
+  creatorName: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
 export interface MockCompany {
   id: string;
   name: string;
@@ -67,6 +77,8 @@ interface MockStore {
   /** Private birth dates by creator id (companies only ever see the age). */
   creatorBirthDates: Record<string, string>;
   reviews: MockReview[];
+  /** Creators' reviews of brands. */
+  companyReviews: MockCompanyReview[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
   subscription: {
@@ -120,6 +132,26 @@ export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
   ],
   creatorStatuses: {},
   creatorBirthDates: {},
+  companyReviews: [
+    {
+      id: "crv-001",
+      companyId: "co-001",
+      creatorId: "cr-002",
+      creatorName: "Emma",
+      rating: 5,
+      comment: "Clear brief, quick replies and paid on the date we agreed.",
+      createdAt: "2026-10-18T00:00:00Z",
+    },
+    {
+      id: "crv-002",
+      companyId: "co-001",
+      creatorId: "cr-003",
+      creatorName: "Haruka",
+      rating: 4,
+      comment: "Nice team to work with. The feedback came in two rounds.",
+      createdAt: "2026-10-25T00:00:00Z",
+    },
+  ],
   reviews: [
     {
       id: "rv-001",

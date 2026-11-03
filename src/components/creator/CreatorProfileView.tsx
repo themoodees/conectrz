@@ -165,7 +165,10 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
         <PortfolioGrid items={creator.portfolio} />
       </section>
 
-      <ReviewsSection reviews={creator.reviews} form={reviewForm} />
+      <ReviewsSection
+        reviews={creator.reviews.map((r) => ({ ...r, name: r.companyName }))}
+        form={reviewForm}
+      />
     </>
   );
 }
