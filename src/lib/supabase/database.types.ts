@@ -93,6 +93,14 @@ export type Database = {
           { foreignKeyName: "messages_sender_id_fkey"; columns: ["sender_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      message_attachments: {
+        Row: { created_at: string; file_name: string; id: string; kind: string; message_id: string; path: string; size_bytes: number }
+        Insert: { created_at?: string; file_name: string; id?: string; kind: string; message_id: string; path: string; size_bytes: number }
+        Update: { created_at?: string; file_name?: string; id?: string; kind?: string; message_id?: string; path?: string; size_bytes?: number }
+        Relationships: [
+          { foreignKeyName: "message_attachments_message_id_fkey"; columns: ["message_id"]; isOneToOne: false; referencedRelation: "messages"; referencedColumns: ["id"] },
+        ]
+      }
       niches: {
         Row: { id: string; is_active: boolean; name: string }
         Insert: { id?: string; is_active?: boolean; name: string }
