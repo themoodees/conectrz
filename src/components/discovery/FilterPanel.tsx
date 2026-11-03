@@ -10,6 +10,8 @@ interface FilterPanelProps {
   onClear: () => void;
   canClear: boolean;
   resultCount: number;
+  /** What is being counted on the confirm button. */
+  noun?: string;
   children: ReactNode;
 }
 
@@ -25,6 +27,7 @@ export function FilterPanel({
   onClear,
   canClear,
   resultCount,
+  noun = "creator",
   children,
 }: FilterPanelProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -76,7 +79,7 @@ export function FilterPanel({
             onClick={onClose}
             className="h-11 flex-1 rounded-control bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
           >
-            Show {resultCount} {resultCount === 1 ? "creator" : "creators"}
+            Show {resultCount} {resultCount === 1 ? noun : `${noun}s`}
           </button>
         </div>
       </div>

@@ -1,26 +1,47 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { CreatorProject } from "@/types/projects";
+import { useMemo, useState, type ReactNode } from "react";
+import type { CreatorProject, ProjectFormOptions } from "@/types/projects";
 import type { NumberRange } from "@/types/discovery";
-import { BriefcaseIcon, SearchIcon } from "@/components/ui/icons";
+import { PAYMENT_METHODS, type PaymentMethod } from "@/lib/payments";
+import { BriefcaseIcon, ChevronDownIcon, SearchIcon } from "@/components/ui/icons";
+import { FilterChip } from "@/components/discovery/FilterChip";
 import { FilterDropdown } from "@/components/discovery/FilterDropdown";
+import { FilterPanel } from "@/components/discovery/FilterPanel";
+import { MoreFiltersButton } from "@/components/discovery/FilterBar";
 import { OptionButton } from "@/components/discovery/OptionButton";
 import { RangeSlider } from "@/components/discovery/RangeSlider";
 import { ProjectCard } from "./ProjectCard";
 
 type Deadline = "week" | "month" | "later";
+type Sort = "newest" | "budget" | "deadline";
+type ListKey = "niches" | "services" | "languages";
+type FilterId = ListKey | "payments" | "budget" | "deadline";
 
 const DEADLINES: { id: Deadline; label: string }[] = [
   { id: "week", label: "Within 7 days" },
   { id: "month", label: "Within 30 days" },
   { id: "later", label: "More than 30 days" },
 ];
+const SORTS: { id: Sort; label: string }[] = [
+  { id: "newest", label: "Newest" },
+  { id: "budget", label: "Highest budget" },
+  { id: "deadline", label: "Deadline soonest" },
+];
 
 const BUDGET_SLIDER = { min: 0, max: 3000, step: 50 };
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
-
-const unique = (lists: string[][]) => [...new Set(lists.flat())].sort((a, b) => a.localeCompare(b));
+const LABELS: Record<FilterId, string> = {
+  niches: "Niche",
+  services: "Service",
+  languages: "Language",
+  payments: "Payment",
+  budget: "Budget",
+  deadline: "Deadline",
+};
+const PRIMARY: FilterId[] = ["niches", "services", "budget"];
+const SECONDARY: FilterId[] = ["languages", "payments", "deadline"];
+const ALL: FilterId[] = [...PRIMARY, ...SECONDARY];
 
 /** Days from today until a yyyy-mm-dd deadline (can be negative). */
 function daysUntil(isoDate: string) {
@@ -36,77 +57,181 @@ function matchesDeadline(project: CreatorProject, deadline: Deadline) {
   return days > 30;
 }
 
-/** "Open projects" with search and filters (niche, service, language, budget, deadline). */
-export function CreatorProjectBrowser({ projects }: { projects: CreatorProject[] }) {
+/**
+ * "Open projects" with search, filters and sorting, laid out like the company's creator search.
+ * Every niche, service and language is offered (not only the ones in use) with the number of open
+ * projects asking for it, most requested first, so creators can see what is in demand.
+ */
+export function CreatorProjectBrowser({
+  projects,
+  options,
+}: {
+  projects: CreatorProject[];
+  options: ProjectFormOptions;
+}) {
   const [query, setQuery] = useState("");
-  const [niches, setNiches] = useState<string[]>([]);
-  const [services, setServices] = useState<string[]>([]);
-  const [languages, setLanguages] = useState<string[]>([]);
+  const [sort, setSort] = useState<Sort>("newest");
+  const [selected, setSelected] = useState<Record<ListKey, string[]>>({
+    niches: [],
+    services: [],
+    languages: [],
+  });
+  const [payments, setPayments] = useState<PaymentMethod[]>([]);
   const [budget, setBudget] = useState<NumberRange | null>(null);
   const [deadline, setDeadline] = useState<Deadline | null>(null);
+  const [panel, setPanel] = useState<"more" | "all" | null>(null);
 
-  const options = useMemo(
-    () => ({
-      niches: unique(projects.map((p) => p.niches)),
-      services: unique(projects.map((p) => p.services)),
-      languages: unique(projects.map((p) => p.languages)),
-    }),
+  /** Option names with how many open projects ask for each, most requested first. */
+  const choices = useMemo(() => {
+    const build = (key: ListKey) => {
+      const counts = new Map<string, number>();
+      projects.forEach((p) => p[key].forEach((name) => counts.set(name, (counts.get(name) ?? 0) + 1)));
+      return options[key]
+        .map((o) => ({ name: o.name, count: counts.get(o.name) ?? 0 }))
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    };
+    return { niches: build("niches"), services: build("services"), languages: build("languages") };
+  }, [projects, options]);
+
+  const paymentCounts = useMemo(
+    () =>
+      PAYMENT_METHODS.map((m) => ({
+        ...m,
+        count: projects.filter((p) => p.paymentMethods.includes(m.id)).length,
+      })),
     [projects],
   );
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const any = (wanted: string[], have: string[]) =>
+    const any = (wanted: readonly string[], have: readonly string[]) =>
       wanted.length === 0 || wanted.some((w) => have.includes(w));
-    return projects.filter((p) => {
+    const list = projects.filter((p) => {
       if (q && !`${p.title} ${p.description} ${p.companyName}`.toLowerCase().includes(q)) {
         return false;
       }
-      if (!any(niches, p.niches) || !any(services, p.services) || !any(languages, p.languages)) {
+      if (
+        !any(selected.niches, p.niches) ||
+        !any(selected.services, p.services) ||
+        !any(selected.languages, p.languages) ||
+        !any(payments, p.paymentMethods)
+      ) {
         return false;
       }
       if (budget && (p.budgetUsd < budget.min || (budget.max !== null && p.budgetUsd > budget.max))) {
         return false;
       }
-      if (deadline && !matchesDeadline(p, deadline)) return false;
-      return true;
+      return !deadline || matchesDeadline(p, deadline);
     });
-  }, [projects, query, niches, services, languages, budget, deadline]);
-
-  const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
-    set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
-
-  const multi = (
-    label: string,
-    items: string[],
-    selected: string[],
-    set: (v: string[]) => void,
-  ) =>
-    items.length > 0 && (
-      <FilterDropdown label={label} selectedCount={selected.length} onClear={() => set([])}>
-        <div className="flex max-w-xs flex-wrap gap-2">
-          {items.map((item) => (
-            <OptionButton
-              key={item}
-              label={item}
-              isSelected={selected.includes(item)}
-              onClick={() => toggle(selected, set, item)}
-            />
-          ))}
-        </div>
-      </FilterDropdown>
+    return list.sort((a, b) =>
+      sort === "budget"
+        ? b.budgetUsd - a.budgetUsd
+        : sort === "deadline"
+          ? a.deliveryDeadline.localeCompare(b.deliveryDeadline)
+          : b.createdAt.localeCompare(a.createdAt),
     );
+  }, [projects, query, selected, payments, budget, deadline, sort]);
 
-  const activeCount =
-    niches.length + services.length + languages.length + (budget ? 1 : 0) + (deadline ? 1 : 0);
-  const clearAll = () => {
-    setQuery("");
-    setNiches([]);
-    setServices([]);
-    setLanguages([]);
-    setBudget(null);
-    setDeadline(null);
+  const toggle = <T extends string>(list: T[], value: T) =>
+    list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+
+  const countFor = (id: FilterId) =>
+    id === "payments"
+      ? payments.length
+      : id === "budget"
+        ? budget
+          ? 1
+          : 0
+        : id === "deadline"
+          ? deadline
+            ? 1
+            : 0
+          : selected[id].length;
+
+  const clear = (ids: FilterId[] = ALL) => {
+    ids.forEach((id) => {
+      if (id === "payments") setPayments([]);
+      else if (id === "budget") setBudget(null);
+      else if (id === "deadline") setDeadline(null);
+      else setSelected((current) => ({ ...current, [id]: [] }));
+    });
   };
+
+  const section = (id: FilterId): ReactNode => {
+    if (id === "budget") {
+      return (
+        <RangeSlider label="Budget" {...BUDGET_SLIDER} value={budget} onChange={setBudget} format={usd} />
+      );
+    }
+    if (id === "deadline") {
+      return DEADLINES.map((d) => (
+        <OptionButton
+          key={d.id}
+          label={d.label}
+          isSelected={deadline === d.id}
+          onClick={() => setDeadline(deadline === d.id ? null : d.id)}
+        />
+      ));
+    }
+    if (id === "payments") {
+      return paymentCounts.map((m) => (
+        <OptionButton
+          key={m.id}
+          label={`${m.label} · ${m.count}`}
+          isSelected={payments.includes(m.id)}
+          onClick={() => setPayments(toggle(payments, m.id))}
+        />
+      ));
+    }
+    return choices[id].map((c) => (
+      <OptionButton
+        key={c.name}
+        label={`${c.name} · ${c.count}`}
+        isSelected={selected[id].includes(c.name)}
+        onClick={() => setSelected((current) => ({ ...current, [id]: toggle(current[id], c.name) }))}
+      />
+    ));
+  };
+
+  const chips = [
+    ...(["niches", "services", "languages"] as const).flatMap((key) =>
+      selected[key].map((name) => ({
+        id: `${key}:${name}`,
+        key: key as FilterId,
+        label: name,
+        remove: () => setSelected((c) => ({ ...c, [key]: c[key].filter((v) => v !== name) })),
+      })),
+    ),
+    ...payments.map((m) => ({
+      id: `payments:${m}`,
+      key: "payments" as FilterId,
+      label: `Pays by ${PAYMENT_METHODS.find((x) => x.id === m)?.label ?? m}`,
+      remove: () => setPayments((c) => c.filter((v) => v !== m)),
+    })),
+    ...(budget
+      ? [
+          {
+            id: "budget",
+            key: "budget" as FilterId,
+            label: `${usd(budget.min)} – ${budget.max === null ? `${usd(BUDGET_SLIDER.max)}+` : usd(budget.max)}`,
+            remove: () => setBudget(null),
+          },
+        ]
+      : []),
+    ...(deadline
+      ? [
+          {
+            id: "deadline",
+            key: "deadline" as FilterId,
+            label: DEADLINES.find((d) => d.id === deadline)!.label,
+            remove: () => setDeadline(null),
+          },
+        ]
+      : []),
+  ];
+
+  const panelIds = panel === "more" ? SECONDARY : ALL;
+  const secondaryCount = SECONDARY.reduce((sum, id) => sum + countFor(id), 0);
 
   return (
     <section aria-labelledby="open-projects-heading">
@@ -115,64 +240,108 @@ export function CreatorProjectBrowser({ projects }: { projects: CreatorProject[]
       </h2>
 
       {projects.length > 0 && (
-        <div className="mb-5 space-y-3">
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search projects"
-              aria-label="Search projects by title, description or company"
-              className="h-12 w-full rounded-control border border-border bg-white pr-4 pl-12 text-base text-ink placeholder:text-muted hover:border-muted/50 focus:border-primary focus:ring-3 focus:ring-primary/15 focus:outline-none"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {multi("Niche", options.niches, niches, setNiches)}
-            {multi("Service", options.services, services, setServices)}
-            {multi("Language", options.languages, languages, setLanguages)}
-            <FilterDropdown
-              label="Budget"
-              selectedCount={budget ? 1 : 0}
-              onClear={() => setBudget(null)}
-            >
-              <RangeSlider
-                label="Budget"
-                {...BUDGET_SLIDER}
-                value={budget}
-                onChange={setBudget}
-                format={usd}
-              />
-            </FilterDropdown>
-            <FilterDropdown
-              label="Deadline"
-              selectedCount={deadline ? 1 : 0}
-              onClear={() => setDeadline(null)}
-            >
-              <div className="flex max-w-xs flex-wrap gap-2">
-                {DEADLINES.map((d) => (
-                  <OptionButton
-                    key={d.id}
-                    label={d.label}
-                    isSelected={deadline === d.id}
-                    onClick={() => setDeadline(deadline === d.id ? null : d.id)}
-                  />
-                ))}
+        <div className="mb-5 space-y-4">
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search projects"
+                  aria-label="Search projects by title, description or company"
+                  className="h-12 w-full rounded-control border border-border bg-white pr-4 pl-12 text-base text-ink placeholder:text-muted hover:border-muted/50 focus:border-primary focus:ring-3 focus:ring-primary/15 focus:outline-none"
+                />
               </div>
-            </FilterDropdown>
-            {(activeCount > 0 || query) && (
+              <MoreFiltersButton
+                label="Filters"
+                count={chips.length}
+                onClick={() => setPanel("all")}
+                className="h-12 md:hidden"
+              />
+            </div>
+            <div className="hidden flex-wrap items-center gap-2 md:flex">
+              {PRIMARY.map((id) => (
+                <FilterDropdown
+                  key={id}
+                  label={LABELS[id]}
+                  selectedCount={countFor(id)}
+                  onClear={() => clear([id])}
+                >
+                  <div className="flex max-h-72 max-w-xs flex-wrap gap-2 overflow-y-auto">
+                    {section(id)}
+                  </div>
+                </FilterDropdown>
+              ))}
+              <MoreFiltersButton
+                count={secondaryCount}
+                onClick={() => setPanel("more")}
+                label="More filters"
+              />
+            </div>
+          </div>
+
+          {chips.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2" aria-label="Active filters">
+              {chips.map((chip) => (
+                <FilterChip key={chip.id} label={chip.label} onRemove={chip.remove} />
+              ))}
               <button
                 type="button"
-                onClick={clearAll}
-                className="h-10 rounded-control px-3 text-sm font-medium text-graphite hover:bg-surface"
+                onClick={() => clear()}
+                className="ml-1 h-8 rounded-lg px-2 text-sm font-medium text-graphite underline-offset-4 hover:text-ink hover:underline"
               >
                 Clear all
               </button>
-            )}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm text-graphite" aria-live="polite">
+              <span className="font-semibold text-ink">{visible.length}</span>{" "}
+              {visible.length === 1 ? "project" : "projects"}
+            </p>
+            <label className="flex items-center gap-2 text-sm">
+              <span className="hidden text-muted sm:inline">Sort by</span>
+              <span className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as Sort)}
+                  aria-label="Sort projects"
+                  className="h-9 appearance-none rounded-control border border-border bg-white pr-9 pl-3 font-medium text-ink hover:border-muted/50"
+                >
+                  {SORTS.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted" />
+              </span>
+            </label>
           </div>
-          <p className="text-sm text-muted" aria-live="polite">
-            {visible.length} {visible.length === 1 ? "project" : "projects"}
-          </p>
+
+          <FilterPanel
+            title={panel === "more" ? "More filters" : "Filters"}
+            isOpen={panel !== null}
+            onClose={() => setPanel(null)}
+            onClear={() => clear(panelIds)}
+            canClear={panelIds.some((id) => countFor(id) > 0)}
+            resultCount={visible.length}
+            noun="project"
+          >
+            {panelIds.map((id) => (
+              <fieldset key={id}>
+                <legend className="mb-3 text-sm font-semibold text-ink">{LABELS[id]}</legend>
+                {id === "budget" ? (
+                  section(id)
+                ) : (
+                  <div className="flex flex-wrap gap-2">{section(id)}</div>
+                )}
+              </fieldset>
+            ))}
+          </FilterPanel>
         </div>
       )}
 

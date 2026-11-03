@@ -3,12 +3,12 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplicationStatusBadge } from "@/components/projects/ProjectBadges";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { CreatorProjectBrowser } from "@/components/projects/CreatorProjectBrowser";
-import { getCreatorProjects } from "@/lib/data/projects";
+import { getCreatorProjects, getProjectFormOptions } from "@/lib/data/projects";
 
 export const metadata: Metadata = { title: "Projects" };
 
 export default async function CreatorProjectsPage() {
-  const projects = await getCreatorProjects();
+  const [projects, options] = await Promise.all([getCreatorProjects(), getProjectFormOptions()]);
   const applied = projects.filter((p) => p.application);
   const open = projects.filter((p) => p.status === "open" && !p.application);
 
@@ -47,7 +47,7 @@ export default async function CreatorProjectsPage() {
         </section>
       )}
 
-      <CreatorProjectBrowser projects={open} />
+      <CreatorProjectBrowser projects={open} options={options} />
     </PageContainer>
   );
 }
