@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { changePlan } from "@/lib/actions/billing";
 import { buttonClass } from "@/components/ui/buttonStyles";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 
 /**
  * "Change to X" with a confirmation step, so a plan (and a charge) is never changed
@@ -38,9 +39,9 @@ export function ChangePlanButton({
       <input type="hidden" name="planId" value={planId} />
       <p className="text-sm text-graphite">{note}</p>
       <div className="mt-3 flex gap-2">
-        <button type="submit" className={buttonClass({ size: "sm" })}>
+        <SubmitButton pendingLabel="Changing plan…" className={buttonClass({ size: "sm" })}>
           Confirm
-        </button>
+        </SubmitButton>
         <button
           type="button"
           onClick={() => setConfirming(false)}

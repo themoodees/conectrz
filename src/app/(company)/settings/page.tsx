@@ -8,6 +8,7 @@ import {
 } from "@/components/settings/SettingsForms";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { getCurrentCompanyAccount } from "@/lib/data/account";
+import { AutoRefresh } from "@/components/plans/AutoRefresh";
 import { openBillingPortal } from "@/lib/actions/billing";
 import { getBillingStatus } from "@/lib/data/billing";
 import { getConversationUsage } from "@/lib/data/messages";
@@ -39,10 +40,11 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
         >
           {billingResult === "success" && (
             <p role="status" className="mb-4 rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink">
-              Thank you! Your payment went through. Your plan updates within a minute; refresh this
-              page if it still shows the old one.
+              Thank you! Your payment went through. Your plan is being activated; this page updates
+              by itself in a few seconds.
             </p>
           )}
+          {billingResult === "success" && <AutoRefresh times={12} />}
           {billingResult === "error" && (
             <p role="alert" className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger">
               Couldn&apos;t open billing. Please try again.

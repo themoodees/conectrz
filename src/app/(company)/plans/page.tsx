@@ -7,7 +7,9 @@ import { getCurrentCompanyAccount } from "@/lib/data/account";
 import { getBillingStatus } from "@/lib/data/billing";
 import { getConversationUsage } from "@/lib/data/messages";
 import { keepCurrentPlan } from "@/lib/actions/billing";
+import { AutoRefresh } from "@/components/plans/AutoRefresh";
 import { ChangePlanButton } from "@/components/plans/ChangePlanButton";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 import { getPlans } from "@/lib/data/plans";
 import { formatUsd, formatShortDate } from "@/lib/format";
 
@@ -64,9 +66,10 @@ export default async function PlansPage({ searchParams }: PageProps<"/plans">) {
         >
           {billingResult === "kept"
             ? "Done. You'll keep your current plan."
-            : "Done. Your plan change is being applied; refresh this page in a moment if it still shows the old plan."}
+            : "Done! Your plan change is being applied. This page updates by itself in a few seconds."}
         </p>
       )}
+      {(billingResult === "changed" || billingResult === "kept") && <AutoRefresh />}
       {billingResult === "error" && (
         <p
           role="alert"
@@ -127,9 +130,12 @@ export default async function PlansPage({ searchParams }: PageProps<"/plans">) {
                       until then.
                     </p>
                     <form action={keepCurrentPlan} className="mt-3 flex flex-col">
-                      <button type="submit" className={buttonClass({ variant: "secondary" })}>
+                      <SubmitButton
+                        pendingLabel="Saving…"
+                        className={buttonClass({ variant: "secondary" })}
+                      >
                         Keep {plan.name}
-                      </button>
+                      </SubmitButton>
                     </form>
                   </div>
                 ) : (
