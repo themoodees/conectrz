@@ -18,7 +18,7 @@ export default async function AdminAccountsPage({ searchParams }: PageProps<"/ad
     <PageContainer>
       <AdminPageHeader
         title="Accounts"
-        description="Pause, ban or reactivate accounts. Companies' plans are managed here too."
+        description="Pause, ban, reactivate or permanently delete accounts. Companies' plans are managed here too."
         tabs={[
           {
             label: "Creators",

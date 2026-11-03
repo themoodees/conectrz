@@ -88,6 +88,45 @@ export async function setAccountStatus(
   return { success: "Account updated." };
 }
 
+/* ── Permanent delete ─────────────────────────────────────────────────────── */
+
+const DELETE_ERRORS: Record<string, string> = {
+  cancel_plan_first: "This company has an active paid plan. Cancel its plan first, then delete.",
+  cannot_delete_admin: "Admin accounts can't be deleted here.",
+  account_not_found: "That account no longer exists.",
+  admins_only: "Only admins can delete accounts.",
+};
+
+/**
+ * Permanently deletes an account and its data (the login, profile, projects, conversations…).
+ * Unlike banning, this can't be undone. Runs in the admin-delete-account edge function,
+ * which needs the key that lets it delete logins.
+ */
+export async function deleteAccount(kind: AccountKind, accountId: string): Promise<AdminResult> {
+  if (isMockMode) {
+    return { error: "Deleting accounts isn't available in the demo." };
+  }
+
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.functions.invoke("admin-delete-account", {
+    body: { user_id: accountId },
+  });
+  if (error) {
+    let code = "";
+    try {
+      code = (await (error as { context?: Response }).context?.json())?.error ?? "";
+    } catch {
+      // not a JSON error body
+    }
+    return { error: DELETE_ERRORS[code] ?? "Couldn't delete the account. Please try again." };
+  }
+
+  await logAction("account_deleted", kind, accountId);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/discover");
+  return { success: "Account deleted." };
+}
+
 /* ── Reports ──────────────────────────────────────────────────────────────── */
 
 export async function resolveReport(

@@ -287,6 +287,7 @@ export type Database = {
         | "category_updated"
         | "category_removed"
         | "project_closed"
+        | "account_deleted"
       application_status: "submitted" | "declined" | "withdrawn"
       project_status: "open" | "closed"
       language_proficiency: "native" | "fluent" | "conversational"
