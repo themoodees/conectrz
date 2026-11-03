@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { Viewer } from "@/types/messages";
+import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { getConversationUsage } from "@/lib/data/messages";
@@ -115,7 +116,9 @@ export async function sendMessage(
       if (attachError) {
         // Users can't delete messages, so say plainly what did go through.
         revalidateInboxes();
-        return { error: "Your message was sent, but the attachments couldn't be. Please send them again." };
+        return {
+          error: "Your message was sent, but the attachments couldn't be. Please send them again.",
+        };
       }
     }
   }
@@ -262,6 +265,7 @@ export async function startConversation(
     conversationId = data;
   }
 
+  await trackEvent({ name: "conversation_started" });
   revalidateInboxes();
   revalidatePath(`/creators/${creatorId}`);
   redirect(`/messages/${conversationId}`);

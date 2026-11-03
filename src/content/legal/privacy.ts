@@ -24,7 +24,7 @@ export const privacyPolicy: LegalDocument = {
         "Company information: company name, contact email, projects you post (title, description, budget, deadline, reference files) and the creators you save.",
         "Activity in the Service: applications, conversations and the messages and attachments (images and videos) you send, reviews you write or receive, reports you submit or that concern you, and notifications.",
         "Billing information (Companies): your plan and subscription status. Card payments are handled by our payment provider, Stripe. We do not see or store your card number; we keep only an identifier that links your account to your Stripe customer record.",
-        "Technical information: cookies that keep you signed in (see section 9), and server logs such as IP address, browser type and time of access, used for security and to keep the Service running.",
+        "Technical information: cookies that keep you signed in (see section 9), and server logs such as IP address, browser type and time of access, used for security and to keep the Service running; and anonymous usage statistics (pages visited, country, device and browser type, and key actions such as signing up or starting a subscription) collected with Vercel Analytics.",
       ],
     },
     {
@@ -45,7 +45,7 @@ export const privacyPolicy: LegalDocument = {
       heading: "5. Sharing with third parties and service providers",
       body: [
         "We do not provide personal data to third parties without your consent, except where the law allows or requires it (for example, a request from a court or public authority, or when needed to protect life, body or property).",
-        "We use the following service providers to run the Service. They handle personal data only on our behalf and for the purposes above: Supabase (database, authentication and file storage); Vercel (website hosting); Stripe (payments and subscriptions); and Resend (sending service emails).",
+        "We use the following service providers to run the Service. They handle personal data only on our behalf and for the purposes above: Supabase (database, authentication and file storage); Vercel (website hosting and anonymous usage statistics); Stripe (payments and subscriptions); and Resend (sending service emails).",
       ],
     },
     {
@@ -72,7 +72,7 @@ export const privacyPolicy: LegalDocument = {
     {
       heading: "9. Cookies",
       body: [
-        "We use cookies that are strictly necessary to keep you signed in and to keep the Service secure. We do not use advertising cookies, and we do not currently use analytics or tracking tools. If we add analytics later, we will update this policy first.",
+        "We use cookies that are strictly necessary to keep you signed in and to keep the Service secure. We do not use advertising cookies. We measure how the Service is used with Vercel Analytics, which does not use cookies and does not track you across other websites or build a profile of you; it counts visits and actions in an anonymous way and we use the result only to understand and improve the Service.",
       ],
     },
     {

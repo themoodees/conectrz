@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type Stripe from "stripe";
+import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { getStripe, isBillingConfigured } from "@/lib/stripe";
@@ -46,7 +47,7 @@ export async function startCheckout(formData: FormData): Promise<void> {
   const [{ data: tier }, { data: customer }] = await Promise.all([
     supabase
       .from("subscription_tiers")
-      .select("stripe_price_id, monthly_price_usd_cents, is_active")
+      .select("name, stripe_price_id, monthly_price_usd_cents, is_active")
       .eq("id", planId)
       .maybeSingle(),
     supabase
@@ -58,6 +59,8 @@ export async function startCheckout(formData: FormData): Promise<void> {
   if (!tier || !tier.is_active || !tier.stripe_price_id || tier.monthly_price_usd_cents <= 0) {
     redirect("/plans?billing=error");
   }
+
+  await trackEvent({ name: "checkout_started", props: { plan: tier.name } });
 
   const origin = await siteOrigin();
   let url: string | null = null;
