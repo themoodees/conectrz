@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
 import {
   CompanyDetailsForm,
@@ -52,6 +53,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
             </p>
           )}
           {billingResult === "success" && <AutoRefresh times={12} />}
+          {billingResult === "success" && <TrackOnMount event="subscription_started" />}
           {billingResult === "error" && (
             <p
               role="alert"

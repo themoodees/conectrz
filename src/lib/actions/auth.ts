@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
 import { ensureCompanyProfile } from "@/lib/data/account";
 import { HOME_PATHS } from "@/lib/roles";
@@ -78,6 +79,8 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
   if (error || !data.user) {
     return { error: error?.message ?? "Sign-up failed. Please try again.", values };
   }
+
+  await trackEvent({ name: "signup_completed", props: { role } });
 
   // With email confirmation on, there's no session until the link is clicked.
   if (!data.session) {
