@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { AccountStatus } from "@/types/account";
 import type { AccountKind } from "@/types/admin";
-import { resolveReport, setAccountStatus, type AdminResult } from "@/lib/actions/admin";
+import { deleteAccount, resolveReport, setAccountStatus, type AdminResult } from "@/lib/actions/admin";
 import { buttonClass } from "@/components/ui/buttonStyles";
 
 function useAdminAction() {
@@ -128,6 +128,19 @@ export function AccountStatusActions({
           Ban
         </button>
       )}
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          const typed = window.prompt(
+            `Permanently delete ${name} and all their data (profile, projects, conversations, login)? This can't be undone.\n\nType DELETE to confirm.`,
+          );
+          if (typed?.trim() === "DELETE") run(() => deleteAccount(kind, accountId));
+        }}
+        className="inline-flex h-8 items-center rounded-control px-3 text-sm font-medium text-danger hover:bg-danger/10 disabled:opacity-50"
+      >
+        Delete
+      </button>
       <ResultText result={result} />
     </div>
   );

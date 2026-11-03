@@ -10,6 +10,7 @@ const ACTION_LABELS: Record<string, string> = {
   profile_paused: "Account status changed",
   profile_unpublished: "Profile unpublished",
   account_banned: "Account banned",
+  account_deleted: "Account deleted",
   subscription_granted: "Plan switched",
   subscription_extended: "Plan extended",
   subscription_canceled: "Plan canceled",
