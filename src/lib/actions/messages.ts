@@ -24,6 +24,43 @@ function revalidateInboxes() {
   revalidatePath("/creator/messages", "layout");
 }
 
+const MAX_ATTACHMENTS = 5;
+
+interface AttachmentInput {
+  path: string;
+  kind: "image" | "video";
+  name: string;
+  size: number;
+}
+
+/** Reads the `attachment` JSON fields the composer submits (one per uploaded file). */
+function parseAttachments(formData: FormData, prefix: string): AttachmentInput[] | null {
+  const items: AttachmentInput[] = [];
+  for (const raw of formData.getAll("attachment")) {
+    try {
+      const value = JSON.parse(String(raw));
+      const valid =
+        typeof value.path === "string" &&
+        value.path.startsWith(prefix) &&
+        !value.path.includes("..") &&
+        (value.kind === "image" || value.kind === "video") &&
+        typeof value.name === "string" &&
+        Number.isFinite(value.size) &&
+        value.size > 0;
+      if (!valid) return null;
+      items.push({
+        path: value.path,
+        kind: value.kind,
+        name: value.name.slice(0, 200),
+        size: Math.round(value.size),
+      });
+    } catch {
+      return null;
+    }
+  }
+  return items.length > MAX_ATTACHMENTS ? null : items;
+}
+
 function validateContent(content: string): string | null {
   if (!content) return "Write a message first.";
   if (content.length > MAX_MESSAGE_LENGTH) {
@@ -39,10 +76,12 @@ export async function sendMessage(
 ): Promise<SendMessageState> {
   const conversationId = String(formData.get("conversationId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
-  const invalid = validateContent(content);
+  const hasFiles = formData.getAll("attachment").length > 0;
+  const invalid = hasFiles && !content ? null : validateContent(content);
   if (invalid) return { error: invalid };
 
   if (isMockMode) {
+    if (hasFiles) return { error: "Attachments aren't available in the demo." };
     const conversation = mockStore.conversations.find((c) => c.id === conversationId);
     if (!conversation) return { error: "Conversation not found." };
     conversation.messages.push({
@@ -55,10 +94,30 @@ export async function sendMessage(
   } else {
     const { supabase, user } = await requireSupabaseUser();
     // RLS only allows sending into conversations the user takes part in.
-    const { error } = await supabase
+    const attachments = parseAttachments(formData, `${conversationId}/${user.id}/`);
+    if (!attachments) return { error: "Those attachments couldn't be sent. Please try again." };
+    const { data: message, error } = await supabase
       .from("messages")
-      .insert({ conversation_id: conversationId, sender_id: user.id, content });
-    if (error) return { error: "Your message couldn't be sent. Please try again." };
+      .insert({ conversation_id: conversationId, sender_id: user.id, content })
+      .select("id")
+      .single();
+    if (error || !message) return { error: "Your message couldn't be sent. Please try again." };
+    if (attachments.length > 0) {
+      const { error: attachError } = await supabase.from("message_attachments").insert(
+        attachments.map((a) => ({
+          message_id: message.id,
+          path: a.path,
+          kind: a.kind,
+          file_name: a.name,
+          size_bytes: a.size,
+        })),
+      );
+      if (attachError) {
+        // Users can't delete messages, so say plainly what did go through.
+        revalidateInboxes();
+        return { error: "Your message was sent, but the attachments couldn't be. Please send them again." };
+      }
+    }
   }
 
   revalidateInboxes();

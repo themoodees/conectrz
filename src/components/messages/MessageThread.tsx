@@ -49,6 +49,33 @@ export function MessageThread({ conversationId, viewer, messages, hasUnread }: M
                     : "self-start rounded-bl-md bg-surface text-ink"
                 }`}
               >
+                {message.attachments.length > 0 && (
+                  <div className={`grid gap-1.5 ${message.attachments.length > 1 ? "grid-cols-2" : ""} ${message.content ? "mb-2" : ""}`}>
+                    {message.attachments.map((file) =>
+                      !file.url ? (
+                        <p key={file.id} className="text-xs opacity-80">{file.name} (unavailable)</p>
+                      ) : file.kind === "video" ? (
+                        <video
+                          key={file.id}
+                          src={file.url}
+                          controls
+                          preload="metadata"
+                          className="max-h-64 w-full rounded-lg bg-black"
+                        />
+                      ) : (
+                        <a key={file.id} href={file.url} target="_blank" rel="noopener noreferrer">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={file.url}
+                            alt={file.name}
+                            loading="lazy"
+                            className="max-h-64 w-full rounded-lg object-cover"
+                          />
+                        </a>
+                      ),
+                    )}
+                  </div>
+                )}
                 {message.content}
               </div>
               <p

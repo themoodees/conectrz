@@ -8,7 +8,7 @@ import type { Database } from "@/lib/supabase/database.types";
  * when reading. Values that are already full URLs (mock data) pass through.
  */
 
-export type MediaBucket = "creator-photos" | "portfolio" | "project-references";
+export type MediaBucket = "creator-photos" | "portfolio" | "project-references" | "message-attachments";
 
 const SIGNED_URL_SECONDS = 60 * 60;
 const isFullUrl = (value: string) => /^https?:\/\//.test(value);

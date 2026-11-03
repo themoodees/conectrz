@@ -10,9 +10,18 @@ export interface Counterpart {
   profileHref: string | null;
 }
 
+export interface MessageAttachment {
+  id: string;
+  kind: "image" | "video";
+  name: string;
+  /** Short-lived signed link; null when not loaded (e.g. inbox previews). */
+  url: string | null;
+}
+
 export interface Message {
   id: string;
   content: string;
+  attachments: MessageAttachment[];
   createdAt: string;
   /** Sent by the signed-in user. */
   isMine: boolean;

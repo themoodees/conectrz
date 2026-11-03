@@ -21,7 +21,8 @@ import { signMedia } from "./storage";
  * companies see creators as the counterpart, creators see companies.
  */
 
-const MESSAGE_COLUMNS = "id, content, sender_id, created_at, read_at";
+const MESSAGE_COLUMNS =
+  "id, content, sender_id, created_at, read_at, message_attachments ( id, path, kind, file_name )";
 const CONVERSATION_SELECT = `
   id, creator_id, archived_by_company, archived_by_creator,
   company_profiles ( id, name ),
@@ -40,6 +41,7 @@ interface ConversationRow {
     sender_id: string;
     created_at: string;
     read_at: string | null;
+    message_attachments: { id: string; path: string; kind: string; file_name: string }[];
   }[];
 }
 
@@ -132,6 +134,7 @@ const mockMessages = (conversation: MockConversation, viewer: Viewer): Message[]
   conversation.messages.map((m) => ({
     id: m.id,
     content: m.content,
+    attachments: [],
     createdAt: m.createdAt,
     isMine: viewer === "company" ? m.fromCompany : !m.fromCompany,
     readAt: m.readAt,
@@ -201,6 +204,12 @@ function toMessage(row: ConversationRow["messages"][number], userId: string): Me
   return {
     id: row.id,
     content: row.content,
+    attachments: (row.message_attachments ?? []).map((a) => ({
+      id: a.id,
+      kind: a.kind === "video" ? "video" : "image",
+      name: a.file_name,
+      url: null,
+    })),
     createdAt: row.created_at,
     isMine: row.sender_id === userId,
     readAt: row.read_at,
@@ -243,10 +252,20 @@ export async function getConversation(
   const counterpart = toCounterpart(data, viewer, creators);
   if (!counterpart) return null;
 
+  const messages = data.messages.map((m) => toMessage(m, user.id));
+  const paths = data.messages.flatMap((m) => (m.message_attachments ?? []).map((a) => a.path));
+  const urls = await signMedia(supabase, "message-attachments", paths);
+  const urlByPath = new Map(paths.map((path, i) => [path, urls[i]]));
+  data.messages.forEach((m, i) => {
+    (m.message_attachments ?? []).forEach((a, j) => {
+      messages[i].attachments[j].url = urlByPath.get(a.path) ?? null;
+    });
+  });
+
   return {
     id: data.id,
     counterpart,
-    messages: data.messages.map((m) => toMessage(m, user.id)),
+    messages,
     isArchived: data[archivedColumn(viewer)],
   };
 }
