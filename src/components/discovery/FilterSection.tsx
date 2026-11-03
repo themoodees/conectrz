@@ -2,11 +2,15 @@ import type { DiscoveryFilterOptions, DiscoveryFilters, FilterKey } from "@/type
 import {
   FILTER_LABELS,
   FOLLOWER_RANGES,
-  PRICE_RANGES,
+  AGE_SLIDER,
+  GENDER_LABELS,
+  GENDER_OPTIONS,
+  PRICE_SLIDER,
   getFilterOptions,
   isMultiSelectFilter,
 } from "@/lib/discovery/filterConfig";
 import { OptionButton } from "./OptionButton";
+import { RangeSlider } from "./RangeSlider";
 import type { FilterActions } from "./useDiscoveryFilters";
 
 interface FilterSectionProps {
@@ -20,6 +24,8 @@ interface FilterSectionProps {
 
 const HINTS: Partial<Record<FilterKey, string>> = {
   price: "Based on the creator's lowest listed rate.",
+  age: "Creators who have not shared their age are hidden while this is on.",
+  gender: "Creators who have not shared their gender are hidden while this is on.",
   followers: "Largest audience on any platform. Creators without follower data are hidden.",
 };
 
@@ -47,12 +53,36 @@ export function FilterSection({
     }
 
     if (filterKey === "price") {
-      return PRICE_RANGES.map((range) => (
+      return (
+        <RangeSlider
+          label="Price"
+          {...PRICE_SLIDER}
+          value={filters.price}
+          onChange={actions.setPrice}
+          format={(n) => `$${n.toLocaleString("en-US")}`}
+        />
+      );
+    }
+
+    if (filterKey === "age") {
+      return (
+        <RangeSlider
+          label="Age"
+          {...AGE_SLIDER}
+          value={filters.age}
+          onChange={actions.setAge}
+          format={String}
+        />
+      );
+    }
+
+    if (filterKey === "gender") {
+      return GENDER_OPTIONS.map((gender) => (
         <OptionButton
-          key={range.id}
-          label={range.label}
-          isSelected={filters.price === range.id}
-          onClick={() => actions.setPrice(filters.price === range.id ? null : range.id)}
+          key={gender}
+          label={GENDER_LABELS[gender]}
+          isSelected={filters.genders.includes(gender)}
+          onClick={() => actions.toggleGender(gender)}
         />
       ));
     }

@@ -22,6 +22,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Tokyo",
     city: "Shibuya",
     isAvailable: true,
+    gender: "woman",
+    age: 29,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Beauty", "Skincare"],
     services: [
@@ -43,6 +45,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Tokyo",
     city: "Meguro",
     isAvailable: true,
+    gender: "woman",
+    age: 34,
     languages: [
       { name: "English", proficiency: "native" },
       { name: "Japanese", proficiency: "conversational" },
@@ -67,6 +71,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Osaka",
     city: "Osaka",
     isAvailable: true,
+    gender: "woman",
+    age: 26,
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "conversational" },
@@ -89,6 +95,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Tokyo",
     city: "Shimokitazawa",
     isAvailable: true,
+    gender: "man",
+    age: 31,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Lifestyle"],
     services: [{ name: "TikTok video", rateType: "starting_from", rateAmountUsd: 600 }],
@@ -107,6 +115,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Kyoto",
     city: "Kyoto",
     isAvailable: true,
+    gender: "woman",
+    age: 38,
     languages: [
       { name: "Spanish", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -130,6 +140,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Kanagawa",
     city: "Yokohama",
     isAvailable: false,
+    gender: "man",
+    age: 27,
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -156,6 +168,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Fukuoka",
     city: "Fukuoka",
     isAvailable: true,
+    gender: "woman",
+    age: 23,
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "Korean", proficiency: "conversational" },
@@ -180,6 +194,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Tokyo",
     city: "Setagaya",
     isAvailable: true,
+    gender: "man",
+    age: 30,
     languages: [
       { name: "English", proficiency: "native" },
       { name: "Mandarin Chinese", proficiency: "native" },
@@ -201,6 +217,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Hokkaido",
     city: "Sapporo",
     isAvailable: true,
+    gender: "woman",
+    age: 41,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Food & Drink", "Travel"],
     services: [
@@ -218,6 +236,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Tokyo",
     city: "Minato",
     isAvailable: false,
+    gender: "woman",
+    age: 33,
     languages: [
       { name: "French", proficiency: "native" },
       { name: "English", proficiency: "fluent" },
@@ -239,6 +259,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Okinawa",
     city: "Naha",
     isAvailable: true,
+    gender: "man",
+    age: 36,
     languages: [
       { name: "Japanese", proficiency: "native" },
       { name: "English", proficiency: "conversational" },
@@ -262,6 +284,8 @@ export const mockCreators: Creator[] = [
     prefecture: "Aichi",
     city: "Nagoya",
     isAvailable: true,
+    gender: "woman",
+    age: 24,
     languages: [{ name: "Japanese", proficiency: "native" }],
     niches: ["Parenting", "Home & Interior"],
     services: [

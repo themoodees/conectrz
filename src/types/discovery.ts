@@ -1,4 +1,4 @@
-import type { SocialPlatform } from "./creator";
+import type { Gender, SocialPlatform } from "./creator";
 
 /** Every filter available on Creator Discovery. */
 export type FilterKey =
@@ -8,13 +8,20 @@ export type FilterKey =
   | "platforms"
   | "services"
   | "price"
+  | "age"
+  | "gender"
   | "followers"
   | "availability";
 
 /** Filters where several values can be selected at once. */
 export type MultiSelectFilterKey = "niches" | "locations" | "languages" | "platforms" | "services";
 
-export type PriceRangeId = "under-200" | "200-500" | "500-1000" | "1000-plus";
+/** A numeric range chosen with a slider. `max: null` means "and above". */
+export interface NumberRange {
+  min: number;
+  max: number | null;
+}
+
 export type FollowerRangeId = "under-10k" | "10k-50k" | "50k-100k" | "100k-plus";
 
 export interface DiscoveryFilters {
@@ -24,7 +31,9 @@ export interface DiscoveryFilters {
   languages: string[];
   platforms: SocialPlatform[];
   services: string[];
-  price: PriceRangeId | null;
+  price: NumberRange | null;
+  age: NumberRange | null;
+  genders: Gender[];
   followers: FollowerRangeId | null;
   availableOnly: boolean;
 }

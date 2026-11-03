@@ -62,9 +62,9 @@ export type Database = {
         ]
       }
       creator_profiles: {
-        Row: { bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
-        Insert: { bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
-        Update: { bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Row: { birth_date: string | null; gender: string | null; bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
+        Insert: { birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Update: { birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
         Relationships: [
           { foreignKeyName: "creator_profiles_id_fkey"; columns: ["id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
@@ -169,6 +169,15 @@ export type Database = {
           { foreignKeyName: "reports_target_creator_id_fkey"; columns: ["target_creator_id"]; isOneToOne: false; referencedRelation: "creator_profiles"; referencedColumns: ["id"] },
         ]
       }
+      creator_reviews: {
+        Row: { comment: string | null; company_id: string; created_at: string; creator_id: string; id: string; is_hidden: boolean; rating: number; updated_at: string }
+        Insert: { comment?: string | null; company_id: string; created_at?: string; creator_id: string; id?: string; is_hidden?: boolean; rating: number; updated_at?: string }
+        Update: { comment?: string | null; company_id?: string; created_at?: string; creator_id?: string; id?: string; is_hidden?: boolean; rating?: number; updated_at?: string }
+        Relationships: [
+          { foreignKeyName: "creator_reviews_creator_id_fkey"; columns: ["creator_id"]; isOneToOne: false; referencedRelation: "creator_profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "creator_reviews_company_id_fkey"; columns: ["company_id"]; isOneToOne: false; referencedRelation: "company_profiles"; referencedColumns: ["id"] },
+        ]
+      }
       saved_creators: {
         Row: { company_id: string; created_at: string; creator_id: string }
         Insert: { company_id: string; created_at?: string; creator_id: string }
@@ -222,7 +231,11 @@ export type Database = {
         Relationships: []
       }
       creator_directory: {
-        Row: { bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Row: { age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Relationships: []
+      }
+      creator_reviews_public: {
+        Row: { comment: string | null; company_name: string | null; created_at: string | null; creator_id: string | null; id: string | null; is_mine: boolean | null; rating: number | null; updated_at: string | null }
         Relationships: []
       }
       creator_social_directory: {

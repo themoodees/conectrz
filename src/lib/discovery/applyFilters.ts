@@ -1,6 +1,12 @@
 import type { Creator } from "@/types/creator";
 import type { DiscoveryFilters, FilterKey, SortOption } from "@/types/discovery";
-import { FILTER_LABELS, FOLLOWER_RANGES, PLATFORM_LABELS, PRICE_RANGES } from "./filterConfig";
+import type { NumberRange } from "@/types/discovery";
+import {
+  FILTER_LABELS,
+  FOLLOWER_RANGES,
+  GENDER_LABELS,
+  PLATFORM_LABELS,
+} from "./filterConfig";
 import { getLargestAudience, getLowestRate } from "@/lib/format";
 
 /*
@@ -32,6 +38,17 @@ function inRange(value: number, range: { min: number; max: number | null }) {
   return value >= range.min && (range.max === null || value < range.max);
 }
 
+/** Inclusive on both ends; a `null` max means "no upper limit". */
+const withinSlider = (value: number, range: NumberRange) =>
+  value >= range.min && (range.max === null || value <= range.max);
+
+const dollars = (n: number) => `$${n.toLocaleString("en-US")}`;
+
+const describeRange = (range: NumberRange, format: (n: number) => string) =>
+  range.max === null
+    ? `${format(range.min)}+`
+    : `${format(range.min)} – ${format(range.max)}`;
+
 export function matchesFilters(creator: Creator, filters: DiscoveryFilters): boolean {
   if (!includesAny(creator.niches, filters.niches)) return false;
   if (!includesAny(creator.prefecture ? [creator.prefecture] : [], filters.locations)) return false;
@@ -59,9 +76,17 @@ export function matchesFilters(creator: Creator, filters: DiscoveryFilters): boo
   if (filters.availableOnly && !creator.isAvailable) return false;
 
   if (filters.price) {
-    const range = PRICE_RANGES.find((r) => r.id === filters.price)!;
     const lowest = getLowestRate(creator.services);
-    if (lowest === null || !inRange(lowest, range)) return false;
+    if (lowest === null || !withinSlider(lowest, filters.price)) return false;
+  }
+
+  if (filters.age) {
+    // Creators who have not shared an age are hidden while the age filter is on.
+    if (creator.age == null || !withinSlider(creator.age, filters.age)) return false;
+  }
+
+  if (filters.genders.length > 0) {
+    if (!creator.gender || !filters.genders.includes(creator.gender)) return false;
   }
 
   if (filters.followers) {
@@ -119,9 +144,16 @@ export function getActiveFilterChips(filters: DiscoveryFilters): ActiveFilterChi
   multi("languages");
 
   if (filters.price) {
-    const label = PRICE_RANGES.find((r) => r.id === filters.price)?.label;
+    const label = describeRange(filters.price, dollars);
     chips.push({ id: "price", key: "price", label: `${FILTER_LABELS.price}: ${label}` });
   }
+  if (filters.age) {
+    const label = describeRange(filters.age, String);
+    chips.push({ id: "age", key: "age", label: `${FILTER_LABELS.age}: ${label}` });
+  }
+  filters.genders.forEach((value) =>
+    chips.push({ id: `gender:${value}`, key: "gender", value, label: GENDER_LABELS[value] }),
+  );
   if (filters.followers) {
     const label = FOLLOWER_RANGES.find((r) => r.id === filters.followers)?.label;
     chips.push({

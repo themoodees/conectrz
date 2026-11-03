@@ -27,6 +27,16 @@ export interface MockReport {
   resolution: "dismissed" | "paused" | "banned" | null;
 }
 
+export interface MockReview {
+  id: string;
+  creatorId: string;
+  companyId: string;
+  companyName: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
 export interface MockCompany {
   id: string;
   name: string;
@@ -54,6 +64,9 @@ interface MockStore {
     createdAt: string;
   }[];
   savedCreatorIds: string[];
+  /** Private birth dates by creator id (companies only ever see the age). */
+  creatorBirthDates: Record<string, string>;
+  reviews: MockReview[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
   subscription: {
@@ -103,6 +116,27 @@ export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
     },
   ],
   creatorStatuses: {},
+  creatorBirthDates: {},
+  reviews: [
+    {
+      id: "rv-001",
+      creatorId: "cr-001",
+      companyId: "co-001",
+      companyName: "Hanami Cosmetics",
+      rating: 5,
+      comment: "Very professional, delivered on time and the content performed well for us.",
+      createdAt: "2026-10-12T00:00:00Z",
+    },
+    {
+      id: "rv-002",
+      creatorId: "cr-001",
+      companyId: "co-003",
+      companyName: "Tabi Travel Co.",
+      rating: 4,
+      comment: "Great communication. One small revision round, then perfect.",
+      createdAt: "2026-10-20T00:00:00Z",
+    },
+  ],
   categories: {
     niches: toCategories(mockFilterOptions.niches),
     languages: toCategories(mockFilterOptions.languages),

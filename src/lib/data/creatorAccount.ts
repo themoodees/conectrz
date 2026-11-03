@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import type { AccountStatus } from "@/types/account";
-import type { SocialPlatform } from "@/types/creator";
+import type { Gender, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData, CreatorEditorOptions } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
 import { centsToUsd } from "@/lib/format";
@@ -10,6 +10,7 @@ import { MOCK_CREATOR_ID } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
 import { mockPortfolio } from "@/mocks/portfolio";
+import { mockStore } from "@/mocks/store";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
 
@@ -85,6 +86,8 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
       firstName: creator.displayName.split(" ")[0] ?? "",
       lastName: creator.displayName.split(" ").slice(1).join(" "),
       bio: creator.bio ?? "",
+      birthDate: mockStore.creatorBirthDates[creator.id] ?? "",
+      gender: creator.gender ?? "",
       prefecture: creator.prefecture ?? "",
       city: creator.city ?? "",
       isAvailable: creator.isAvailable,
@@ -113,7 +116,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
   const { data, error } = await supabase
     .from("creator_profiles")
     .select(
-      `id, status, first_name, last_name, bio, prefecture, city, is_available, photo_url,
+      `id, status, first_name, last_name, bio, birth_date, gender, prefecture, city, is_available, photo_url,
        creator_niches ( niche_id ),
        creator_languages ( language_id, proficiency ),
        creator_services ( service_id, rate_type, rate_amount_usd_cents ),
@@ -142,6 +145,8 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
     firstName: data.first_name,
     lastName: data.last_name,
     bio: data.bio ?? "",
+    birthDate: data.birth_date ?? "",
+    gender: (data.gender as Gender | null) ?? "",
     prefecture: data.prefecture ?? "",
     city: data.city ?? "",
     isAvailable: data.is_available,

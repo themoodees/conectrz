@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import type {
   Creator,
+  Gender,
   CreatorProfile,
   SocialAccount,
   SocialPlatform,
@@ -13,8 +14,10 @@ import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
 import { mockPortfolio } from "@/mocks/portfolio";
+import { mockStore } from "@/mocks/store";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
+import { getCreatorReviews } from "./reviews";
 
 /*
  * Data access for creators. Pages call these functions — never the mocks or
@@ -39,6 +42,11 @@ interface BaseRow {
   prefecture: string | null;
   city: string | null;
   is_available: boolean | null;
+  gender?: string | null;
+  age?: number | null;
+  birth_date?: string | null;
+  rating_avg?: number | null;
+  review_count?: number | null;
 }
 
 interface SocialRow {
@@ -56,20 +64,32 @@ const isKnownPlatform = (platform: string): platform is SocialPlatform =>
 export const fullName = (first: string | null, last: string | null) =>
   [first, last].filter(Boolean).join(" ") || "Creator";
 
+function ageFromBirthDate(birthDate: string | null | undefined): number | null {
+  if (!birthDate) return null;
+  const born = new Date(birthDate);
+  const now = new Date();
+  let age = now.getFullYear() - born.getFullYear();
+  if (now < new Date(now.getFullYear(), born.getMonth(), born.getDate())) age -= 1;
+  return age;
+}
+
 /** Creators, optionally limited to specific ids. `own` reads the base tables (the creator's own view). */
 async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Creator[]> {
   const { supabase } = await getSupabaseSession();
   const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, is_available";
+  // Companies get a calculated age and rating; the creator's own view reads the birth date.
+  const ownColumns = `${columns}, gender, birth_date`;
+  const directoryColumns = `${columns}, gender, age, rating_avg, review_count`;
 
   let rows: BaseRow[];
   if (own) {
-    let query = supabase.from("creator_profiles").select(columns);
+    let query = supabase.from("creator_profiles").select(ownColumns);
     if (ids) query = query.in("id", ids);
     const { data, error } = await query.overrideTypes<BaseRow[], { merge: false }>();
     if (error) throw error;
     rows = data;
   } else {
-    let query = supabase.from("creator_directory").select(columns);
+    let query = supabase.from("creator_directory").select(directoryColumns);
     if (ids) query = query.in("id", ids);
     const { data, error } = await query.overrideTypes<BaseRow[], { merge: false }>();
     if (error) throw error;
@@ -124,6 +144,10 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     prefecture: row.prefecture,
     city: row.city,
     isAvailable: row.is_available ?? false,
+    gender: (row.gender as Gender | null) ?? null,
+    age: row.age ?? ageFromBirthDate(row.birth_date),
+    ratingAverage: row.rating_avg ?? null,
+    reviewCount: row.review_count ?? 0,
     languages: byCreator(languages.data!, row.id).flatMap((l) => {
       const language = l.languages as { name: string } | null;
       return language ? [{ name: language.name, proficiency: l.proficiency }] : [];
@@ -162,7 +186,18 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
 }
 
 export async function getDiscoverableCreators(): Promise<Creator[]> {
-  if (isMockMode) return mockCreators;
+  if (isMockMode) {
+    return mockCreators.map((creator) => {
+      const reviews = mockStore.reviews.filter((r) => r.creatorId === creator.id);
+      return {
+        ...creator,
+        reviewCount: reviews.length,
+        ratingAverage: reviews.length
+          ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10) / 10
+          : null,
+      };
+    });
+  }
   return fetchCreators();
 }
 
@@ -183,7 +218,9 @@ export const getCreatorProfile = cache(
   async (id: string, activeOnly: boolean = true): Promise<CreatorProfile | null> => {
     if (isMockMode) {
       const creator = mockCreators.find((c) => c.id === id);
-      return creator ? { ...creator, portfolio: mockPortfolio[id] ?? [] } : null;
+      return creator
+        ? { ...creator, portfolio: mockPortfolio[id] ?? [], reviews: await getCreatorReviews(id) }
+        : null;
     }
 
     const [creator] = await fetchCreators([id], { own: !activeOnly });
@@ -202,8 +239,10 @@ export const getCreatorProfile = cache(
       "portfolio",
       data.map((item) => item.media_url),
     );
+    const reviews = await getCreatorReviews(id);
     return {
       ...creator,
+      reviews,
       portfolio: data.flatMap((item, index) =>
         urls[index]
           ? [

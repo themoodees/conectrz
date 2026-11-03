@@ -3,6 +3,7 @@ import type { Creator } from "@/types/creator";
 import { formatFollowers, formatUsd, formatLocation, getLowestRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { BookmarkIcon, LanguageIcon, MapPinIcon, PlatformIcon } from "@/components/ui/icons";
+import { RatingSummary } from "@/components/creator/RatingSummary";
 import { CreatorImage } from "./CreatorImage";
 
 /* How much to show before collapsing into "+N". */
@@ -67,6 +68,12 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
             <MapPinIcon className="size-3.5 shrink-0" />
             <span className="truncate">{formatLocation(creator)}</span>
           </p>
+          {creator.age != null || creator.reviewCount ? (
+            <p className="mt-1 flex items-center gap-2 text-sm text-muted">
+              {creator.age != null && <span>{creator.age} years old</span>}
+              <RatingSummary average={creator.ratingAverage} count={creator.reviewCount} />
+            </p>
+          ) : null}
         </div>
 
         {creator.niches.length > 0 && (

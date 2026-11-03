@@ -1,5 +1,5 @@
 import type { AccountStatus } from "./account";
-import type { LanguageProficiency, RateType, SocialPlatform } from "./creator";
+import type { Gender, LanguageProficiency, RateType, SocialPlatform } from "./creator";
 
 /** A lookup-table option (niche, language or service). */
 export interface CategoryOption {
@@ -15,6 +15,9 @@ export interface CreatorEditorData {
   firstName: string;
   lastName: string;
   bio: string;
+  /** yyyy-mm-dd, or "" when not set. Private: companies only see the age. */
+  birthDate: string;
+  gender: Gender | "";
   prefecture: string;
   city: string;
   isAvailable: boolean;
