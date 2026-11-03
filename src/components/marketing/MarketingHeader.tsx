@@ -18,6 +18,9 @@ export function MarketingHeader({ isSignedIn }: { isSignedIn: boolean }) {
           <Link href="/pricing" className="px-3 py-2 text-sm font-medium text-muted hover:text-ink">
             Pricing
           </Link>
+          <Link href="/faq" className="px-3 py-2 text-sm font-medium text-muted hover:text-ink">
+            FAQ
+          </Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {isSignedIn ? (
