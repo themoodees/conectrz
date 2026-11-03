@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         next={typeof next === "string" ? next : undefined}
         initialError={
           error === "confirmation"
-            ? "That confirmation link is invalid or has expired. Try signing in, or sign up again."
+            ? "This confirmation link was already used or has expired. If you already clicked it, your email is confirmed: just sign in below."
             : error === "reset"
               ? "That reset link is invalid or has expired. Request a new one below."
               : undefined
