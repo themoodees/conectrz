@@ -8,6 +8,7 @@ import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
+import { ReferencesField } from "./ReferencesField";
 import { PaymentMethodsPicker } from "@/components/payments/PaymentMethodsPicker";
 import { PaymentNotice } from "@/components/payments/PaymentInfo";
 
@@ -87,6 +88,7 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
       <ChipPicker legend="Services wanted" name="serviceIds" options={options.services} />
       <ChipPicker legend="Niches" name="nicheIds" options={options.niches} />
       <ChipPicker legend="Languages" name="languageIds" options={options.languages} />
+      <ReferencesField />
       <div className="space-y-2">
         <PaymentMethodsPicker
           legend="How will you pay the creator?"

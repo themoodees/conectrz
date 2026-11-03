@@ -7,6 +7,7 @@ import type {
   MyApplication,
   Project,
   ProjectFormOptions,
+  ProjectReference,
 } from "@/types/projects";
 import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
@@ -92,6 +93,36 @@ const fromMock = (project: MockProject): Project => ({
 const newestFirst = <T extends { createdAt: string }>(a: T, b: T) =>
   b.createdAt.localeCompare(a.createdAt);
 
+/** Links and images attached to one project. Image paths become short-lived signed URLs. */
+async function loadReferences(projectId: string): Promise<ProjectReference[]> {
+  if (isMockMode) {
+    const project = mockStore.projects.find((p) => p.id === projectId);
+    return (project?.referenceLinks ?? []).map((url, index) => ({
+      id: `${projectId}-ref-${index}`,
+      kind: "link" as const,
+      url,
+    }));
+  }
+  const { supabase } = await getSupabaseSession();
+  const { data, error } = await supabase
+    .from("project_references")
+    .select("id, kind, url")
+    .eq("project_id", projectId)
+    .order("created_at");
+  if (error) throw error;
+  const images = data.filter((r) => r.kind === "image");
+  const signed = await signMedia(
+    supabase,
+    "project-references",
+    images.map((r) => r.url),
+  );
+  return data.flatMap((r): ProjectReference[] => {
+    if (r.kind === "link") return [{ id: r.id, kind: "link", url: r.url }];
+    const url = signed[images.findIndex((i) => i.id === r.id)];
+    return url ? [{ id: r.id, kind: "image", url }] : [];
+  });
+}
+
 /* ── Company side ─────────────────────────────────────────────────────────── */
 
 const MOCK_COMPANY_ID = mockCompanyAccount.id;
@@ -170,8 +201,9 @@ export async function getCompanyProject(
   id: string,
 ): Promise<{ project: CompanyProject; applicants: Applicant[] } | null> {
   const projects = await getCompanyProjects();
-  const project = projects.find((p) => p.id === id);
-  if (!project) return null;
+  const found = projects.find((p) => p.id === id);
+  if (!found) return null;
+  const project = { ...found, references: await loadReferences(id) };
 
   if (isMockMode) {
     const applicants = mockStore.applications
@@ -309,5 +341,6 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
 
 export async function getCreatorProject(id: string): Promise<CreatorProject | null> {
   const projects = await getCreatorProjects();
-  return projects.find((p) => p.id === id) ?? null;
+  const project = projects.find((p) => p.id === id);
+  return project ? { ...project, references: await loadReferences(id) } : null;
 }

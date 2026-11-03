@@ -8,6 +8,13 @@ import type { PaymentMethod } from "@/lib/payments";
 export type ProjectStatus = "open" | "closed";
 export type ApplicationStatus = "submitted" | "declined" | "withdrawn";
 
+/** A link or image the company attached to a project. `url` is the link, or a signed image URL. */
+export interface ProjectReference {
+  id: string;
+  kind: "link" | "image";
+  url: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -24,6 +31,8 @@ export interface Project {
   languages: string[];
   /** How the company says it will pay. */
   paymentMethods: PaymentMethod[];
+  /** Only loaded on the project page, not in lists. */
+  references?: ProjectReference[];
 }
 
 /** A project in the company's own list. */

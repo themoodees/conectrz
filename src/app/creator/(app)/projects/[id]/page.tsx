@@ -5,6 +5,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplyPanel } from "@/components/projects/ApplyPanel";
 import { ProjectStatusBadge, TagList } from "@/components/projects/ProjectBadges";
 import { ArrowLeftIcon } from "@/components/ui/icons";
+import { ProjectReferences } from "@/components/projects/ProjectReferences";
 import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { getOwnCreatorEditorData } from "@/lib/data/creatorAccount";
 import { getCreatorProject } from "@/lib/data/projects";
@@ -63,6 +64,7 @@ export default async function CreatorProjectPage({
             <TagList label="Niches" items={project.niches} />
             <TagList label="Languages" items={project.languages} />
           </dl>
+          <ProjectReferences references={project.references} />
           <div className="mt-6">
             <h2 className="mb-2 text-sm font-semibold text-ink">How the company will pay</h2>
             <PaymentMethodTags
