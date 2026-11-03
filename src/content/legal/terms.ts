@@ -8,7 +8,7 @@ export const termsOfService: LegalDocument = {
   title: "Terms of Service",
   lastUpdated: "2026-11-03",
   intro:
-    "These Terms govern your use of Conectrz, operated by [Company legal name] (“we”, “us”). By creating an account or using the Service, you agree to these Terms. If you do not agree, please do not use the Service.",
+    "These Terms govern your use of Conectrz, operated by Conectrz (“we”, “us”). By creating an account or using the Service, you agree to these Terms. If you do not agree, please do not use the Service.",
   sections: [
     {
       heading: "1. Definitions",
@@ -21,8 +21,8 @@ export const termsOfService: LegalDocument = {
       heading: "2. Accounts",
       body: [
         "You must provide accurate and current information and keep it up to date. Each person or company may hold one account. Creators must be individuals who live in Japan. Companies may be located anywhere in the world.",
-        "You are responsible for keeping your password secure and for everything that happens under your account. Tell us promptly at [Support email] if you suspect unauthorised use.",
-        "You must be at least [18] years old, or the age of majority where you live, to create an account.",
+        "You are responsible for keeping your password secure and for everything that happens under your account. Tell us promptly at hello@conectrz.com if you suspect unauthorised use.",
+        "You must be at least 18 years old, or the age of majority where you live, to create an account.",
       ],
     },
     {
@@ -37,7 +37,7 @@ export const termsOfService: LegalDocument = {
       body: [
         "Creators can use Conectrz for free.",
         "Companies can browse creators on the Free plan. Starting new conversations with Creators requires a paid Plan. Each Plan includes a number of new conversations per billing period: the Pro plan (US$39 per month) includes 10 new conversations, and the Business plan (US$99 per month) includes unlimited new conversations, up to 10 new conversations per day. Replying in a conversation you or the other User already started does not use a new conversation. Current Plans and prices are always shown on our Plans page.",
-        "Paid Plans are billed monthly in advance by our payment provider, Stripe, and renew automatically until cancelled. You can change or cancel your Plan at any time from Account settings (Manage billing). [Cancellation takes effect at the end of the current billing period / Refund policy: describe.] Prices may be changed with advance notice, and any change applies from the next billing period. [Taxes: state whether prices include Japanese consumption tax or other applicable taxes.]",
+        "Paid Plans are billed monthly in advance by our payment provider, Stripe, and renew automatically until cancelled. You can change or cancel your Plan at any time from Account settings (Manage billing). All prices include Japanese consumption tax. Payments are non-refundable: we do not give refunds for amounts already charged, including for a partly used billing period. [Confirm: when a cancellation takes effect, e.g. at the end of the current billing period, and what the Company keeps until then.] If we change our prices, we will tell you in advance, and the change applies from your next billing period.",
       ],
     },
     {
@@ -66,7 +66,7 @@ export const termsOfService: LegalDocument = {
       heading: "8. Reports, suspension and termination",
       body: [
         "Users can report profiles, projects, messages or reviews. We review reports and may warn a User, hide Content, pause an account or close it, with or without prior notice where we reasonably think these Terms have been broken or other Users may be harmed.",
-        "You can close your account at any time. Closing an account removes your profile and, subject to what we must keep by law, deletes your personal data as described in our Privacy Policy. Closing a Company account does not by itself cancel a paid Plan; please cancel your Plan first. [Confirm: whether deleting an account also cancels the subscription.]",
+        "You can close your account at any time. Creators can delete their account from Settings. Companies can ask us to close their account by writing to hello@conectrz.com. Closing an account removes your profile and, subject to what we must keep by law, deletes your personal data as described in our Privacy Policy. Closing a Company account also cancels its paid Plan. As stated in section 4, no refund is given for the current billing period.",
       ],
     },
     {
@@ -79,19 +79,19 @@ export const termsOfService: LegalDocument = {
     {
       heading: "10. Changes to the Service and to these Terms",
       body: [
-        "We may update the Service and these Terms from time to time. If we make a material change, we will notify you by email or in the Service at least [14] days before it takes effect. Continuing to use the Service after the effective date means you accept the updated Terms. The date at the top of this page shows when the Terms were last updated.",
+        "We may update the Service and these Terms from time to time. If we make a material change, we will notify you by email or in the Service at least 14 days before it takes effect. Continuing to use the Service after the effective date means you accept the updated Terms. The date at the top of this page shows when the Terms were last updated.",
       ],
     },
     {
       heading: "11. Governing law and jurisdiction",
       body: [
-        "These Terms are governed by the laws of Japan. Any dispute relating to them or to the Service will be subject to the exclusive jurisdiction of the [Tokyo District Court] as the court of first instance, unless mandatory law gives you the right to bring a claim elsewhere.",
+        "These Terms are governed by the laws of Japan. Any dispute relating to them or to the Service will be subject to the exclusive jurisdiction of the court of first instance that covers the location of our head office in Japan, unless mandatory law gives you the right to bring a claim elsewhere.",
       ],
     },
     {
       heading: "12. Contact",
       body: [
-        "[Company legal name], [Address]. Email: [Support email]. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
+        "Conectrz, [Address]. Email: hello@conectrz.com. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
       ],
     },
   ],
