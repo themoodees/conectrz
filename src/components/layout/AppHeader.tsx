@@ -2,6 +2,7 @@ import { Logo } from "@/components/ui/Logo";
 import { AccountMenu } from "./AccountMenu";
 import { MainNav } from "./MainNav";
 import { MobileTabBar } from "./MobileTabBar";
+import { NotificationBell } from "./NotificationBell";
 import { NAV_BY_AREA, type AppArea } from "./navItems";
 
 interface AppHeaderProps {
@@ -28,7 +29,8 @@ export function AppHeader({ area, account, areaLabel }: AppHeaderProps) {
             )}
           </div>
           <MainNav area={area} />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
+            {account && area !== "admin" && <NotificationBell area={area} />}
             {account && <AccountMenu area={area} name={account.name} subtitle={account.subtitle} />}
           </div>
         </div>

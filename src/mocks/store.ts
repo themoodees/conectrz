@@ -81,6 +81,8 @@ interface MockStore {
   projects: MockProject[];
   applications: MockApplication[];
   reports: MockReport[];
+  /** Notification ids the mock user has read (notifications themselves are derived). */
+  readNotificationIds: string[];
 }
 
 // Kept on globalThis so it survives hot reloads in development.
@@ -89,6 +91,7 @@ const globalForMock = globalThis as unknown as { __conectrzMockStore?: MockStore
 const toCategories = (names: string[]) => names.map((name) => ({ id: name, name, isActive: true }));
 
 export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
+  readNotificationIds: [],
   companies: [
     {
       id: "co-001",
