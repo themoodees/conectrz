@@ -89,7 +89,7 @@ export const termsOfService: LegalDocument = {
     {
       heading: "12. Contact",
       body: [
-        "Conectrz, [Address]. Email: hello@conectrz.com. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
+        "If you have any questions about these Terms, contact us at hello@conectrz.com. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
       ],
     },
   ],
