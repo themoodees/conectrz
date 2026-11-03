@@ -113,25 +113,6 @@ export const WHY = {
   ],
 } as const;
 
-export const FAQ = [
-  {
-    q: "Is Conectrz free for creators?",
-    a: "Yes. Creating a profile and applying to projects is free for creators.",
-  },
-  {
-    q: "Do I need a lot of followers?",
-    a: "No. UGC creators are welcome, with or without a big audience.",
-  },
-  {
-    q: "How do payments work?",
-    a: "The brand and the creator agree on a payment method and pay each other directly. Conectrz doesn't process, hold or guarantee payments.",
-  },
-  {
-    q: "What can brands see on the Free plan?",
-    a: "Free plans can browse creators (first names and audience sizes). Paid plans show full names, city and social links, and let you start conversations.",
-  },
-];
-
 export const CLOSING = {
   title: "Ready to meet your next creator?",
   description: "Create a company account and start discovering creators today.",

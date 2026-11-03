@@ -4,7 +4,6 @@ import {
   BRAND_STEPS,
   CLOSING,
   CREATOR_STEPS,
-  FAQ,
   HERO,
   PAIN,
   WHY,
@@ -23,7 +22,6 @@ import { buttonClass } from "@/components/ui/buttonStyles";
 import {
   BriefcaseIcon,
   CheckIcon,
-  ChevronDownIcon,
   MapPinIcon,
   MessageIcon,
   SearchIcon,
@@ -190,21 +188,18 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* FAQ */}
+        {/* FAQ link */}
         <section className="border-t border-border">
-          <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
-            <h2 className="text-3xl font-semibold text-ink md:text-4xl">Questions</h2>
-            <div className="mt-8 divide-y divide-border rounded-card border border-border">
-              {FAQ.map((item) => (
-                <details key={item.q} className="group px-5 py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <ChevronDownIcon className="size-5 shrink-0 text-muted transition-transform group-open:rotate-180" />
-                  </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-graphite">{item.a}</p>
-                </details>
-              ))}
+          <div className="mx-auto flex max-w-page flex-col items-start gap-4 px-4 py-12 md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
+            <div>
+              <h2 className="text-2xl font-semibold text-ink">Have questions?</h2>
+              <p className="mt-1 text-graphite">
+                How payments work, what&apos;s free, how to get started. It&apos;s all in the FAQ.
+              </p>
             </div>
+            <Link href="/faq" className={buttonClass({ variant: "secondary" })}>
+              Read the FAQ
+            </Link>
           </div>
         </section>
 
