@@ -90,7 +90,9 @@ function toCounterpart(
 ): Counterpart | null {
   if (viewer === "company") return creators.get(row.creator_id) ?? null;
   const company = row.company_profiles;
-  return company ? { id: company.id, name: company.name, photoUrl: null, profileHref: null } : null;
+  return company
+    ? { id: company.id, name: company.name, photoUrl: null, profileHref: `/creator/companies/${company.id}` }
+    : null;
 }
 
 const summarize = (
@@ -118,7 +120,7 @@ function mockCounterpart(conversation: MockConversation, viewer: Viewer): Counte
       id: mockCompanyAccount.id,
       name: mockCompanyAccount.companyName,
       photoUrl: null,
-      profileHref: null,
+      profileHref: `/creator/companies/${mockCompanyAccount.id}`,
     };
   }
   const creator = mockCreators.find((c) => c.id === conversation.creatorId);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CreatorProfileView } from "@/components/creator/CreatorProfileView";
 import { ReviewForm } from "@/components/creator/ReviewForm";
+import { deleteReview, saveReview } from "@/lib/actions/reviews";
 import { ProfileActions } from "@/components/creator/ProfileActions";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { getCreatorProfile } from "@/lib/data/creators";
@@ -50,8 +51,9 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
         reviewForm={
           conversationId || creator.reviews.some((r) => r.isMine) ? (
             <ReviewForm
-              creatorId={creator.id}
               existing={creator.reviews.find((r) => r.isMine) ?? null}
+              save={saveReview.bind(null, creator.id)}
+              remove={deleteReview.bind(null, creator.id)}
             />
           ) : undefined
         }

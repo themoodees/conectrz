@@ -17,6 +17,8 @@ export interface ProjectReference {
 
 export interface Project {
   id: string;
+  /** The company that posted it (links to its page). */
+  companyId: string;
   title: string;
   description: string;
   budgetUsd: number;

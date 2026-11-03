@@ -7,7 +7,10 @@ import {
   SettingsSection,
 } from "@/components/settings/SettingsForms";
 import { buttonClass } from "@/components/ui/buttonStyles";
+import { RatingSummary } from "@/components/creator/RatingSummary";
+import { ReviewList } from "@/components/creator/ReviewsSection";
 import { getCurrentCompanyAccount } from "@/lib/data/account";
+import { getMyCompanyReviews } from "@/lib/data/companies";
 import { AutoRefresh } from "@/components/plans/AutoRefresh";
 import { openBillingPortal } from "@/lib/actions/billing";
 import { getBillingStatus } from "@/lib/data/billing";
@@ -17,10 +20,11 @@ import { formatShortDate } from "@/lib/format";
 export const metadata: Metadata = { title: "Account settings" };
 
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
-  const [account, usage, billing, { billing: billingResult }] = await Promise.all([
+  const [account, usage, billing, reviews, { billing: billingResult }] = await Promise.all([
     getCurrentCompanyAccount(),
     getConversationUsage(),
     getBillingStatus(),
+    getMyCompanyReviews(),
     searchParams,
   ]);
   if (!account) return null;
@@ -39,14 +43,20 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           description="Your plan sets how many new conversations you can start."
         >
           {billingResult === "success" && (
-            <p role="status" className="mb-4 rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink">
+            <p
+              role="status"
+              className="mb-4 rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink"
+            >
               Thank you! Your payment went through. Your plan is being activated; this page updates
               by itself in a few seconds.
             </p>
           )}
           {billingResult === "success" && <AutoRefresh times={12} />}
           {billingResult === "error" && (
-            <p role="alert" className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger">
+            <p
+              role="alert"
+              className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger"
+            >
               Couldn&apos;t open billing. Please try again.
             </p>
           )}
@@ -87,6 +97,21 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
 
         <SettingsSection title="Company details">
           <CompanyDetailsForm name={account.companyName} contactEmail={account.contactEmail} />
+        </SettingsSection>
+
+        <SettingsSection
+          title="Reviews from creators"
+          description="What creators you have talked with say about working with you. Creators can read these too."
+        >
+          {reviews.length > 0 && (
+            <p className="mb-4">
+              <RatingSummary
+                average={reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length}
+                count={reviews.length}
+              />
+            </p>
+          )}
+          <ReviewList reviews={reviews.map((r) => ({ ...r, name: r.creatorName }))} />
         </SettingsSection>
 
         <SettingsSection title="Password">

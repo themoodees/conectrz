@@ -77,6 +77,7 @@ export async function getProjectFormOptions(): Promise<ProjectFormOptions> {
 
 const fromMock = (project: MockProject): Project => ({
   id: project.id,
+  companyId: project.companyId,
   title: project.title,
   description: project.description,
   budgetUsd: project.budgetUsd,
@@ -170,6 +171,7 @@ export async function getCompanyProjects(): Promise<CompanyProject[]> {
     .map(
       (p): CompanyProject => ({
         id: p.id,
+        companyId: user.id,
         title: p.title,
         description: p.description,
         budgetUsd: centsToUsd(p.budget_usd_cents),
@@ -313,6 +315,7 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
       return [
         {
           id: row.id,
+          companyId: row.company_id ?? "",
           title: row.title ?? "",
           description: row.description ?? "",
           budgetUsd: centsToUsd(row.budget_usd_cents ?? 0),

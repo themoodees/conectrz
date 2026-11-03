@@ -177,6 +177,15 @@ export type Database = {
           { foreignKeyName: "reports_target_creator_id_fkey"; columns: ["target_creator_id"]; isOneToOne: false; referencedRelation: "creator_profiles"; referencedColumns: ["id"] },
         ]
       }
+      company_reviews: {
+        Row: { comment: string | null; company_id: string; created_at: string; creator_id: string; id: string; is_hidden: boolean; rating: number; updated_at: string }
+        Insert: { comment?: string | null; company_id: string; created_at?: string; creator_id: string; id?: string; is_hidden?: boolean; rating: number; updated_at?: string }
+        Update: { comment?: string | null; company_id?: string; created_at?: string; creator_id?: string; id?: string; is_hidden?: boolean; rating?: number; updated_at?: string }
+        Relationships: [
+          { foreignKeyName: "company_reviews_creator_id_fkey"; columns: ["creator_id"]; isOneToOne: false; referencedRelation: "creator_profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "company_reviews_company_id_fkey"; columns: ["company_id"]; isOneToOne: false; referencedRelation: "company_profiles"; referencedColumns: ["id"] },
+        ]
+      }
       creator_reviews: {
         Row: { comment: string | null; company_id: string; created_at: string; creator_id: string; id: string; is_hidden: boolean; rating: number; updated_at: string }
         Insert: { comment?: string | null; company_id: string; created_at?: string; creator_id: string; id?: string; is_hidden?: boolean; rating: number; updated_at?: string }
@@ -239,7 +248,7 @@ export type Database = {
         Relationships: []
       }
       project_listings: {
-        Row: { payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
+        Row: { company_id: string | null; payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
         Relationships: []
       }
       conversation_creators: {
@@ -248,6 +257,14 @@ export type Database = {
       }
       creator_directory: {
         Row: { payment_methods: string[] | null; age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Relationships: []
+      }
+      company_reviews_public: {
+        Row: { comment: string | null; company_id: string | null; created_at: string | null; creator_name: string | null; id: string | null; is_mine: boolean | null; rating: number | null; updated_at: string | null }
+        Relationships: []
+      }
+      company_public_profiles: {
+        Row: { created_at: string | null; id: string | null; name: string | null; rating_avg: number | null; review_count: number | null }
         Relationships: []
       }
       creator_reviews_public: {

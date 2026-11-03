@@ -31,7 +31,20 @@ export function ProjectCard({
           {project.title}
         </Link>
       </h2>
-      {showCompany && <p className="mt-0.5 text-sm text-muted">{project.companyName}</p>}
+      {showCompany && (
+        <p className="mt-0.5 text-sm text-muted">
+          {project.companyId ? (
+            <Link
+              href={`/creator/companies/${project.companyId}`}
+              className="relative z-10 hover:text-primary hover:underline"
+            >
+              {project.companyName}
+            </Link>
+          ) : (
+            project.companyName
+          )}
+        </p>
+      )}
       <p className="mt-2 line-clamp-2 text-sm text-graphite">{project.description}</p>
       <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         <div className="flex gap-1.5">
