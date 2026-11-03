@@ -10,14 +10,7 @@ export const legalNotice = {
   lastUpdated: "2026-11-03",
   rows: [
     { label: "販売業者", en: "Seller", value: "Conectrz" },
-    { label: "運営統括責任者", en: "Responsible person", value: "[Name]" },
-    { label: "所在地", en: "Address", value: "[Address]" },
-    {
-      label: "電話番号",
-      en: "Phone",
-      value:
-        "[Phone number — or: 請求があった場合には遅滞なく開示します / Disclosed without delay upon request]",
-    },
+    { label: "運営統括責任者", en: "Responsible person", value: "Sayuri Nakamura" },
     { label: "メールアドレス", en: "Email", value: "hello@conectrz.com" },
     {
       label: "販売価格",
