@@ -1,6 +1,12 @@
 import { mockConversations, type MockConversation } from "./conversations";
 import { mockFilterOptions } from "./filterOptions";
 import { mockPlans, type MockPlan } from "./plans";
+import {
+  mockApplications,
+  mockProjects,
+  type MockApplication,
+  type MockProject,
+} from "./projects";
 
 /*
  * In-memory state for MOCK MODE only, so actions (saving, messaging, reporting,
@@ -50,8 +56,17 @@ interface MockStore {
   savedCreatorIds: string[];
   conversations: MockConversation[];
   /** The mock company's current plan. */
-  subscription: { planName: string; quota: number | null; periodStart: string; periodEnd: string };
+  subscription: {
+    planName: string;
+    quota: number | null;
+    periodStart: string;
+    periodEnd: string;
+    /** A downgrade that starts when the current period ends. */
+    pendingPlanName?: string | null;
+  };
   plans: MockPlan[];
+  projects: MockProject[];
+  applications: MockApplication[];
   reports: MockReport[];
 }
 
@@ -103,6 +118,8 @@ export const mockStore: MockStore = (globalForMock.__conectrzMockStore ??= {
     periodEnd: "2026-10-01T00:00:00Z",
   },
   plans: structuredClone(mockPlans),
+  projects: structuredClone(mockProjects),
+  applications: structuredClone(mockApplications),
   reports: [
     {
       id: "rp-001",

@@ -80,7 +80,7 @@ editing it, redeploy with the Supabase CLI: `supabase functions deploy notify-ne
    | `NEXT_PUBLIC_DATA_SOURCE` | `supabase` |
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://kwjpvlxnuquphjblydcy.supabase.co` |
    | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | the publishable key from `.env.example` |
-   | `NEXT_PUBLIC_SUPPORT_EMAIL` | your support address |
+   | `NEXT_PUBLIC_SUPPORT_EMAIL` | `hello@conectrz.com` |
 
    Never add the Supabase *service role* / secret key here.
 3. **Deploy**. Then **Settings → Domains** → add your domain and follow the DNS steps.

@@ -19,4 +19,4 @@ export const supabaseConfig = {
 };
 
 /** Where upgrade requests and support questions go. PLACEHOLDER — set your real address. */
-export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@conectrz.com";
+export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "hello@conectrz.com";

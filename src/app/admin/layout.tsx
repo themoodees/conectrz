@@ -9,7 +9,7 @@ import { getCurrentRole, getSupabaseSession } from "@/lib/data/session";
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await connection();
 
-  let email = "admin@conectrz.example";
+  let email = "hello@conectrz.com";
   if (!isMockMode) {
     const { user } = await getSupabaseSession();
     if (!user) redirect("/login");

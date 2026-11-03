@@ -8,13 +8,20 @@ import {
 } from "@/components/settings/SettingsForms";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { getCurrentCompanyAccount } from "@/lib/data/account";
+import { openBillingPortal } from "@/lib/actions/billing";
+import { getBillingStatus } from "@/lib/data/billing";
 import { getConversationUsage } from "@/lib/data/messages";
 import { formatShortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Account settings" };
 
-export default async function SettingsPage() {
-  const [account, usage] = await Promise.all([getCurrentCompanyAccount(), getConversationUsage()]);
+export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
+  const [account, usage, billing, { billing: billingResult }] = await Promise.all([
+    getCurrentCompanyAccount(),
+    getConversationUsage(),
+    getBillingStatus(),
+    searchParams,
+  ]);
   if (!account) return null;
 
   return (
@@ -30,6 +37,17 @@ export default async function SettingsPage() {
           title="Plan"
           description="Your plan sets how many new conversations you can start."
         >
+          {billingResult === "success" && (
+            <p role="status" className="mb-4 rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink">
+              Thank you! Your payment went through. Your plan updates within a minute; refresh this
+              page if it still shows the old one.
+            </p>
+          )}
+          {billingResult === "error" && (
+            <p role="alert" className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger">
+              Couldn&apos;t open billing. Please try again.
+            </p>
+          )}
           {usage ? (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -42,9 +60,18 @@ export default async function SettingsPage() {
                       : `${usage.used} of ${usage.quota} conversations used · renews ${formatShortDate(usage.periodEnd)}`}
                 </p>
               </div>
-              <Link href="/plans" className={buttonClass({ variant: "secondary", size: "sm" })}>
-                View plans
-              </Link>
+              <div className="flex flex-wrap gap-2">
+                {billing.hasCustomer && (
+                  <form action={openBillingPortal}>
+                    <button type="submit" className={buttonClass({ size: "sm" })}>
+                      Manage billing
+                    </button>
+                  </form>
+                )}
+                <Link href="/plans" className={buttonClass({ variant: "secondary", size: "sm" })}>
+                  View plans
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-4">
