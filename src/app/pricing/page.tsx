@@ -77,7 +77,7 @@ export default async function PricingPage() {
                     ))}
                   </ul>
                   <Link
-                    href={isSignedIn ? "/plans" : "/signup"}
+                    href={isSignedIn ? "/plans" : "/signup/company"}
                     className={buttonClass({
                       variant: paid ? "primary" : "secondary",
                       className: "mt-8",
