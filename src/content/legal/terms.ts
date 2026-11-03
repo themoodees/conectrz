@@ -37,7 +37,7 @@ export const termsOfService: LegalDocument = {
       body: [
         "Creators can use Conectrz for free.",
         "Companies can browse creators on the Free plan. Starting new conversations with Creators requires a paid Plan. Each Plan includes a number of new conversations per billing period: the Pro plan (US$39 per month) includes 10 new conversations, and the Business plan (US$99 per month) includes unlimited new conversations, up to 10 new conversations per day. Replying in a conversation you or the other User already started does not use a new conversation. Current Plans and prices are always shown on our Plans page.",
-        "Paid Plans are billed monthly in advance by our payment provider, Stripe, and renew automatically until cancelled. You can change or cancel your Plan at any time from Account settings (Manage billing). All prices include Japanese consumption tax. Payments are non-refundable: we do not give refunds for amounts already charged, including for a partly used billing period. [Confirm: when a cancellation takes effect, e.g. at the end of the current billing period, and what the Company keeps until then.] If we change our prices, we will tell you in advance, and the change applies from your next billing period.",
+        "Paid Plans are billed monthly in advance by our payment provider, Stripe, and renew automatically until cancelled. You can change or cancel your Plan at any time from Account settings (Manage billing). All prices include Japanese consumption tax. Payments are non-refundable: we do not give refunds for amounts already charged, including for a partly used billing period. When you cancel, your Plan stays active until the end of the billing period you have already paid for. After that, your account returns to the Free plan and no further charges are made. If we change our prices, we will tell you in advance, and the change applies from your next billing period.",
       ],
     },
     {
@@ -89,7 +89,7 @@ export const termsOfService: LegalDocument = {
     {
       heading: "12. Contact",
       body: [
-        "Conectrz, [Address]. Email: hello@conectrz.com. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
+        "If you have any questions about these Terms, contact us at hello@conectrz.com. See also our Privacy Policy and the Legal Notice (特定商取引法に基づく表記).",
       ],
     },
   ],
