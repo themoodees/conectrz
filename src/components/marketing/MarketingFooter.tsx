@@ -20,6 +20,9 @@ export function MarketingFooter() {
           <Link href="/pricing" className="hover:text-ink">
             Pricing
           </Link>
+          <Link href="/faq" className="hover:text-ink">
+            FAQ
+          </Link>
           <Link href="/login" className="hover:text-ink">
             Sign in
           </Link>
