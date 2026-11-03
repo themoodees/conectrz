@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Plans" };
  * Without Stripe, "Request" opens an email and an admin switches the plan.
  */
 export default async function PlansPage({ searchParams }: PageProps<"/plans">) {
-  const { billing: billingResult } = await searchParams;
+  const { billing: billingResult, detail } = await searchParams;
   const [plans, usage, account, billing] = await Promise.all([
     getPlans(),
     getConversationUsage(),
@@ -75,7 +75,10 @@ export default async function PlansPage({ searchParams }: PageProps<"/plans">) {
           role="alert"
           className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger"
         >
-          Something went wrong starting the payment. Please try again, or email {SUPPORT_EMAIL}.
+          Something went wrong changing your plan. Please try again, or email {SUPPORT_EMAIL}.
+          {typeof detail === "string" && detail && (
+            <span className="mt-1 block text-xs opacity-80">Details: {detail}</span>
+          )}
         </p>
       )}
 
