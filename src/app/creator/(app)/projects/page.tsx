@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplicationStatusBadge } from "@/components/projects/ProjectBadges";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-import { BriefcaseIcon } from "@/components/ui/icons";
+import { CreatorProjectBrowser } from "@/components/projects/CreatorProjectBrowser";
 import { getCreatorProjects } from "@/lib/data/projects";
 
 export const metadata: Metadata = { title: "Projects" };
@@ -47,22 +47,7 @@ export default async function CreatorProjectsPage() {
         </section>
       )}
 
-      <section>
-        <h2 className="mb-4 text-lg font-semibold text-ink">Open projects</h2>
-        {open.length > 0 ? (
-          renderList(open)
-        ) : (
-          <div className="flex flex-col items-center rounded-card border border-dashed border-border px-6 py-16 text-center">
-            <span className="grid size-12 place-items-center rounded-full bg-surface text-muted">
-              <BriefcaseIcon className="size-5" />
-            </span>
-            <h3 className="mt-4 text-lg font-semibold text-ink">No open projects right now</h3>
-            <p className="mt-1 max-w-sm text-sm text-muted">
-              New projects from companies will show up here.
-            </p>
-          </div>
-        )}
-      </section>
+      <CreatorProjectBrowser projects={open} />
     </PageContainer>
   );
 }

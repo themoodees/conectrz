@@ -1,3 +1,5 @@
+import type { PaymentMethod } from "@/lib/payments";
+
 /*
  * Projects: a company posts a brief; creators apply with a message and a
  * proposed price. Amounts are whole US dollars (cents in the database).
@@ -20,6 +22,8 @@ export interface Project {
   services: string[];
   niches: string[];
   languages: string[];
+  /** How the company says it will pay. */
+  paymentMethods: PaymentMethod[];
 }
 
 /** A project in the company's own list. */
@@ -37,6 +41,8 @@ export interface Applicant {
   proposedAmountUsd: number;
   status: ApplicationStatus;
   createdAt: string;
+  /** Methods the creator accepts. */
+  paymentMethods: PaymentMethod[];
 }
 
 /** The signed-in creator's own application to a project. */

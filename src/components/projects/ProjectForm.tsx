@@ -8,6 +8,8 @@ import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
+import { PaymentMethodsPicker } from "@/components/payments/PaymentMethodsPicker";
+import { PaymentNotice } from "@/components/payments/PaymentInfo";
 
 /** Chip picker that submits its choices as repeated hidden inputs. */
 function ChipPicker({
@@ -85,6 +87,13 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
       <ChipPicker legend="Services wanted" name="serviceIds" options={options.services} />
       <ChipPicker legend="Niches" name="nicheIds" options={options.niches} />
       <ChipPicker legend="Languages" name="languageIds" options={options.languages} />
+      <div className="space-y-2">
+        <PaymentMethodsPicker
+          legend="How will you pay the creator?"
+          hint="Choose every method you can use. Creators see this before they apply."
+        />
+        <PaymentNotice />
+      </div>
       <button type="submit" disabled={pending} className={buttonClass()}>
         {pending ? "Posting…" : "Post project"}
       </button>

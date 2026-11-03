@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
 import type { MyApplication } from "@/types/projects";
 import {
@@ -7,6 +8,7 @@ import {
   withdrawApplication,
   type ProjectActionState,
 } from "@/lib/actions/projects";
+import { PAYMENT_LABELS, sharedPaymentMethods, type PaymentMethod } from "@/lib/payments";
 import { formatShortDate, formatUsd } from "@/lib/format";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
@@ -20,11 +22,15 @@ export function ApplyPanel({
   isOpen,
   application,
   budgetUsd,
+  projectMethods,
+  myMethods,
 }: {
   projectId: string;
   isOpen: boolean;
   application: MyApplication | null;
   budgetUsd: number;
+  projectMethods: PaymentMethod[];
+  myMethods: PaymentMethod[];
 }) {
   const [state, formAction, pending] = useActionState<ProjectActionState, FormData>(
     applyToProject,
@@ -106,10 +112,49 @@ export function ApplyPanel({
           hint={`The company's budget is ${formatUsd(budgetUsd)}.`}
           className="max-w-xs"
         />
+        {projectMethods.length > 0 && (
+          <PaymentCheck projectMethods={projectMethods} myMethods={myMethods} />
+        )}
         <button type="submit" disabled={pending} className={buttonClass()}>
           {pending ? "Sending…" : "Send application"}
         </button>
       </form>
     </section>
   );
+}
+
+/** Tells the creator early whether the company's payment methods fit theirs. */
+function PaymentCheck({
+  projectMethods,
+  myMethods,
+}: {
+  projectMethods: PaymentMethod[];
+  myMethods: PaymentMethod[];
+}) {
+  const shared = sharedPaymentMethods(projectMethods, myMethods);
+  const companyList = projectMethods.map((m) => PAYMENT_LABELS[m]).join(", ");
+
+  let text: React.ReactNode;
+  if (myMethods.length === 0) {
+    text = (
+      <>
+        The company pays by {companyList}.{" "}
+        <Link href="/creator/profile" className="font-medium underline">
+          Add the methods you accept
+        </Link>{" "}
+        to your profile so you can both check this early.
+      </>
+    );
+  } else if (shared.length === 0) {
+    text = (
+      <>
+        Heads up: the company pays by {companyList}, but you accept{" "}
+        {myMethods.map((m) => PAYMENT_LABELS[m]).join(", ")}. You can still apply and agree on a
+        method with them.
+      </>
+    );
+  } else {
+    text = <>Good match: you both can use {shared.map((m) => PAYMENT_LABELS[m]).join(", ")}.</>;
+  }
+  return <p className="rounded-control bg-surface px-3.5 py-2.5 text-xs text-graphite">{text}</p>;
 }

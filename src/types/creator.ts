@@ -11,6 +11,8 @@ export type LanguageProficiency = "native" | "fluent" | "conversational";
 /** Mirrors the `rate_type` enum. */
 export type RateType = "flat" | "starting_from";
 
+import type { PaymentMethod } from "@/lib/payments";
+
 /**
  * Platforms the UI knows how to label/iconify.
  * `social_accounts.platform` is free text in the DB, so keep this list in sync.
@@ -60,6 +62,8 @@ export interface Creator {
   /** Average of visible reviews (1-5), null when there are none. */
   ratingAverage?: number | null;
   reviewCount?: number;
+  /** Payment methods the creator accepts. */
+  paymentMethods?: PaymentMethod[];
 }
 
 export interface CreatorReview {

@@ -11,6 +11,7 @@ import type {
 import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
 import { centsToUsd } from "@/lib/format";
+import { parsePaymentMethods } from "@/lib/payments";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
@@ -85,6 +86,7 @@ const fromMock = (project: MockProject): Project => ({
   services: project.services,
   niches: project.niches,
   languages: project.languages,
+  paymentMethods: project.paymentMethods,
 });
 
 const newestFirst = <T extends { createdAt: string }>(a: T, b: T) =>
@@ -156,6 +158,7 @@ export async function getCompanyProjects(): Promise<CompanyProject[]> {
           languages.data!.filter((r) => r.project_id === p.id).map((r) => r.language_id),
           names.languages,
         ),
+        paymentMethods: parsePaymentMethods(p.payment_methods),
         applicantCount: applications.data!.filter((a) => a.project_id === p.id).length,
       }),
     )
@@ -186,6 +189,7 @@ export async function getCompanyProject(
                 proposedAmountUsd: a.proposedAmountUsd,
                 status: a.status,
                 createdAt: a.createdAt,
+                paymentMethods: creator.paymentMethods ?? [],
               },
             ]
           : [];
@@ -198,7 +202,7 @@ export async function getCompanyProject(
   const { data, error } = await supabase
     .from("project_applicants")
     .select(
-      "id, creator_id, first_name, last_name, photo_url, message, proposed_amount_usd_cents, status, created_at",
+      "id, creator_id, first_name, last_name, photo_url, message, proposed_amount_usd_cents, status, created_at, payment_methods",
     )
     .eq("project_id", id);
   if (error) throw error;
@@ -221,6 +225,7 @@ export async function getCompanyProject(
               proposedAmountUsd: centsToUsd(a.proposed_amount_usd_cents ?? 0),
               status: a.status,
               createdAt: a.created_at,
+              paymentMethods: parsePaymentMethods(a.payment_methods),
             },
           ]
         : [],
@@ -286,6 +291,7 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
           services: namesOf(row.service_ids, names.services),
           niches: namesOf(row.niche_ids, names.niches),
           languages: namesOf(row.language_ids, names.languages),
+          paymentMethods: parsePaymentMethods(row.payment_methods),
           application: application
             ? {
                 id: application.id,

@@ -5,6 +5,7 @@ import { BasicsForm } from "@/components/creatorEditor/BasicsForm";
 import { EditorSection } from "@/components/creatorEditor/EditorSection";
 import { LanguagesEditor } from "@/components/creatorEditor/LanguagesEditor";
 import { NichesEditor } from "@/components/creatorEditor/NichesEditor";
+import { PaymentMethodsEditor } from "@/components/creatorEditor/PaymentMethodsEditor";
 import { PhotoUploader } from "@/components/creatorEditor/PhotoUploader";
 import { PortfolioEditor } from "@/components/creatorEditor/PortfolioEditor";
 import { ServicesEditor } from "@/components/creatorEditor/ServicesEditor";
@@ -90,6 +91,12 @@ export default async function CreatorProfileEditorPage({
           description="Follower counts are optional — leave them empty if you mainly create UGC."
         >
           <SocialAccountsEditor initialRows={data.socialAccounts} />
+        </EditorSection>
+        <EditorSection
+          title="Payment methods"
+          description="Payment is arranged directly with each brand."
+        >
+          <PaymentMethodsEditor initial={data.paymentMethods} />
         </EditorSection>
         <EditorSection title="Portfolio" description="Examples of your best work.">
           <PortfolioEditor creatorId={data.id} items={data.portfolio} />

@@ -6,6 +6,7 @@ import type { Gender, LanguageProficiency, RateType, SocialPlatform } from "@/ty
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
 import { usdToCents } from "@/lib/format";
+import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { PREFECTURES } from "@/lib/prefectures";
@@ -158,6 +159,30 @@ export async function updateCreatorBasics(
       gender: basics.gender || null,
       updated_at: new Date().toISOString(),
     })
+    .eq("id", user.id);
+  if (error) return { error: "Couldn't save your changes. Please try again." };
+
+  revalidateCreator(user.id);
+  return { success: "Saved." };
+}
+
+/** Saves the payment methods the creator accepts. */
+export async function updatePaymentMethods(
+  _previous: SaveResult,
+  formData: FormData,
+): Promise<SaveResult> {
+  const methods = parsePaymentMethods(formData.getAll("paymentMethods").map(String));
+
+  if (isMockMode) {
+    mockCreator().paymentMethods = methods;
+    revalidateCreator(MOCK_CREATOR_ID);
+    return { success: "Saved." };
+  }
+
+  const { supabase, user } = await requireSupabaseUser();
+  const { error } = await supabase
+    .from("creator_profiles")
+    .update({ payment_methods: methods, updated_at: new Date().toISOString() })
     .eq("id", user.id);
   if (error) return { error: "Couldn't save your changes. Please try again." };
 

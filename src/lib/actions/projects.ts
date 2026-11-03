@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { usdToCents } from "@/lib/format";
+import { parsePaymentMethods } from "@/lib/payments";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
 import { mockStore } from "@/mocks/store";
 
@@ -49,6 +50,7 @@ export async function createProject(
   const serviceIds = formData.getAll("serviceIds").map(String);
   const nicheIds = formData.getAll("nicheIds").map(String);
   const languageIds = formData.getAll("languageIds").map(String);
+  const paymentMethods = parsePaymentMethods(formData.getAll("paymentMethods").map(String));
 
   if (!title) return { error: "Enter a title." };
   if (title.length > MAX_TITLE) return { error: `Titles can be up to ${MAX_TITLE} characters.` };
@@ -58,6 +60,9 @@ export async function createProject(
   }
   if (!Number.isInteger(budget) || budget <= 0 || budget > MAX_AMOUNT_USD) {
     return { error: "Enter a budget in whole US dollars." };
+  }
+  if (paymentMethods.length === 0) {
+    return { error: "Choose at least one way you will pay the creator." };
   }
   if (!DATE_PATTERN.test(deadline) || deadline < todayIso()) {
     return { error: "Choose a delivery deadline that is today or later." };
@@ -80,6 +85,7 @@ export async function createProject(
       services: serviceIds,
       niches: nicheIds,
       languages: languageIds,
+      paymentMethods,
     });
   } else {
     if (![...serviceIds, ...nicheIds, ...languageIds].every((id) => UUID_PATTERN.test(id))) {
@@ -94,6 +100,7 @@ export async function createProject(
         description,
         budget_usd_cents: usdToCents(budget),
         delivery_deadline: deadline,
+        payment_methods: paymentMethods,
       })
       .select("id")
       .single();

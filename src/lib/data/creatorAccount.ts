@@ -5,6 +5,7 @@ import type { Gender, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData, CreatorEditorOptions } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
 import { centsToUsd } from "@/lib/format";
+import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { MOCK_CREATOR_ID } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
@@ -91,6 +92,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
       prefecture: creator.prefecture ?? "",
       city: creator.city ?? "",
       isAvailable: creator.isAvailable,
+      paymentMethods: creator.paymentMethods ?? [],
       photoUrl: creator.photoUrl,
       nicheIds: creator.niches,
       languages: creator.languages.map((l) => ({ languageId: l.name, proficiency: l.proficiency })),
@@ -116,7 +118,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
   const { data, error } = await supabase
     .from("creator_profiles")
     .select(
-      `id, status, first_name, last_name, bio, birth_date, gender, prefecture, city, is_available, photo_url,
+      `id, status, first_name, last_name, bio, birth_date, gender, payment_methods, prefecture, city, is_available, photo_url,
        creator_niches ( niche_id ),
        creator_languages ( language_id, proficiency ),
        creator_services ( service_id, rate_type, rate_amount_usd_cents ),
@@ -150,6 +152,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
     prefecture: data.prefecture ?? "",
     city: data.city ?? "",
     isAvailable: data.is_available,
+    paymentMethods: parsePaymentMethods(data.payment_methods),
     photoUrl,
     nicheIds: data.creator_niches.map((n) => n.niche_id),
     languages: data.creator_languages.map((l) => ({

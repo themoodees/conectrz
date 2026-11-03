@@ -62,9 +62,9 @@ export type Database = {
         ]
       }
       creator_profiles: {
-        Row: { birth_date: string | null; gender: string | null; bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
-        Insert: { birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
-        Update: { birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Row: { payment_methods: string[]; birth_date: string | null; gender: string | null; bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
+        Insert: { payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Update: { payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
         Relationships: [
           { foreignKeyName: "creator_profiles_id_fkey"; columns: ["id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
@@ -128,9 +128,9 @@ export type Database = {
         Relationships: []
       }
       projects: {
-        Row: { budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
-        Insert: { budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
-        Update: { budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
+        Row: { payment_methods: string[]; budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
+        Insert: { payment_methods?: string[]; budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
+        Update: { payment_methods?: string[]; budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
         Relationships: []
       }
       project_applications: {
@@ -219,11 +219,11 @@ export type Database = {
     }
     Views: {
       project_applicants: {
-        Row: { created_at: string | null; creator_id: string | null; creator_status: Database["public"]["Enums"]["account_status"] | null; first_name: string | null; id: string | null; last_name: string | null; message: string | null; photo_url: string | null; project_id: string | null; proposed_amount_usd_cents: number | null; status: Database["public"]["Enums"]["application_status"] | null }
+        Row: { payment_methods: string[] | null; created_at: string | null; creator_id: string | null; creator_status: Database["public"]["Enums"]["account_status"] | null; first_name: string | null; id: string | null; last_name: string | null; message: string | null; photo_url: string | null; project_id: string | null; proposed_amount_usd_cents: number | null; status: Database["public"]["Enums"]["application_status"] | null }
         Relationships: []
       }
       project_listings: {
-        Row: { budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
+        Row: { payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
         Relationships: []
       }
       conversation_creators: {
@@ -231,7 +231,7 @@ export type Database = {
         Relationships: []
       }
       creator_directory: {
-        Row: { age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Row: { payment_methods: string[] | null; age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
         Relationships: []
       }
       creator_reviews_public: {
