@@ -26,6 +26,14 @@ export default async function CreatorProfileEditorPage({
   ]);
   if (!data) return null;
 
+  // Brands only find creators who have these three things (and an active account).
+  const missing = [
+    !data.prefecture && "your prefecture",
+    data.languages.length === 0 && "at least one language",
+    data.services.length === 0 && "at least one service with a rate",
+  ].filter((item): item is string => Boolean(item));
+  const isLive = data.status === "active" && missing.length === 0;
+
   return (
     <PageContainer>
       <header className="flex flex-wrap items-end justify-between gap-4 pt-7 pb-6 md:pt-10 md:pb-7">
@@ -40,11 +48,20 @@ export default async function CreatorProfileEditorPage({
         </Link>
       </header>
 
-      {welcome && (
+      {data.status === "active" && missing.length > 0 && (
+        <p
+          role="status"
+          className="mb-5 max-w-3xl rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink"
+        >
+          <span className="font-semibold">Brands can&apos;t find you yet.</span> To appear in
+          search, add {missing.join(", ")}.
+        </p>
+      )}
+      {welcome && isLive && (
         <div className="mb-5 max-w-3xl">
           <FormMessage tone="success">
-            Your profile is live. Add a photo, services and portfolio work so brands can understand
-            what you offer.
+            Your profile is live. Add a photo and portfolio work so brands can understand what you
+            offer.
           </FormMessage>
         </div>
       )}

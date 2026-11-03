@@ -1,3 +1,4 @@
+import { PREFECTURES } from "@/lib/prefectures";
 import type { DiscoveryFilterOptions } from "@/types/discovery";
 
 /*
@@ -20,7 +21,7 @@ export const mockFilterOptions: DiscoveryFilterOptions = {
     "Parenting",
     "Home & Interior",
   ],
-  locations: ["Tokyo", "Kanagawa", "Osaka", "Kyoto", "Aichi", "Fukuoka", "Hokkaido", "Okinawa"],
+  locations: [...PREFECTURES],
   languages: [
     "Japanese",
     "English",
