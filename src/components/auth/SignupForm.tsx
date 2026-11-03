@@ -20,7 +20,7 @@ const COPY = {
     nameAutoComplete: "name",
     switchText: "Hiring creators?",
     switchLink: "Create a company account",
-    switchHref: "/signup",
+    switchHref: "/signup/company",
   },
 };
 

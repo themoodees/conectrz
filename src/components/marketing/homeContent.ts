@@ -8,7 +8,7 @@ export const HERO = {
   title: "Find the right creator for your brand in Japan",
   description:
     "Conectrz connects brands with UGC creators and influencers across Japan — Japanese and international, in the languages your audience speaks.",
-  primaryCta: { label: "Find creators", href: "/signup" },
+  primaryCta: { label: "Find creators", href: "/signup/company" },
   secondaryCta: { label: "Join as a creator", href: "/signup/creator" },
 };
 
@@ -45,5 +45,5 @@ export const CREATOR_BENEFITS = [
 export const CLOSING = {
   title: "Ready to meet your next creator?",
   description: "Create a free company account and start discovering creators today.",
-  cta: { label: "Get started", href: "/signup" },
+  cta: { label: "Get started", href: "/signup/company" },
 };

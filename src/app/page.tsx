@@ -66,7 +66,7 @@ export default async function HomePage() {
                 </li>
               ))}
             </ol>
-            <Link href="/signup" className={buttonClass({ className: "mt-10" })}>
+            <Link href="/signup/company" className={buttonClass({ className: "mt-10" })}>
               Create a company account
             </Link>
           </div>
