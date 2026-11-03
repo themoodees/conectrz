@@ -3,6 +3,7 @@
 import { useActionState, type ReactNode } from "react";
 import {
   changePassword,
+  deleteCreatorAccount,
   updateCompanyDetails,
   type SettingsFormState,
 } from "@/lib/actions/account";
@@ -79,6 +80,32 @@ export function PasswordForm() {
       />
       <button type="submit" disabled={pending} className={buttonClass({ variant: "secondary" })}>
         {pending ? "Updating…" : "Update password"}
+      </button>
+    </form>
+  );
+}
+
+export function DeleteAccountForm() {
+  const [state, formAction, pending] = useActionState(deleteCreatorAccount, {});
+  return (
+    <form action={formAction} className="max-w-md space-y-4">
+      <FormStatus state={state} />
+      <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
+        <li>Your profile, photos, portfolio and social links are permanently removed.</li>
+        <li>You can no longer sign in, and your pending applications are withdrawn.</li>
+        <li>
+          Past conversations stay visible to the companies you wrote to, shown as
+          &ldquo;Deleted creator&rdquo;.
+        </li>
+        <li>This cannot be undone.</li>
+      </ul>
+      <TextField label="Type DELETE to confirm" name="confirm" autoComplete="off" required />
+      <button
+        type="submit"
+        disabled={pending}
+        className={buttonClass({ variant: "secondary", className: "text-danger" })}
+      >
+        {pending ? "Deleting…" : "Delete my account"}
       </button>
     </form>
   );
