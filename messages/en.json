@@ -789,7 +789,10 @@
         "aboutHint": "What you create, who you create for, and what brands can expect.",
         "aboutOptional": "About you (optional)",
         "aboutPlaceholder": "What you create and who you create for.",
-        "available": "Available for new work"
+        "available": "Available for new work",
+        "cityOther": "Other (not in the list)",
+        "cityOtherLabel": "Your city or area",
+        "cityPrefectureFirst": "Choose a prefecture first"
       },
       "personal": {
         "birth": "Birth date (optional)",
@@ -931,7 +934,8 @@
       "followers": "Followers must be a whole number (or leave it empty).",
       "invalidAccount": "Invalid account.",
       "addFailed": "Couldn't add this item. Please try again.",
-      "minAge": "You must be at least {min} to join Conectrz."
+      "minAge": "You must be at least {min} to join Conectrz.",
+      "city": "Choose your city or ward from the list, or pick \"Other\"."
     },
     "creatorView": {
       "years": "{age} years old",

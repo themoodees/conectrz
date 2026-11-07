@@ -93,6 +93,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
       birthDate: mockStore.creatorBirthDates[creator.id] ?? "",
       gender: creator.gender ?? "",
       prefecture: creator.prefecture ?? "",
+      cityCode: "",
       city: creator.city ?? "",
       isAvailable: creator.isAvailable,
       paymentMethods: creator.paymentMethods ?? [],
@@ -121,7 +122,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
   const { data, error } = await supabase
     .from("creator_profiles")
     .select(
-      `id, status, first_name, last_name, bio, birth_date, gender, payment_methods, prefecture, city, is_available, photo_url,
+      `id, status, first_name, last_name, bio, birth_date, gender, payment_methods, prefecture, city, city_code, is_available, photo_url,
        creator_niches ( niche_id ),
        creator_languages ( language_id, proficiency ),
        creator_services ( service_id, rate_type, rate_amount_usd_cents ),
@@ -153,6 +154,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
     birthDate: data.birth_date ?? "",
     gender: (data.gender as Gender | null) ?? "",
     prefecture: data.prefecture ?? "",
+    cityCode: data.city_code ?? "",
     city: data.city ?? "",
     isAvailable: data.is_available,
     paymentMethods: parsePaymentMethods(data.payment_methods),
