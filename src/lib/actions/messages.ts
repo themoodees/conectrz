@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import type { Viewer } from "@/types/messages";
 import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
@@ -62,10 +63,13 @@ function parseAttachments(formData: FormData, prefix: string): AttachmentInput[]
   return items.length > MAX_ATTACHMENTS ? null : items;
 }
 
-function validateContent(content: string): string | null {
-  if (!content) return "Write a message first.";
+function validateContent(
+  content: string,
+  t: Awaited<ReturnType<typeof getTranslations<"app.serverErrors">>>,
+): string | null {
+  if (!content) return t("writeFirst");
   if (content.length > MAX_MESSAGE_LENGTH) {
-    return `Messages can be up to ${MAX_MESSAGE_LENGTH.toLocaleString()} characters.`;
+    return t("tooLong", { max: MAX_MESSAGE_LENGTH.toLocaleString() });
   }
   return null;
 }
@@ -75,16 +79,17 @@ export async function sendMessage(
   _previous: SendMessageState,
   formData: FormData,
 ): Promise<SendMessageState> {
+  const t = await getTranslations("app.serverErrors");
   const conversationId = String(formData.get("conversationId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
   const hasFiles = formData.getAll("attachment").length > 0;
-  const invalid = hasFiles && !content ? null : validateContent(content);
+  const invalid = hasFiles && !content ? null : validateContent(content, t);
   if (invalid) return { error: invalid };
 
   if (isMockMode) {
-    if (hasFiles) return { error: "Attachments aren't available in the demo." };
+    if (hasFiles) return { error: t("demoAttachments") };
     const conversation = mockStore.conversations.find((c) => c.id === conversationId);
-    if (!conversation) return { error: "Conversation not found." };
+    if (!conversation) return { error: t("conversationNotFound") };
     conversation.messages.push({
       id: `m-${Date.now()}`,
       content,
@@ -96,13 +101,13 @@ export async function sendMessage(
     const { supabase, user } = await requireSupabaseUser();
     // RLS only allows sending into conversations the user takes part in.
     const attachments = parseAttachments(formData, `${conversationId}/${user.id}/`);
-    if (!attachments) return { error: "Those attachments couldn't be sent. Please try again." };
+    if (!attachments) return { error: t("attachmentsFailed") };
     const { data: message, error } = await supabase
       .from("messages")
       .insert({ conversation_id: conversationId, sender_id: user.id, content })
       .select("id")
       .single();
-    if (error || !message) return { error: "Your message couldn't be sent. Please try again." };
+    if (error || !message) return { error: t("messageFailed") };
     if (attachments.length > 0) {
       const { error: attachError } = await supabase.from("message_attachments").insert(
         attachments.map((a) => ({
@@ -117,7 +122,7 @@ export async function sendMessage(
         // Users can't delete messages, so say plainly what did go through.
         revalidateInboxes();
         return {
-          error: "Your message was sent, but the attachments couldn't be. Please send them again.",
+          error: t("attachmentsFailedAfter"),
         };
       }
     }
@@ -167,9 +172,10 @@ export async function setConversationArchived(
   viewer: Viewer,
   archived: boolean,
 ): Promise<{ error?: string }> {
+  const t = await getTranslations("app.serverErrors");
   if (isMockMode) {
     const conversation = mockStore.conversations.find((c) => c.id === conversationId);
-    if (!conversation) return { error: "Conversation not found." };
+    if (!conversation) return { error: t("conversationNotFound") };
     if (viewer === "company") conversation.archivedByCompany = archived;
     else conversation.archivedByCreator = archived;
   } else {
@@ -186,10 +192,7 @@ export async function setConversationArchived(
     if (error) {
       // one_active_conversation_per_pair: a newer open conversation already exists.
       return {
-        error:
-          error.code === "23505"
-            ? "You already have an open conversation with this creator."
-            : "Couldn't update the conversation. Please try again.",
+        error: error.code === "23505" ? t("alreadyOpen") : t("updateFailed"),
       };
     }
   }
@@ -210,9 +213,10 @@ export async function startConversation(
   _previous: StartConversationState,
   formData: FormData,
 ): Promise<StartConversationState> {
+  const t = await getTranslations("app.serverErrors");
   const creatorId = String(formData.get("creatorId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
-  const invalid = validateContent(content);
+  const invalid = validateContent(content, t);
   if (invalid) return { error: invalid };
 
   let conversationId: string;
@@ -223,7 +227,7 @@ export async function startConversation(
       return {
         error: usage.isFree
           ? "Your Free plan can't start new conversations. Upgrade to contact creators."
-          : "You've reached your plan's conversation limit for this period.",
+          : t("planLimit"),
       };
     }
     conversationId = `cv-${Date.now()}`;
@@ -249,18 +253,18 @@ export async function startConversation(
     if (error || !data) {
       const message = error?.message ?? "";
       if (message.includes("daily_limit_reached")) {
-        return { error: "You've reached today's limit for new conversations. Try again tomorrow." };
+        return { error: t("dailyLimit") };
       }
       if (message.includes("conversation_quota_reached")) {
-        return { error: "You've reached your plan's conversation limit for this period." };
+        return { error: t("planLimit") };
       }
       if (error?.code === "23505") {
-        return { error: "You already have an open conversation with this creator." };
+        return { error: t("alreadyOpen") };
       }
       if (message.includes("creator_not_available")) {
-        return { error: "This creator isn't available right now." };
+        return { error: t("creatorUnavailable") };
       }
-      return { error: "Your message couldn't be sent. Please try again." };
+      return { error: t("messageFailed") };
     }
     conversationId = data;
   }

@@ -1,9 +1,14 @@
 import type { Creator, CreatorService, LanguageProficiency, SocialAccount } from "@/types/creator";
 
-const compactNumber = new Intl.NumberFormat("en", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+const compactCache = new Map<string, Intl.NumberFormat>();
+const compactFor = (locale: string) => {
+  let f = compactCache.get(locale);
+  if (!f) {
+    f = new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 });
+    compactCache.set(locale, f);
+  }
+  return f;
+};
 
 // English formatting ("$250"). Whole dollars; cents are only used for storage.
 const usd = new Intl.NumberFormat("en-US", {
@@ -13,7 +18,7 @@ const usd = new Intl.NumberFormat("en-US", {
 });
 
 /** 248000 → "248K" */
-export const formatFollowers = (count: number) => compactNumber.format(count);
+export const formatFollowers = (count: number, locale = "en") => compactFor(locale).format(count);
 
 /** 250 → "$250" */
 export const formatUsd = (amount: number) => usd.format(amount);
@@ -73,18 +78,24 @@ const timeFormat = new Intl.DateTimeFormat("en", {
   minute: "2-digit",
   hour12: false,
 });
-const shortDateFormat = new Intl.DateTimeFormat("en", {
-  timeZone: TIME_ZONE,
-  month: "short",
-  day: "numeric",
-});
-const dayFormat = new Intl.DateTimeFormat("en", {
-  timeZone: TIME_ZONE,
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-});
 const dayKeyFormat = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE });
+
+const dtf = new Map<string, Intl.DateTimeFormat>();
+const dateFormatter = (locale: string, kind: "short" | "day" | "long") => {
+  const key = `${locale}|${kind}`;
+  let f = dtf.get(key);
+  if (!f) {
+    const opts: Intl.DateTimeFormatOptions =
+      kind === "short"
+        ? { month: "short", day: "numeric" }
+        : kind === "day"
+          ? { weekday: "short", month: "short", day: "numeric" }
+          : { month: "short", day: "numeric", year: "numeric" };
+    f = new Intl.DateTimeFormat(locale, { timeZone: TIME_ZONE, ...opts });
+    dtf.set(key, f);
+  }
+  return f;
+};
 
 /** "2026-09-27" in Japan time — for grouping messages by day. */
 export const getDayKey = (iso: string | Date) => dayKeyFormat.format(new Date(iso));
@@ -92,33 +103,32 @@ export const getDayKey = (iso: string | Date) => dayKeyFormat.format(new Date(is
 /** "14:05" */
 export const formatTime = (iso: string) => timeFormat.format(new Date(iso));
 
-/** Today → "14:05", otherwise "Sep 27". Used in the conversation list. */
-export function formatConversationTime(iso: string) {
+/** Today → "14:05", otherwise "Sep 27" / "9月27日". Used in the conversation list. */
+export function formatConversationTime(iso: string, locale = "en") {
   return getDayKey(iso) === getDayKey(new Date())
     ? formatTime(iso)
-    : shortDateFormat.format(new Date(iso));
+    : dateFormatter(locale, "short").format(new Date(iso));
 }
 
 /** "Today", "Yesterday" or "Sat, Sep 27". Used as day separators in a thread. */
-export function formatDayLabel(iso: string) {
+export function formatDayLabel(iso: string, locale = "en") {
   const key = getDayKey(iso);
-  if (key === getDayKey(new Date())) return "Today";
-  if (key === getDayKey(new Date(Date.now() - 86_400_000))) return "Yesterday";
-  return dayFormat.format(new Date(iso));
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1);
+  if (key === getDayKey(new Date())) return cap(rtf.format(0, "day"));
+  if (key === getDayKey(new Date(Date.now() - 86_400_000))) return cap(rtf.format(-1, "day"));
+  return dateFormatter(locale, "day").format(new Date(iso));
 }
 
-const longDateFormat = new Intl.DateTimeFormat("en", {
-  timeZone: TIME_ZONE,
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
-
-/** "Oct 1, 2026" */
-export const formatShortDate = (iso: string) => longDateFormat.format(new Date(iso));
+/** "Oct 1, 2026" / "2026年10月1日" */
+export const formatShortDate = (iso: string, locale = "en") =>
+  dateFormatter(locale, "long").format(new Date(iso));
 
 /** "2026-12-15" → "Dec 15, 2026" (date only, no time zone shift). */
-export const formatDeadline = (isoDate: string) =>
-  new Intl.DateTimeFormat("en", { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" }).format(
-    new Date(`${isoDate}T00:00:00Z`),
-  );
+export const formatDeadline = (isoDate: string, locale = "en") =>
+  new Intl.DateTimeFormat(locale, {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${isoDate}T00:00:00Z`));

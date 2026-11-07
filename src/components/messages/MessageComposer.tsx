@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { sendMessage, type SendMessageState } from "@/lib/actions/messages";
 import { isMockMode } from "@/lib/config";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -29,6 +30,7 @@ export function MessageComposer({
   conversationId: string;
   viewer: Viewer;
 }) {
+  const t = useTranslations("app.composer");
   const [text, setText] = useState("");
   const [files, setFiles] = useState<Attached[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -54,11 +56,11 @@ export function MessageComposer({
   async function upload(chosen: FileList) {
     setUploadError(null);
     const room = MAX_FILES - files.length;
-    if (chosen.length > room) setUploadError(`You can attach up to ${MAX_FILES} files per message.`);
+    if (chosen.length > room) setUploadError(t("maxFiles", { max: MAX_FILES }));
 
     const supabase = createSupabaseBrowserClient();
     const { data } = await supabase.auth.getUser();
-    if (!data.user) return setUploadError("Please sign in again.");
+    if (!data.user) return setUploadError(t("signInAgain"));
 
     setUploading(true);
     const added: Attached[] = [];
@@ -69,22 +71,21 @@ export function MessageComposer({
           ? "video"
           : null;
       if (!kind) {
-        setUploadError("Use JPG, PNG or WebP images, or MP4 or MOV videos.");
+        setUploadError(t("fileTypes"));
         continue;
       }
       if (file.size > (kind === "image" ? MAX_IMAGE_BYTES : MAX_VIDEO_BYTES)) {
-        setUploadError(
-          kind === "image" ? "Images can be up to 10 MB." : "Videos can be up to 50 MB.",
-        );
+        setUploadError(kind === "image" ? t("imageSize") : t("videoSize"));
         continue;
       }
-      const extension = file.name.split(".").pop()?.toLowerCase() ?? (kind === "image" ? "jpg" : "mp4");
+      const extension =
+        file.name.split(".").pop()?.toLowerCase() ?? (kind === "image" ? "jpg" : "mp4");
       const path = `${conversationId}/${data.user.id}/${crypto.randomUUID()}.${extension}`;
       const { error } = await supabase.storage
         .from("message-attachments")
         .upload(path, file, { contentType: file.type });
       if (error) {
-        setUploadError("Upload failed. Please try again.");
+        setUploadError(t("uploadFailed"));
         continue;
       }
       added.push({
@@ -128,7 +129,10 @@ export function MessageComposer({
       {files.length > 0 && (
         <ul className="mx-auto mb-2 flex max-w-2xl flex-wrap gap-2">
           {files.map((f) => (
-            <li key={f.path} className="relative size-16 overflow-hidden rounded-control bg-surface">
+            <li
+              key={f.path}
+              className="relative size-16 overflow-hidden rounded-control bg-surface"
+            >
               {f.kind === "image" ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={f.previewUrl} alt={f.name} className="size-full object-cover" />
@@ -137,7 +141,7 @@ export function MessageComposer({
               )}
               <button
                 type="button"
-                aria-label={`Remove ${f.name}`}
+                aria-label={t("remove", { name: f.name })}
                 onClick={() => void remove(f)}
                 className="absolute top-0.5 right-0.5 grid size-5 place-items-center rounded-full bg-ink/70 text-white"
               >
@@ -161,7 +165,7 @@ export function MessageComposer({
             />
             <button
               type="button"
-              aria-label="Attach images or videos"
+              aria-label={t("attach")}
               disabled={uploading || files.length >= MAX_FILES}
               onClick={() => inputRef.current?.click()}
               className="grid size-11 shrink-0 place-items-center rounded-control border border-border text-graphite transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
@@ -171,7 +175,7 @@ export function MessageComposer({
           </>
         )}
         <label htmlFor="message-content" className="sr-only">
-          Message
+          {t("message")}
         </label>
         <textarea
           id="message-content"
@@ -185,13 +189,13 @@ export function MessageComposer({
               if (canSend) formRef.current?.requestSubmit();
             }
           }}
-          placeholder={uploading ? "Uploading…" : "Write a message…"}
+          placeholder={uploading ? t("uploading") : t("placeholder")}
           className="field-sizing-content max-h-40 min-h-11 flex-1 resize-none rounded-control border border-border bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-muted hover:border-muted/50 focus:border-primary focus:ring-3 focus:ring-primary/15 focus:outline-none focus-visible:outline-none md:text-sm"
         />
         <button
           type="submit"
           disabled={!canSend}
-          aria-label="Send message"
+          aria-label={t("send")}
           className="grid size-11 shrink-0 place-items-center rounded-control bg-primary text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-primary/40"
         >
           <SendIcon className="size-[18px]" />

@@ -384,5 +384,133 @@
       "confirmationSent": "{email} に確認リンクを送信しました。リンクを開いて登録を完了してください。",
       "resetSent": "{email} のアカウントが存在する場合、パスワード再設定用のリンクを送信しました。"
     }
+  },
+  "app": {
+    "nav": {
+      "discover": "探す",
+      "projects": "プロジェクト",
+      "saved": "保存済み",
+      "messages": "メッセージ",
+      "myProfile": "マイプロフィール",
+      "accountSettings": "アカウント設定",
+      "plans": "プラン",
+      "signOut": "ログアウト",
+      "reports": "Reports",
+      "accounts": "Accounts",
+      "categories": "Categories",
+      "activity": "Activity",
+      "main": "メインメニュー"
+    },
+    "area": {
+      "creator": "クリエイター",
+      "admin": "Admin"
+    },
+    "status": {
+      "pausedTitle": "アカウントは一時停止されています",
+      "closedTitle": "アカウントは閉鎖されました",
+      "contactSupport": "誤りだと思われる場合は、Conectrz のサポートまでご連絡ください。",
+      "wrongTitle": "このエリアは{area}向けです",
+      "wrongText": "別の種類のアカウントでログインしています。",
+      "goToAccount": "自分のアカウントへ",
+      "areaCreators": "クリエイター",
+      "areaBrands": "ブランド",
+      "areaAdmins": "管理者",
+      "areaCompanies": "企業"
+    },
+    "notifications": {
+      "label": "通知",
+      "labelUnread": "通知（未読{count}件）",
+      "markAll": "すべて既読にする",
+      "empty": "新しい通知はありません。新しい動きがあるとここに表示されます。",
+      "newMessage": "新着メッセージ",
+      "newApplication": "新しい応募",
+      "applicationDeclined": "応募は選ばれませんでした",
+      "newMatching": "あなたに合う新しいプロジェクト",
+      "newReview": "新しいレビューが届きました",
+      "aProject": "プロジェクト"
+    },
+    "inbox": {
+      "title": "メッセージ",
+      "archivedConversations": "アーカイブした会話",
+      "you": "あなた：",
+      "sentAttachment": "添付ファイルを送信しました",
+      "sentAttachments": "添付ファイルを送信しました",
+      "noMessages": "まだメッセージはありません",
+      "unread": "未読",
+      "back": "会話一覧に戻る",
+      "viewProfile": "プロフィールを見る",
+      "company": "企業",
+      "archived": "アーカイブ済み",
+      "options": "会話のオプション",
+      "moveToInbox": "受信箱に戻す",
+      "archive": "会話をアーカイブ",
+      "reportTarget": "{name}さんとの会話",
+      "conversationWith": "{name}さんとの会話",
+      "noArchived": "アーカイブした会話はありません。",
+      "restoreHint": "会話を開いて「受信箱に戻す」を選ぶと、元に戻せます。",
+      "select": "会話を選択してください",
+      "selectHint": "会話は左側に表示されます。",
+      "creatorEmpty": "まだメッセージはありません。ブランドから連絡があると、ここに会話が表示されます。",
+      "companyEmpty": "まだ会話はありません。クリエイターのプロフィールを開いて、会話を始めましょう。",
+      "archivedTitle": "アーカイブ"
+    },
+    "thread": {
+      "unavailable": "{name}（表示できません）",
+      "seen": "既読",
+      "today": "今日",
+      "yesterday": "昨日"
+    },
+    "composer": {
+      "maxFiles": "1通のメッセージに添付できるファイルは最大{max}個です。",
+      "signInAgain": "もう一度ログインしてください。",
+      "fileTypes": "JPG、PNG、WebPの画像、またはMP4、MOVの動画をご利用ください。",
+      "imageSize": "画像は10MBまでです。",
+      "videoSize": "動画は50MBまでです。",
+      "uploadFailed": "アップロードに失敗しました。もう一度お試しください。",
+      "remove": "{name}を削除",
+      "attach": "画像や動画を添付",
+      "message": "メッセージ",
+      "uploading": "アップロード中…",
+      "placeholder": "メッセージを入力…",
+      "send": "メッセージを送信"
+    },
+    "report": {
+      "report": "報告する",
+      "title": "{name}を報告",
+      "thanks": "ありがとうございます。担当チームが報告内容を確認します。",
+      "close": "閉じる",
+      "reason": "理由",
+      "choose": "理由を選択してください",
+      "details": "詳細（任意）",
+      "detailsPlaceholder": "何があったか教えてください",
+      "cancel": "キャンセル",
+      "send": "報告を送信",
+      "sending": "送信しています…",
+      "reasons": {
+        "fake_profile": "偽のプロフィール",
+        "spam": "スパム",
+        "inappropriate_content": "不適切なコンテンツ",
+        "harassment": "嫌がらせ",
+        "no_response": "返信がない",
+        "other": "その他"
+      }
+    },
+    "serverErrors": {
+      "demoAttachments": "デモでは添付ファイルをご利用いただけません。",
+      "conversationNotFound": "会話が見つかりません。",
+      "attachmentsFailed": "添付ファイルを送信できませんでした。もう一度お試しください。",
+      "messageFailed": "メッセージを送信できませんでした。もう一度お試しください。",
+      "attachmentsFailedAfter": "メッセージは送信されましたが、添付ファイルは送信できませんでした。もう一度送信してください。",
+      "dailyLimit": "本日の新規会話の上限に達しました。明日もう一度お試しください。",
+      "planLimit": "今期のプランの会話数の上限に達しました。",
+      "alreadyOpen": "このクリエイターとの会話はすでに開かれています。",
+      "creatorUnavailable": "このクリエイターは現在対応できません。",
+      "generic": "問題が発生しました。もう一度お試しください。",
+      "chooseReason": "理由を選択してください。",
+      "reportFailed": "報告を送信できませんでした。もう一度お試しください。",
+      "updateFailed": "会話を更新できませんでした。もう一度お試しください。",
+      "writeFirst": "先にメッセージを入力してください。",
+      "tooLong": "メッセージは{max}文字までです。"
+    }
   }
 }

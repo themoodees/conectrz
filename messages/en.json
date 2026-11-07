@@ -384,5 +384,133 @@
       "confirmationSent": "We sent a confirmation link to {email}. Open it to finish signing up.",
       "resetSent": "If an account exists for {email}, we've sent a link to reset your password."
     }
+  },
+  "app": {
+    "nav": {
+      "discover": "Discover",
+      "projects": "Projects",
+      "saved": "Saved",
+      "messages": "Messages",
+      "myProfile": "My profile",
+      "accountSettings": "Account settings",
+      "plans": "Plans",
+      "signOut": "Sign out",
+      "reports": "Reports",
+      "accounts": "Accounts",
+      "categories": "Categories",
+      "activity": "Activity",
+      "main": "Main"
+    },
+    "area": {
+      "creator": "Creator",
+      "admin": "Admin"
+    },
+    "status": {
+      "pausedTitle": "Your account is paused",
+      "closedTitle": "Your account has been closed",
+      "contactSupport": "If you think this is a mistake, please contact Conectrz support.",
+      "wrongTitle": "This area is for {area}",
+      "wrongText": "You're signed in with a different kind of account.",
+      "goToAccount": "Go to my account",
+      "areaCreators": "creators",
+      "areaBrands": "brands",
+      "areaAdmins": "admins",
+      "areaCompanies": "companies"
+    },
+    "notifications": {
+      "label": "Notifications",
+      "labelUnread": "Notifications, {count} unread",
+      "markAll": "Mark all as read",
+      "empty": "You're all caught up. New activity will show up here.",
+      "newMessage": "New message",
+      "newApplication": "New application",
+      "applicationDeclined": "Application not selected",
+      "newMatching": "New project for you",
+      "newReview": "You received a new review",
+      "aProject": "a project"
+    },
+    "inbox": {
+      "title": "Messages",
+      "archivedConversations": "Archived conversations",
+      "you": "You: ",
+      "sentAttachment": "Sent an attachment",
+      "sentAttachments": "Sent attachments",
+      "noMessages": "No messages yet",
+      "unread": "Unread",
+      "back": "Back to conversations",
+      "viewProfile": "View profile",
+      "company": "Company",
+      "archived": "Archived",
+      "options": "Conversation options",
+      "moveToInbox": "Move to inbox",
+      "archive": "Archive conversation",
+      "reportTarget": "conversation with {name}",
+      "conversationWith": "Conversation with {name}",
+      "noArchived": "No archived conversations.",
+      "restoreHint": "Open a conversation and choose “Move to inbox” to restore it.",
+      "select": "Select a conversation",
+      "selectHint": "Your conversations appear on the left.",
+      "creatorEmpty": "No messages yet. When a brand contacts you, the conversation appears here.",
+      "companyEmpty": "No conversations yet. Contact a creator from their profile to start one.",
+      "archivedTitle": "Archived"
+    },
+    "thread": {
+      "unavailable": "{name} (unavailable)",
+      "seen": "Seen",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "composer": {
+      "maxFiles": "You can attach up to {max} files per message.",
+      "signInAgain": "Please sign in again.",
+      "fileTypes": "Use JPG, PNG or WebP images, or MP4 or MOV videos.",
+      "imageSize": "Images can be up to 10 MB.",
+      "videoSize": "Videos can be up to 50 MB.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "remove": "Remove {name}",
+      "attach": "Attach images or videos",
+      "message": "Message",
+      "uploading": "Uploading…",
+      "placeholder": "Write a message…",
+      "send": "Send message"
+    },
+    "report": {
+      "report": "Report",
+      "title": "Report {name}",
+      "thanks": "Thanks — our team will review your report.",
+      "close": "Close",
+      "reason": "Reason",
+      "choose": "Choose a reason",
+      "details": "Details (optional)",
+      "detailsPlaceholder": "Tell us what happened",
+      "cancel": "Cancel",
+      "send": "Send report",
+      "sending": "Sending…",
+      "reasons": {
+        "fake_profile": "Fake profile",
+        "spam": "Spam",
+        "inappropriate_content": "Inappropriate content",
+        "harassment": "Harassment",
+        "no_response": "No response",
+        "other": "Other"
+      }
+    },
+    "serverErrors": {
+      "demoAttachments": "Attachments aren't available in the demo.",
+      "conversationNotFound": "Conversation not found.",
+      "attachmentsFailed": "Those attachments couldn't be sent. Please try again.",
+      "messageFailed": "Your message couldn't be sent. Please try again.",
+      "attachmentsFailedAfter": "Your message was sent, but the attachments couldn't be. Please send them again.",
+      "dailyLimit": "You've reached today's limit for new conversations. Try again tomorrow.",
+      "planLimit": "You've reached your plan's conversation limit for this period.",
+      "alreadyOpen": "You already have an open conversation with this creator.",
+      "creatorUnavailable": "This creator isn't available right now.",
+      "generic": "Something went wrong. Please try again.",
+      "chooseReason": "Choose a reason.",
+      "reportFailed": "Your report couldn't be sent. Please try again.",
+      "updateFailed": "Couldn't update the conversation. Please try again.",
+      "writeFirst": "Write a message first.",
+      "tooLong": "Messages can be up to {max} characters."
+    }
   }
 }
