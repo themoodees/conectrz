@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { NumberRange } from "@/types/discovery";
 
 interface RangeSliderProps {
@@ -16,6 +17,7 @@ interface RangeSliderProps {
 
 /** Two-handle slider. Dragging the right handle to the end means "max+" (no upper limit). */
 export function RangeSlider({ label, min, max, step, value, onChange, format }: RangeSliderProps) {
+  const t = useTranslations("app.filters");
   const low = value?.min ?? min;
   const high = value ? (value.max ?? max) : max;
   const pct = (n: number) => ((n - min) / (max - min)) * 100;
@@ -41,7 +43,7 @@ export function RangeSlider({ label, min, max, step, value, onChange, format }: 
         />
         <input
           type="range"
-          aria-label={`${label}, minimum`}
+          aria-label={t("rangeMin", { label })}
           min={min}
           max={max}
           step={step}
@@ -50,7 +52,7 @@ export function RangeSlider({ label, min, max, step, value, onChange, format }: 
         />
         <input
           type="range"
-          aria-label={`${label}, maximum`}
+          aria-label={t("rangeMax", { label })}
           min={min}
           max={max}
           step={step}

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { MyApplication } from "@/types/projects";
 import {
   applyToProject,
   withdrawApplication,
   type ProjectActionState,
 } from "@/lib/actions/projects";
-import { PAYMENT_LABELS, sharedPaymentMethods, type PaymentMethod } from "@/lib/payments";
+import { sharedPaymentMethods, type PaymentMethod } from "@/lib/payments";
 import { formatShortDate, formatUsd } from "@/lib/format";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
@@ -32,6 +33,8 @@ export function ApplyPanel({
   projectMethods: PaymentMethod[];
   myMethods: PaymentMethod[];
 }) {
+  const t = useTranslations("app.projects.apply");
+  const locale = useLocale();
   const [state, formAction, pending] = useActionState<ProjectActionState, FormData>(
     applyToProject,
     {},
@@ -43,11 +46,13 @@ export function ApplyPanel({
     return (
       <section className="rounded-card border border-border p-5 md:p-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold text-ink">Your application</h2>
+          <h2 className="text-base font-semibold text-ink">{t("yourApplication")}</h2>
           <ApplicationStatusBadge status={application.status} />
         </div>
-        <p className="mt-1 text-xs text-muted">Sent {formatShortDate(application.createdAt)}</p>
-        <p className="mt-4 text-sm text-muted">Your price</p>
+        <p className="mt-1 text-xs text-muted">
+          {t("sent", { date: formatShortDate(application.createdAt, locale) })}
+        </p>
+        <p className="mt-4 text-sm text-muted">{t("yourPrice")}</p>
         <p className="text-lg font-semibold text-ink">{formatUsd(application.proposedAmountUsd)}</p>
         <p className="mt-4 text-sm whitespace-pre-line text-graphite">{application.message}</p>
         {application.status === "submitted" && isOpen && (
@@ -63,7 +68,7 @@ export function ApplyPanel({
               }
               className={buttonClass({ variant: "secondary", size: "sm" })}
             >
-              Withdraw application
+              {t("withdraw")}
             </button>
             {withdrawError && (
               <p role="alert" className="mt-2 text-xs text-danger">
@@ -79,44 +84,44 @@ export function ApplyPanel({
   if (!isOpen) {
     return (
       <p className="rounded-card border border-dashed border-border p-5 text-sm text-muted">
-        This project is closed and no longer takes applications.
+        {t("closedNote")}
       </p>
     );
   }
 
   return (
     <section className="rounded-card border border-border p-5 md:p-6">
-      <h2 className="text-base font-semibold text-ink">Apply to this project</h2>
+      <h2 className="text-base font-semibold text-ink">{t("title")}</h2>
       <p className="mt-1 text-sm text-muted">
-        Tell the company why you&apos;re a good fit and what you&apos;d charge. You can&apos;t edit an
-        application once it&apos;s sent, but you can withdraw it.
+        Tell the company why you&apos;re a good fit and what you&apos;d charge. You can&apos;t edit
+        an application once it&apos;s sent, but you can withdraw it.
       </p>
       <form action={formAction} className="mt-5 space-y-4">
         <input type="hidden" name="projectId" value={projectId} />
         {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
         {state.success && <FormMessage tone="success">{state.success}</FormMessage>}
         <TextAreaField
-          label="Your message"
+          label={t("message")}
           name="message"
           required
           rows={5}
           maxLength={2000}
-          placeholder="Why you're a good fit, similar work you've done, timing…"
+          placeholder={t("messagePlaceholder")}
         />
         <TextField
-          label="Your price (USD)"
+          label={t("priceLabel")}
           name="amount"
           required
           inputMode="numeric"
           placeholder={String(budgetUsd)}
-          hint={`The company's budget is ${formatUsd(budgetUsd)}.`}
+          hint={t("budgetHint", { amount: formatUsd(budgetUsd) })}
           className="max-w-xs"
         />
         {projectMethods.length > 0 && (
           <PaymentCheck projectMethods={projectMethods} myMethods={myMethods} />
         )}
         <button type="submit" disabled={pending} className={buttonClass()}>
-          {pending ? "Sending…" : "Send application"}
+          {pending ? t("sending") : t("send")}
         </button>
       </form>
     </section>
@@ -131,30 +136,24 @@ function PaymentCheck({
   projectMethods: PaymentMethod[];
   myMethods: PaymentMethod[];
 }) {
+  const t = useTranslations("app.projects.apply");
+  const tPay = useTranslations("app.payments.methods");
   const shared = sharedPaymentMethods(projectMethods, myMethods);
-  const companyList = projectMethods.map((m) => PAYMENT_LABELS[m]).join(", ");
+  const companyList = projectMethods.map((m) => tPay(m)).join(", ");
+  const list = (methods: PaymentMethod[]) => methods.map((m) => tPay(m)).join(", ");
 
-  let text: React.ReactNode;
-  if (myMethods.length === 0) {
-    text = (
-      <>
-        The company pays by {companyList}.{" "}
-        <Link href="/creator/profile" className="font-medium underline">
-          Add the methods you accept
-        </Link>{" "}
-        to your profile so you can both check this early.
-      </>
-    );
-  } else if (shared.length === 0) {
-    text = (
-      <>
-        Heads up: the company pays by {companyList}, but you accept{" "}
-        {myMethods.map((m) => PAYMENT_LABELS[m]).join(", ")}. You can still apply and agree on a
-        method with them.
-      </>
-    );
-  } else {
-    text = <>Good match: you both can use {shared.map((m) => PAYMENT_LABELS[m]).join(", ")}.</>;
-  }
+  const text =
+    myMethods.length === 0
+      ? t.rich("noMethods", {
+          company: companyList,
+          link: (chunks) => (
+            <Link href="/creator/profile" className="font-medium underline">
+              {chunks}
+            </Link>
+          ),
+        })
+      : shared.length === 0
+        ? t("mismatch", { company: companyList, mine: list(myMethods) })
+        : t("match", { shared: list(shared) });
   return <p className="rounded-control bg-surface px-3.5 py-2.5 text-xs text-graphite">{text}</p>;
 }

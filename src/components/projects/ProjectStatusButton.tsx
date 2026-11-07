@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import type { ProjectStatus } from "@/types/projects";
 import { setProjectStatus } from "@/lib/actions/projects";
 import { buttonClass } from "@/components/ui/buttonStyles";
@@ -13,6 +14,7 @@ export function ProjectStatusButton({
   projectId: string;
   status: ProjectStatus;
 }) {
+  const t = useTranslations("app.projects.statusButton");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
   const next = status === "open" ? "closed" : "open";
@@ -30,7 +32,7 @@ export function ProjectStatusButton({
         }
         className={buttonClass({ variant: "secondary", size: "sm" })}
       >
-        {status === "open" ? "Close project" : "Reopen project"}
+        {status === "open" ? t("close") : t("reopen")}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-xs text-danger">

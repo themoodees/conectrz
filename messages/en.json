@@ -519,6 +519,190 @@
       "navLabel": "Language",
       "title": "Language",
       "description": "The language you read Conectrz in. It's saved to your account, so it looks the same on every device."
+    },
+    "projects": {
+      "status": {
+        "open": "Open",
+        "closed": "Closed"
+      },
+      "application": {
+        "submitted": "Applied",
+        "declined": "Declined",
+        "withdrawn": "Withdrawn"
+      },
+      "card": {
+        "budget": "Budget",
+        "deliverBy": "Deliver by"
+      },
+      "tags": {
+        "services": "Services",
+        "niches": "Niches",
+        "languages": "Languages"
+      },
+      "references": {
+        "title": "References",
+        "note": "Links are added by the company and open in a new tab. Only open links you trust.",
+        "imageAlt": "Project reference"
+      },
+      "browser": {
+        "openProjects": "Open projects",
+        "searchPlaceholder": "Search projects",
+        "searchAria": "Search projects by title, description or company",
+        "clearAll": "Clear all",
+        "activeFilters": "Active filters",
+        "sortBy": "Sort by",
+        "sortAria": "Sort projects",
+        "count": "<b>{count}</b> {count, plural, one {project} other {projects}}",
+        "sorts": {
+          "newest": "Newest",
+          "budget": "Highest budget",
+          "deadline": "Deadline soonest"
+        },
+        "deadlines": {
+          "week": "Within 7 days",
+          "month": "Within 30 days",
+          "later": "More than 30 days"
+        },
+        "labels": {
+          "niches": "Niche",
+          "services": "Service",
+          "languages": "Language",
+          "payments": "Payment",
+          "budget": "Budget",
+          "deadline": "Deadline"
+        },
+        "paysBy": "Pays by {method}",
+        "noOpenTitle": "No open projects right now",
+        "noOpenText": "New projects from companies will show up here.",
+        "noMatchTitle": "No projects match your filters",
+        "noMatchText": "Try removing a filter or searching for something else."
+      },
+      "page": {
+        "title": "Projects",
+        "intro": "Briefs from companies looking for creators. Apply with a message and your price.",
+        "yourApplications": "Your applications",
+        "posted": "Posted {date}",
+        "howPay": "How the company will pay",
+        "single": "Project"
+      },
+      "apply": {
+        "yourApplication": "Your application",
+        "sent": "Sent {date}",
+        "yourPrice": "Your price",
+        "withdraw": "Withdraw application",
+        "closedNote": "This project is closed and no longer takes applications.",
+        "title": "Apply to this project",
+        "intro": "Tell the company why you're a good fit and what you'd charge. You can't edit an application once it's sent, but you can withdraw it.",
+        "message": "Your message",
+        "messagePlaceholder": "Why you're a good fit, similar work you've done, timing…",
+        "priceLabel": "Your price (USD)",
+        "budgetHint": "The company's budget is {amount}.",
+        "sending": "Sending…",
+        "send": "Send application",
+        "noMethods": "The company pays by {company}. <link>Add the methods you accept</link> to your profile so you can both check this early.",
+        "mismatch": "Heads up: the company pays by {company}, but you accept {mine}. You can still apply and agree on a method with them.",
+        "match": "Good match: you both can use {shared}."
+      },
+      "applicants": {
+        "applied": "Applied {date}",
+        "proposed": "proposed price",
+        "acceptsBy": "Accepts payment by",
+        "view": "View profile & message",
+        "decline": "Decline"
+      },
+      "form": {
+        "titleLabel": "Project title",
+        "titlePlaceholder": "e.g. Autumn skincare UGC videos",
+        "descLabel": "What do you need?",
+        "descHint": "Describe the deliverables, style, how many, and anything creators should know.",
+        "budgetLabel": "Budget (USD)",
+        "budgetHint": "Whole US dollars.",
+        "deadlineLabel": "Deliver by",
+        "services": "Services wanted",
+        "niches": "Niches",
+        "languages": "Languages",
+        "payLegend": "How will you pay the creator?",
+        "payHint": "Choose every method you can use. Creators see this before they apply.",
+        "posting": "Posting…",
+        "post": "Post project"
+      },
+      "refs": {
+        "legend": "References (optional)",
+        "hint": "Add links (a mood board, an Instagram account, a product page) and images that show the style you want. Creators see them on the project page.",
+        "linkAria": "Reference link {n}",
+        "removeLink": "Remove link {n}",
+        "addLink": "Add another link",
+        "removeImage": "Remove image",
+        "addImages": "Add images",
+        "uploading": "Uploading…",
+        "mockNote": "Uploads are available in Supabase mode.",
+        "limits": "Up to {max} images, JPG, PNG or WebP, 5 MB each.",
+        "maxImages": "You can add up to {max} images.",
+        "signIn": "Please sign in again.",
+        "fileTypes": "Use JPG, PNG or WebP images.",
+        "fileSize": "Each image can be up to 5 MB.",
+        "uploadFailed": "Upload failed. Please try again."
+      },
+      "statusButton": {
+        "close": "Close project",
+        "reopen": "Reopen project"
+      }
+    },
+    "filters": {
+      "clear": "Clear",
+      "close": "Close filters",
+      "moreFilters": "More filters",
+      "filters": "Filters",
+      "removeFilter": "Remove filter: {label}",
+      "rangeMin": "{label}, minimum",
+      "rangeMax": "{label}, maximum",
+      "showCreators": "Show {count, plural, one {# creator} other {# creators}}",
+      "showProjects": "Show {count, plural, one {# project} other {# projects}}"
+    },
+    "payments": {
+      "methods": {
+        "bank_transfer": "Bank transfer",
+        "paypal": "PayPal",
+        "wise": "Wise",
+        "stripe": "Stripe",
+        "other": "Other"
+      },
+      "notice": "Payment is arranged directly between the company and the creator. Conectrz does not process, hold or guarantee payments.",
+      "notSpecified": "Not specified"
+    },
+    "projectErrors": {
+      "enterTitle": "Enter a title.",
+      "titleTooLong": "Titles can be up to {max} characters.",
+      "describe": "Describe what you need.",
+      "descTooLong": "Descriptions can be up to {max} characters.",
+      "budgetInvalid": "Enter a budget in whole US dollars.",
+      "tooManyRefs": "You can add up to {links} links and {images} images.",
+      "refLinkInvalid": "Reference links must be full web addresses starting with http:// or https://.",
+      "choosePayment": "Choose at least one way you will pay the creator.",
+      "deadlinePast": "Choose a delivery deadline that is today or later.",
+      "invalidSelection": "Invalid selection.",
+      "invalidImage": "Invalid image.",
+      "postFailed": "Couldn't post your project. Please try again.",
+      "saveDetailsFailed": "Couldn't save the project details. Please try again.",
+      "notFound": "Project not found.",
+      "pausedReopen": "Your account is paused, so projects can't be reopened.",
+      "updateFailed": "Couldn't update the project. Please try again.",
+      "cantChange": "This application can't be changed.",
+      "closedDecline": "This project is closed. Reopen it to decline applications.",
+      "declineFailed": "Couldn't decline this application. Please try again.",
+      "declined": "Application declined.",
+      "enterMessage": "Write a short message to the company.",
+      "msgTooLong": "Messages can be up to {max} characters.",
+      "enterPrice": "Enter your price in whole US dollars.",
+      "closed": "This project is closed.",
+      "alreadyApplied": "You've already applied to this project.",
+      "notPublished": "You can apply once your profile is published: add your prefecture, at least one language and one service. The project must also still be open.",
+      "sendFailed": "Couldn't send your application. Please try again.",
+      "sent": "Application sent.",
+      "withdrawFailed": "Couldn't withdraw your application. Please try again.",
+      "withdrawn": "Application withdrawn.",
+      "projectClosed": "Project closed.",
+      "projectReopened": "Project reopened."
     }
   }
 }

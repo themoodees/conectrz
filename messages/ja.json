@@ -519,6 +519,190 @@
       "navLabel": "言語",
       "title": "言語",
       "description": "Conectrz を表示する言語です。アカウントに保存されるため、どの端末でも同じ言語で表示されます。"
+    },
+    "projects": {
+      "status": {
+        "open": "募集中",
+        "closed": "終了"
+      },
+      "application": {
+        "submitted": "応募済み",
+        "declined": "見送り",
+        "withdrawn": "取り下げ"
+      },
+      "card": {
+        "budget": "予算",
+        "deliverBy": "納期"
+      },
+      "tags": {
+        "services": "サービス",
+        "niches": "ジャンル",
+        "languages": "言語"
+      },
+      "references": {
+        "title": "参考資料",
+        "note": "リンクは企業が追加したもので、新しいタブで開きます。信頼できるリンクのみ開いてください。",
+        "imageAlt": "プロジェクトの参考画像"
+      },
+      "browser": {
+        "openProjects": "募集中のプロジェクト",
+        "searchPlaceholder": "プロジェクトを検索",
+        "searchAria": "タイトル、説明、企業名でプロジェクトを検索",
+        "clearAll": "すべてクリア",
+        "activeFilters": "適用中のフィルター",
+        "sortBy": "並び替え",
+        "sortAria": "プロジェクトを並び替え",
+        "count": "<b>{count}</b>件のプロジェクト",
+        "sorts": {
+          "newest": "新着順",
+          "budget": "予算が高い順",
+          "deadline": "納期が近い順"
+        },
+        "deadlines": {
+          "week": "7日以内",
+          "month": "30日以内",
+          "later": "30日より先"
+        },
+        "labels": {
+          "niches": "ジャンル",
+          "services": "サービス",
+          "languages": "言語",
+          "payments": "支払い方法",
+          "budget": "予算",
+          "deadline": "納期"
+        },
+        "paysBy": "{method}で支払い",
+        "noOpenTitle": "現在募集中のプロジェクトはありません",
+        "noOpenText": "企業から新しいプロジェクトが届くと、ここに表示されます。",
+        "noMatchTitle": "条件に合うプロジェクトがありません",
+        "noMatchText": "フィルターを外すか、別のキーワードで検索してみてください。"
+      },
+      "page": {
+        "title": "プロジェクト",
+        "intro": "クリエイターを探している企業の依頼内容です。メッセージと希望金額を添えて応募しましょう。",
+        "yourApplications": "あなたの応募",
+        "posted": "投稿日 {date}",
+        "howPay": "企業の支払い方法",
+        "single": "プロジェクト"
+      },
+      "apply": {
+        "yourApplication": "あなたの応募",
+        "sent": "送信日 {date}",
+        "yourPrice": "希望金額",
+        "withdraw": "応募を取り下げる",
+        "closedNote": "このプロジェクトは終了しており、応募を受け付けていません。",
+        "title": "このプロジェクトに応募する",
+        "intro": "自分が適任である理由と、希望金額を企業に伝えましょう。送信後の応募は編集できませんが、取り下げることはできます。",
+        "message": "メッセージ",
+        "messagePlaceholder": "適任である理由、似た実績、対応可能な時期など…",
+        "priceLabel": "希望金額（USD）",
+        "budgetHint": "企業の予算は{amount}です。",
+        "sending": "送信しています…",
+        "send": "応募を送信",
+        "noMethods": "企業の支払い方法：{company}。プロフィールに<link>受け取り可能な支払い方法を追加</link>すると、お互いに早めに確認できます。",
+        "mismatch": "ご注意：企業の支払い方法は{company}ですが、あなたは{mine}に対応しています。応募は可能で、支払い方法は企業と相談できます。",
+        "match": "相性良好：どちらも{shared}を利用できます。"
+      },
+      "applicants": {
+        "applied": "応募日 {date}",
+        "proposed": "希望金額",
+        "acceptsBy": "受け取り可能な支払い方法",
+        "view": "プロフィールを見てメッセージ",
+        "decline": "見送る"
+      },
+      "form": {
+        "titleLabel": "プロジェクト名",
+        "titlePlaceholder": "例：秋のスキンケアUGC動画",
+        "descLabel": "依頼内容",
+        "descHint": "納品物、スタイル、本数など、クリエイターに知っておいてほしいことを記入してください。",
+        "budgetLabel": "予算（USD）",
+        "budgetHint": "米ドルの整数で入力してください。",
+        "deadlineLabel": "納期",
+        "services": "希望するサービス",
+        "niches": "ジャンル",
+        "languages": "言語",
+        "payLegend": "クリエイターへの支払い方法",
+        "payHint": "利用できる方法をすべて選んでください。クリエイターは応募前にこの情報を確認できます。",
+        "posting": "投稿しています…",
+        "post": "プロジェクトを投稿"
+      },
+      "refs": {
+        "legend": "参考資料（任意）",
+        "hint": "イメージに合うリンク（ムードボード、Instagramアカウント、商品ページなど）や画像を追加してください。クリエイターはプロジェクトページで確認できます。",
+        "linkAria": "参考リンク {n}",
+        "removeLink": "リンク {n} を削除",
+        "addLink": "リンクを追加",
+        "removeImage": "画像を削除",
+        "addImages": "画像を追加",
+        "uploading": "アップロード中…",
+        "mockNote": "アップロードはSupabaseモードで利用できます。",
+        "limits": "画像は最大{max}枚、JPG・PNG・WebP、1枚5MBまで。",
+        "maxImages": "画像は最大{max}枚まで追加できます。",
+        "signIn": "もう一度ログインしてください。",
+        "fileTypes": "JPG、PNG、WebPの画像をご利用ください。",
+        "fileSize": "画像は1枚5MBまでです。",
+        "uploadFailed": "アップロードに失敗しました。もう一度お試しください。"
+      },
+      "statusButton": {
+        "close": "プロジェクトを終了",
+        "reopen": "プロジェクトを再開"
+      }
+    },
+    "filters": {
+      "clear": "クリア",
+      "close": "フィルターを閉じる",
+      "moreFilters": "その他のフィルター",
+      "filters": "フィルター",
+      "removeFilter": "フィルターを解除：{label}",
+      "rangeMin": "{label}（下限）",
+      "rangeMax": "{label}（上限）",
+      "showCreators": "{count}人のクリエイターを表示",
+      "showProjects": "{count}件のプロジェクトを表示"
+    },
+    "payments": {
+      "methods": {
+        "bank_transfer": "銀行振込",
+        "paypal": "PayPal",
+        "wise": "Wise",
+        "stripe": "Stripe",
+        "other": "その他"
+      },
+      "notice": "支払いは企業とクリエイターの間で直接調整します。Conectrz は支払いの処理・保管・保証を行いません。",
+      "notSpecified": "指定なし"
+    },
+    "projectErrors": {
+      "enterTitle": "タイトルを入力してください。",
+      "titleTooLong": "タイトルは{max}文字までです。",
+      "describe": "依頼内容を入力してください。",
+      "descTooLong": "説明は{max}文字までです。",
+      "budgetInvalid": "予算を米ドルの整数で入力してください。",
+      "tooManyRefs": "リンクは{links}件、画像は{images}枚まで追加できます。",
+      "refLinkInvalid": "参考リンクは http:// または https:// で始まる完全なURLにしてください。",
+      "choosePayment": "クリエイターへの支払い方法を1つ以上選んでください。",
+      "deadlinePast": "納期は今日以降の日付を選んでください。",
+      "invalidSelection": "選択内容が正しくありません。",
+      "invalidImage": "画像が正しくありません。",
+      "postFailed": "プロジェクトを投稿できませんでした。もう一度お試しください。",
+      "saveDetailsFailed": "プロジェクトの詳細を保存できませんでした。もう一度お試しください。",
+      "notFound": "プロジェクトが見つかりません。",
+      "pausedReopen": "アカウントが一時停止されているため、プロジェクトを再開できません。",
+      "updateFailed": "プロジェクトを更新できませんでした。もう一度お試しください。",
+      "cantChange": "この応募は変更できません。",
+      "closedDecline": "このプロジェクトは終了しています。応募を見送るには、先に再開してください。",
+      "declineFailed": "この応募を見送れませんでした。もう一度お試しください。",
+      "declined": "応募を見送りました。",
+      "enterMessage": "企業への短いメッセージを入力してください。",
+      "msgTooLong": "メッセージは{max}文字までです。",
+      "enterPrice": "希望金額を米ドルの整数で入力してください。",
+      "closed": "このプロジェクトは終了しています。",
+      "alreadyApplied": "このプロジェクトにはすでに応募済みです。",
+      "notPublished": "プロフィールを公開すると応募できます。都道府県、言語、サービスをそれぞれ1つ以上追加してください。また、プロジェクトが募集中である必要があります。",
+      "sendFailed": "応募を送信できませんでした。もう一度お試しください。",
+      "sent": "応募を送信しました。",
+      "withdrawFailed": "応募を取り下げられませんでした。もう一度お試しください。",
+      "withdrawn": "応募を取り下げました。",
+      "projectClosed": "プロジェクトを終了しました。",
+      "projectReopened": "プロジェクトを再開しました。"
     }
   }
 }

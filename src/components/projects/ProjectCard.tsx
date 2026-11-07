@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { Project } from "@/types/projects";
 import { formatDeadline, formatUsd } from "@/lib/format";
 import { ProjectStatusBadge } from "./ProjectBadges";
@@ -19,6 +20,8 @@ export function ProjectCard({
   badges?: ReactNode;
   footer?: ReactNode;
 }) {
+  const t = useTranslations("app.projects.card");
+  const locale = useLocale();
   const tags = [...project.services, ...project.niches];
   return (
     <article className="relative rounded-card border border-border bg-white p-5 shadow-card transition-shadow hover:shadow-card-hover md:p-6">
@@ -48,17 +51,17 @@ export function ProjectCard({
       <p className="mt-2 line-clamp-2 text-sm text-graphite">{project.description}</p>
       <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
         <div className="flex gap-1.5">
-          <dt className="text-muted">Budget</dt>
+          <dt className="text-muted">{t("budget")}</dt>
           <dd className="font-semibold text-ink">{formatUsd(project.budgetUsd)}</dd>
         </div>
         <div className="flex gap-1.5">
-          <dt className="text-muted">Deliver by</dt>
-          <dd className="font-semibold text-ink">{formatDeadline(project.deliveryDeadline)}</dd>
+          <dt className="text-muted">{t("deliverBy")}</dt>
+          <dd className="font-semibold text-ink">
+            {formatDeadline(project.deliveryDeadline, locale)}
+          </dd>
         </div>
       </dl>
-      {tags.length > 0 && (
-        <p className="mt-3 text-xs text-muted">{tags.slice(0, 4).join(" · ")}</p>
-      )}
+      {tags.length > 0 && <p className="mt-3 text-xs text-muted">{tags.slice(0, 4).join(" · ")}</p>}
       {footer && <div className="relative mt-4">{footer}</div>}
     </article>
   );

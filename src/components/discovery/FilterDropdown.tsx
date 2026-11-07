@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { useDismiss } from "@/lib/useDismiss";
 import { ChevronDownIcon } from "@/components/ui/icons";
 
@@ -13,6 +14,7 @@ interface FilterDropdownProps {
 
 /** Desktop toolbar button that opens a small popover with one filter's options. */
 export function FilterDropdown({ label, selectedCount, onClear, children }: FilterDropdownProps) {
+  const t = useTranslations("app.filters");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setIsOpen(false), []);
@@ -51,7 +53,7 @@ export function FilterDropdown({ label, selectedCount, onClear, children }: Filt
               disabled={!isActive}
               className="text-sm font-medium text-graphite hover:text-ink disabled:cursor-not-allowed disabled:text-muted/60"
             >
-              Clear
+              {t("clear")}
             </button>
             <button
               type="button"

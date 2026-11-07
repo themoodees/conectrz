@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ProjectReference } from "@/types/projects";
 
 const hostOf = (url: string) => {
@@ -10,13 +11,14 @@ const hostOf = (url: string) => {
 
 /** Links and images the company attached to a project. Nothing when there are none. */
 export function ProjectReferences({ references }: { references: ProjectReference[] | undefined }) {
+  const t = useTranslations("app.projects.references");
   const links = (references ?? []).filter((r) => r.kind === "link");
   const images = (references ?? []).filter((r) => r.kind === "image");
   if (links.length + images.length === 0) return null;
 
   return (
     <div className="mt-6">
-      <h2 className="mb-2 text-sm font-semibold text-ink">References</h2>
+      <h2 className="mb-2 text-sm font-semibold text-ink">{t("title")}</h2>
       {links.length > 0 && (
         <ul className="space-y-1.5">
           {links.map((link) => (
@@ -42,7 +44,7 @@ export function ProjectReferences({ references }: { references: ProjectReference
                 {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL */}
                 <img
                   src={image.url}
-                  alt="Project reference"
+                  alt={t("imageAlt")}
                   loading="lazy"
                   className="aspect-square w-full rounded-card border border-border object-cover"
                 />
@@ -51,9 +53,7 @@ export function ProjectReferences({ references }: { references: ProjectReference
           ))}
         </ul>
       )}
-      <p className="mt-2 text-xs text-muted">
-        Links are added by the company and open in a new tab. Only open links you trust.
-      </p>
+      <p className="mt-2 text-xs text-muted">{t("note")}</p>
     </div>
   );
 }

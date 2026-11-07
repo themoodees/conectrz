@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import type { CreatorProject, ProjectFormOptions } from "@/types/projects";
 import type { NumberRange } from "@/types/discovery";
 import { PAYMENT_METHODS, type PaymentMethod } from "@/lib/payments";
@@ -18,27 +19,11 @@ type Sort = "newest" | "budget" | "deadline";
 type ListKey = "niches" | "services" | "languages";
 type FilterId = ListKey | "payments" | "budget" | "deadline";
 
-const DEADLINES: { id: Deadline; label: string }[] = [
-  { id: "week", label: "Within 7 days" },
-  { id: "month", label: "Within 30 days" },
-  { id: "later", label: "More than 30 days" },
-];
-const SORTS: { id: Sort; label: string }[] = [
-  { id: "newest", label: "Newest" },
-  { id: "budget", label: "Highest budget" },
-  { id: "deadline", label: "Deadline soonest" },
-];
+const DEADLINES: Deadline[] = ["week", "month", "later"];
+const SORTS: Sort[] = ["newest", "budget", "deadline"];
 
 const BUDGET_SLIDER = { min: 0, max: 3000, step: 50 };
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
-const LABELS: Record<FilterId, string> = {
-  niches: "Niche",
-  services: "Service",
-  languages: "Language",
-  payments: "Payment",
-  budget: "Budget",
-  deadline: "Deadline",
-};
 const PRIMARY: FilterId[] = ["niches", "services", "budget"];
 const SECONDARY: FilterId[] = ["languages", "payments", "deadline"];
 const ALL: FilterId[] = [...PRIMARY, ...SECONDARY];
@@ -69,6 +54,9 @@ export function CreatorProjectBrowser({
   projects: CreatorProject[];
   options: ProjectFormOptions;
 }) {
+  const t = useTranslations("app.projects.browser");
+  const tPay = useTranslations("app.payments.methods");
+  const tf = useTranslations("app.filters");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("newest");
   const [selected, setSelected] = useState<Record<ListKey, string[]>>({
@@ -85,7 +73,9 @@ export function CreatorProjectBrowser({
   const choices = useMemo(() => {
     const build = (key: ListKey) => {
       const counts = new Map<string, number>();
-      projects.forEach((p) => p[key].forEach((name) => counts.set(name, (counts.get(name) ?? 0) + 1)));
+      projects.forEach((p) =>
+        p[key].forEach((name) => counts.set(name, (counts.get(name) ?? 0) + 1)),
+      );
       return options[key]
         .map((o) => ({ name: o.name, count: counts.get(o.name) ?? 0 }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
@@ -118,7 +108,10 @@ export function CreatorProjectBrowser({
       ) {
         return false;
       }
-      if (budget && (p.budgetUsd < budget.min || (budget.max !== null && p.budgetUsd > budget.max))) {
+      if (
+        budget &&
+        (p.budgetUsd < budget.min || (budget.max !== null && p.budgetUsd > budget.max))
+      ) {
         return false;
       }
       return !deadline || matchesDeadline(p, deadline);
@@ -160,16 +153,22 @@ export function CreatorProjectBrowser({
   const section = (id: FilterId): ReactNode => {
     if (id === "budget") {
       return (
-        <RangeSlider label="Budget" {...BUDGET_SLIDER} value={budget} onChange={setBudget} format={usd} />
+        <RangeSlider
+          label={t("labels.budget")}
+          {...BUDGET_SLIDER}
+          value={budget}
+          onChange={setBudget}
+          format={usd}
+        />
       );
     }
     if (id === "deadline") {
       return DEADLINES.map((d) => (
         <OptionButton
-          key={d.id}
-          label={d.label}
-          isSelected={deadline === d.id}
-          onClick={() => setDeadline(deadline === d.id ? null : d.id)}
+          key={d}
+          label={t(`deadlines.${d}`)}
+          isSelected={deadline === d}
+          onClick={() => setDeadline(deadline === d ? null : d)}
         />
       ));
     }
@@ -177,7 +176,7 @@ export function CreatorProjectBrowser({
       return paymentCounts.map((m) => (
         <OptionButton
           key={m.id}
-          label={`${m.label} · ${m.count}`}
+          label={`${tPay(m.id)} · ${m.count}`}
           isSelected={payments.includes(m.id)}
           onClick={() => setPayments(toggle(payments, m.id))}
         />
@@ -188,7 +187,9 @@ export function CreatorProjectBrowser({
         key={c.name}
         label={`${c.name} · ${c.count}`}
         isSelected={selected[id].includes(c.name)}
-        onClick={() => setSelected((current) => ({ ...current, [id]: toggle(current[id], c.name) }))}
+        onClick={() =>
+          setSelected((current) => ({ ...current, [id]: toggle(current[id], c.name) }))
+        }
       />
     ));
   };
@@ -205,7 +206,7 @@ export function CreatorProjectBrowser({
     ...payments.map((m) => ({
       id: `payments:${m}`,
       key: "payments" as FilterId,
-      label: `Pays by ${PAYMENT_METHODS.find((x) => x.id === m)?.label ?? m}`,
+      label: t("paysBy", { method: tPay(m) }),
       remove: () => setPayments((c) => c.filter((v) => v !== m)),
     })),
     ...(budget
@@ -223,7 +224,7 @@ export function CreatorProjectBrowser({
           {
             id: "deadline",
             key: "deadline" as FilterId,
-            label: DEADLINES.find((d) => d.id === deadline)!.label,
+            label: t(`deadlines.${deadline}`),
             remove: () => setDeadline(null),
           },
         ]
@@ -236,7 +237,7 @@ export function CreatorProjectBrowser({
   return (
     <section aria-labelledby="open-projects-heading">
       <h2 id="open-projects-heading" className="mb-4 text-lg font-semibold text-ink">
-        Open projects
+        {t("openProjects")}
       </h2>
 
       {projects.length > 0 && (
@@ -249,13 +250,13 @@ export function CreatorProjectBrowser({
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search projects"
-                  aria-label="Search projects by title, description or company"
+                  placeholder={t("searchPlaceholder")}
+                  aria-label={t("searchAria")}
                   className="h-12 w-full rounded-control border border-border bg-white pr-4 pl-12 text-base text-ink placeholder:text-muted hover:border-muted/50 focus:border-primary focus:ring-3 focus:ring-primary/15 focus:outline-none"
                 />
               </div>
               <MoreFiltersButton
-                label="Filters"
+                label={tf("filters")}
                 count={chips.length}
                 onClick={() => setPanel("all")}
                 className="h-12 md:hidden"
@@ -265,7 +266,7 @@ export function CreatorProjectBrowser({
               {PRIMARY.map((id) => (
                 <FilterDropdown
                   key={id}
-                  label={LABELS[id]}
+                  label={t(`labels.${id}`)}
                   selectedCount={countFor(id)}
                   onClear={() => clear([id])}
                 >
@@ -277,13 +278,13 @@ export function CreatorProjectBrowser({
               <MoreFiltersButton
                 count={secondaryCount}
                 onClick={() => setPanel("more")}
-                label="More filters"
+                label={tf("moreFilters")}
               />
             </div>
           </div>
 
           {chips.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2" aria-label="Active filters">
+            <div className="flex flex-wrap items-center gap-2" aria-label={t("activeFilters")}>
               {chips.map((chip) => (
                 <FilterChip key={chip.id} label={chip.label} onRemove={chip.remove} />
               ))}
@@ -292,28 +293,30 @@ export function CreatorProjectBrowser({
                 onClick={() => clear()}
                 className="ml-1 h-8 rounded-lg px-2 text-sm font-medium text-graphite underline-offset-4 hover:text-ink hover:underline"
               >
-                Clear all
+                {t("clearAll")}
               </button>
             </div>
           )}
 
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm text-graphite" aria-live="polite">
-              <span className="font-semibold text-ink">{visible.length}</span>{" "}
-              {visible.length === 1 ? "project" : "projects"}
+              {t.rich("count", {
+                count: visible.length,
+                b: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
+              })}
             </p>
             <label className="flex items-center gap-2 text-sm">
-              <span className="hidden text-muted sm:inline">Sort by</span>
+              <span className="hidden text-muted sm:inline">{t("sortBy")}</span>
               <span className="relative">
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as Sort)}
-                  aria-label="Sort projects"
+                  aria-label={t("sortAria")}
                   className="h-9 appearance-none rounded-control border border-border bg-white pr-9 pl-3 font-medium text-ink hover:border-muted/50"
                 >
                   {SORTS.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.label}
+                    <option key={s} value={s}>
+                      {t(`sorts.${s}`)}
                     </option>
                   ))}
                 </select>
@@ -323,7 +326,7 @@ export function CreatorProjectBrowser({
           </div>
 
           <FilterPanel
-            title={panel === "more" ? "More filters" : "Filters"}
+            title={panel === "more" ? tf("moreFilters") : tf("filters")}
             isOpen={panel !== null}
             onClose={() => setPanel(null)}
             onClear={() => clear(panelIds)}
@@ -333,7 +336,7 @@ export function CreatorProjectBrowser({
           >
             {panelIds.map((id) => (
               <fieldset key={id}>
-                <legend className="mb-3 text-sm font-semibold text-ink">{LABELS[id]}</legend>
+                <legend className="mb-3 text-sm font-semibold text-ink">{t(`labels.${id}`)}</legend>
                 {id === "budget" ? (
                   section(id)
                 ) : (
@@ -359,12 +362,10 @@ export function CreatorProjectBrowser({
             <BriefcaseIcon className="size-5" />
           </span>
           <h3 className="mt-4 text-lg font-semibold text-ink">
-            {projects.length === 0 ? "No open projects right now" : "No projects match your filters"}
+            {projects.length === 0 ? t("noOpenTitle") : t("noMatchTitle")}
           </h3>
           <p className="mt-1 max-w-sm text-sm text-muted">
-            {projects.length === 0
-              ? "New projects from companies will show up here."
-              : "Try removing a filter or searching for something else."}
+            {projects.length === 0 ? t("noOpenText") : t("noMatchText")}
           </p>
         </div>
       )}
