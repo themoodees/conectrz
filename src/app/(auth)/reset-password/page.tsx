@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 
-export const metadata: Metadata = { title: "Choose a new password" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.reset");
+  return { title: t("metaTitle") };
+}
 
 /** Reached from the reset email (via /auth/confirm, which signs the user in). */
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  const t = await getTranslations("auth.reset");
   return (
     <>
-      <h1 className="text-3xl font-semibold text-ink">Choose a new password</h1>
-      <p className="mt-2 mb-8 text-muted">You&apos;ll use it the next time you sign in.</p>
+      <h1 className="text-3xl font-semibold text-ink">{t("title")}</h1>
+      <p className="mt-2 mb-8 text-muted">{t("subtitle")}</p>
       <ResetPasswordForm />
     </>
   );

@@ -2,39 +2,26 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { signUp, type AuthFormState } from "@/lib/actions/auth";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { TextField } from "@/components/ui/TextField";
 import { FormMessage } from "@/components/ui/FormMessage";
 
-const COPY = {
-  company: {
-    nameLabel: "Company name",
-    nameAutoComplete: "organization",
-    switchText: "Are you a creator?",
-    switchLink: "Join as a creator",
-    switchHref: "/signup/creator",
-  },
-  creator: {
-    nameLabel: "Your name (shown on your profile)",
-    nameAutoComplete: "name",
-    switchText: "Hiring creators?",
-    switchLink: "Create a company account",
-    switchHref: "/signup/company",
-  },
-};
+const SWITCH_HREF = { company: "/signup/creator", creator: "/signup/company" } as const;
+const NAME_AUTOCOMPLETE = { company: "organization", creator: "name" } as const;
 
 /** Sign-up form for companies and creators. */
 export function SignupForm({ role }: { role: "company" | "creator" }) {
   const [state, formAction, pending] = useActionState<AuthFormState, FormData>(signUp, {});
-  const copy = COPY[role];
+  const t = useTranslations("auth.signup");
 
   if (state.notice) {
     return (
       <div className="space-y-5">
         <FormMessage tone="success">{state.notice}</FormMessage>
         <Link href="/login" className={buttonClass({ variant: "secondary", className: "w-full" })}>
-          Back to sign in
+          {t("backToSignIn")}
         </Link>
       </div>
     );
@@ -46,14 +33,14 @@ export function SignupForm({ role }: { role: "company" | "creator" }) {
       {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
 
       <TextField
-        label={copy.nameLabel}
+        label={role === "company" ? t("companyName") : t("creatorName")}
         name="name"
-        autoComplete={copy.nameAutoComplete}
+        autoComplete={NAME_AUTOCOMPLETE[role]}
         required
         defaultValue={state.values?.name}
       />
       <TextField
-        label={role === "company" ? "Work email" : "Email"}
+        label={role === "company" ? t("workEmail") : t("email")}
         name="email"
         type="email"
         autoComplete="email"
@@ -61,44 +48,44 @@ export function SignupForm({ role }: { role: "company" | "creator" }) {
         defaultValue={state.values?.email}
       />
       <TextField
-        label="Password"
+        label={t("password")}
         name="password"
         type="password"
         autoComplete="new-password"
         minLength={8}
         required
-        hint="At least 8 characters."
+        hint={t("passwordHint")}
       />
 
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
-        {pending ? "Creating account…" : "Create account"}
+        {pending ? t("submitting") : t("submit")}
       </button>
       <p className="text-center text-xs text-muted">
-        By creating an account, you agree to our{" "}
+        {t("agreePrefix")}
         <Link href="/terms" className="underline hover:text-ink">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="underline hover:text-ink">
-          Privacy Policy
+          {t("terms")}
         </Link>
-        .
+        {t("and")}
+        <Link href="/privacy" className="underline hover:text-ink">
+          {t("privacy")}
+        </Link>
+        {t("agreeSuffix")}
       </p>
 
       <div className="space-y-1.5 text-center text-sm text-muted">
         <p>
-          Already have an account?{" "}
+          {t("haveAccount")}{" "}
           <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
         <p>
-          {copy.switchText}{" "}
+          {role === "company" ? t("switchToCreator") : t("switchToCompany")}{" "}
           <Link
-            href={copy.switchHref}
+            href={SWITCH_HREF[role]}
             className="font-semibold text-primary hover:text-primary-hover"
           >
-            {copy.switchLink}
+            {role === "company" ? t("switchToCreatorLink") : t("switchToCompanyLink")}
           </Link>
         </p>
       </div>

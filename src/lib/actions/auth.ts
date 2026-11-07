@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
@@ -29,16 +30,17 @@ export async function logIn(_previous: AuthFormState, formData: FormData): Promi
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = safeNextPath(formData.get("next"));
+  const t = await getTranslations("auth");
 
   if (!email || !password) {
-    return { error: "Enter your email and password.", values: { email } };
+    return { error: t("errors.enterCredentials"), values: { email } };
   }
   if (isMockMode) redirect(next === "/home" ? HOME_PATHS.company : next);
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error || !data.user) {
-    return { error: "That email and password don't match.", values: { email } };
+    return { error: t("errors.badCredentials"), values: { email } };
   }
 
   // No-op for creators/admins; finishes company setup if confirmation happened elsewhere.
@@ -56,12 +58,13 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const values = { name, email };
+  const t = await getTranslations("auth");
 
   if (!name || !email || !password) {
-    return { error: "Fill in all fields.", values };
+    return { error: t("errors.fillAll"), values };
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.`, values };
+    return { error: t("errors.passwordLength", { min: MIN_PASSWORD_LENGTH }), values };
   }
   if (isMockMode) redirect(HOME_PATHS[role]);
 
@@ -77,14 +80,20 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
     },
   });
   if (error || !data.user) {
-    return { error: error?.message ?? "Sign-up failed. Please try again.", values };
+    const reason = (error?.message ?? "").toLowerCase();
+    const message = /weak|pwned|leak|compromised/.test(reason)
+      ? t("errors.weakPassword")
+      : /already|registered/.test(reason)
+        ? t("errors.alreadyRegistered")
+        : t("errors.signupFailed");
+    return { error: message, values };
   }
 
   await trackEvent({ name: "signup_completed", props: { role } });
 
   // With email confirmation on, there's no session until the link is clicked.
   if (!data.session) {
-    return { notice: `We sent a confirmation link to ${email}. Open it to finish signing up.` };
+    return { notice: t("notices.confirmationSent", { email }) };
   }
 
   if (role === "company") await ensureCompanyProfile(supabase, data.user);
@@ -108,9 +117,10 @@ export async function requestPasswordReset(
   formData: FormData,
 ): Promise<AuthFormState> {
   const email = String(formData.get("email") ?? "").trim();
-  if (!email) return { error: "Enter your email address." };
+  const t = await getTranslations("auth");
+  if (!email) return { error: t("errors.enterEmail") };
 
-  const notice = `If an account exists for ${email}, we've sent a link to reset your password.`;
+  const notice = t("notices.resetSent", { email });
   if (isMockMode) return { notice };
 
   const origin = (await headers()).get("origin") ?? "";
@@ -128,17 +138,18 @@ export async function resetPassword(
 ): Promise<AuthFormState> {
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  const t = await getTranslations("auth");
 
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.` };
+    return { error: t("errors.passwordLength", { min: MIN_PASSWORD_LENGTH }) };
   }
-  if (password !== confirm) return { error: "The passwords don't match." };
+  if (password !== confirm) return { error: t("errors.mismatch") };
   if (isMockMode) redirect(HOME_PATHS.company);
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {
-    return { error: "Your reset link has expired. Request a new one from the sign-in page." };
+    return { error: t("errors.resetExpired") };
   }
   redirect("/home");
 }

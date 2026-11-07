@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { logIn, type AuthFormState } from "@/lib/actions/auth";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { TextField } from "@/components/ui/TextField";
 import { FormMessage } from "@/components/ui/FormMessage";
 
 export function LoginForm({ next, initialError }: { next?: string; initialError?: string }) {
+  const t = useTranslations("auth.login");
   const [state, formAction, pending] = useActionState<AuthFormState, FormData>(logIn, {
     error: initialError,
   });
@@ -18,7 +20,7 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
       {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
 
       <TextField
-        label="Work email"
+        label={t("workEmail")}
         name="email"
         type="email"
         autoComplete="email"
@@ -27,7 +29,7 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
       />
       <div>
         <TextField
-          label="Password"
+          label={t("password")}
           name="password"
           type="password"
           autoComplete="current-password"
@@ -37,28 +39,28 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
           href="/forgot-password"
           className="mt-2 inline-block text-sm font-medium text-primary hover:text-primary-hover"
         >
-          Forgot password?
+          {t("forgot")}
         </Link>
       </div>
 
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? t("submitting") : t("submit")}
       </button>
 
       <div className="space-y-1.5 text-center text-sm text-muted">
         <p>
-          New to Conectrz?{" "}
+          {t("newHere")}{" "}
           <Link href="/signup" className="font-semibold text-primary hover:text-primary-hover">
-            Create a company account
+            {t("createCompany")}
           </Link>
         </p>
         <p>
-          Are you a creator?{" "}
+          {t("areCreator")}{" "}
           <Link
             href="/signup/creator"
             className="font-semibold text-primary hover:text-primary-hover"
           >
-            Join as a creator
+            {t("joinCreator")}
           </Link>
         </p>
       </div>

@@ -285,5 +285,104 @@
       "fullDetails": "Creators' full names, city, social handles and links",
       "firstNames": "Creators' first names and audience sizes"
     }
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Sign in",
+      "title": "Welcome back",
+      "subtitle": "Sign in to your Conectrz account.",
+      "deleted": "Your account has been deleted. Thank you for being part of Conectrz.",
+      "workEmail": "Work email",
+      "password": "Password",
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "newHere": "New to Conectrz?",
+      "createCompany": "Create a company account",
+      "areCreator": "Are you a creator?",
+      "joinCreator": "Join as a creator",
+      "confirmationError": "This confirmation link was already used or has expired. If you already clicked it, your email is confirmed: just sign in below.",
+      "resetError": "That reset link is invalid or has expired. Request a new one below."
+    },
+    "choice": {
+      "metaTitle": "Create an account",
+      "title": "What describes you best?",
+      "subtitle": "We'll set you up in the right place.",
+      "brandTitle": "I'm a Brand or Agency",
+      "brandText": "Find and hire creators living in Japan.",
+      "creatorTitle": "I'm a Creator",
+      "creatorText": "Get discovered by brands and apply to projects.",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "signup": {
+      "companyMetaTitle": "Create a company account",
+      "companyTitle": "Create a company account",
+      "companySubtitle": "Find and connect with creators living in Japan.",
+      "creatorMetaTitle": "Join as a creator",
+      "creatorTitle": "Join as a creator",
+      "creatorSubtitle": "Get discovered by brands looking for creators in Japan.",
+      "companyName": "Company name",
+      "creatorName": "Your name (shown on your profile)",
+      "workEmail": "Work email",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters.",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "backToSignIn": "Back to sign in",
+      "agreePrefix": "By creating an account, you agree to our ",
+      "terms": "Terms of Service",
+      "and": " and ",
+      "privacy": "Privacy Policy",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "switchToCreator": "Are you a creator?",
+      "switchToCreatorLink": "Join as a creator",
+      "switchToCompany": "Hiring creators?",
+      "switchToCompanyLink": "Create a company account",
+      "agreeSuffix": "."
+    },
+    "forgot": {
+      "metaTitle": "Reset your password",
+      "title": "Reset your password",
+      "subtitle": "Enter the email you signed up with and we'll send you a reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "remembered": "Remembered it?",
+      "signIn": "Sign in",
+      "backToSignIn": "Back to sign in"
+    },
+    "reset": {
+      "metaTitle": "Choose a new password",
+      "title": "Choose a new password",
+      "subtitle": "You'll use it the next time you sign in.",
+      "newPassword": "New password",
+      "confirm": "Confirm new password",
+      "hint": "At least 8 characters.",
+      "submit": "Save new password",
+      "submitting": "Saving…"
+    },
+    "panel": {
+      "title": "Connect with creators living in Japan.",
+      "text": "Discover, save and message UGC and influencer creators — all in one place."
+    },
+    "errors": {
+      "enterCredentials": "Enter your email and password.",
+      "badCredentials": "That email and password don't match.",
+      "fillAll": "Fill in all fields.",
+      "passwordLength": "Use at least {min} characters for your password.",
+      "weakPassword": "That password is too easy to guess or has appeared in a data leak. Please choose a different one.",
+      "alreadyRegistered": "An account with this email already exists. Try signing in instead.",
+      "signupFailed": "Sign-up failed. Please try again.",
+      "enterEmail": "Enter your email address.",
+      "mismatch": "The passwords don't match.",
+      "resetExpired": "Your reset link has expired. Request a new one from the sign-in page."
+    },
+    "notices": {
+      "confirmationSent": "We sent a confirmation link to {email}. Open it to finish signing up.",
+      "resetSent": "If an account exists for {email}, we've sent a link to reset your password."
+    }
   }
 }

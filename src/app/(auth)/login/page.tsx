@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export const metadata: Metadata = { title: "Sign in" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.login");
+  return { title: t("metaTitle") };
+}
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const { next, error, deleted } = await searchParams;
+  const t = await getTranslations("auth.login");
 
   return (
     <>
-      <h1 className="text-3xl font-semibold text-ink">Welcome back</h1>
-      <p className="mt-2 mb-8 text-muted">
-        {deleted === "1"
-          ? "Your account has been deleted. Thank you for being part of Conectrz."
-          : "Sign in to your Conectrz account."}
-      </p>
+      <h1 className="text-3xl font-semibold text-ink">{t("title")}</h1>
+      <p className="mt-2 mb-8 text-muted">{deleted === "1" ? t("deleted") : t("subtitle")}</p>
       <LoginForm
         next={typeof next === "string" ? next : undefined}
         initialError={
           error === "confirmation"
-            ? "This confirmation link was already used or has expired. If you already clicked it, your email is confirmed: just sign in below."
+            ? t("confirmationError")
             : error === "reset"
-              ? "That reset link is invalid or has expired. Request a new one below."
+              ? t("resetError")
               : undefined
         }
       />
