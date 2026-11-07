@@ -101,6 +101,14 @@ export type Database = {
           { foreignKeyName: "message_translations_message_id_fkey"; columns: ["message_id"]; isOneToOne: false; referencedRelation: "messages"; referencedColumns: ["id"] },
         ]
       }
+      project_translations: {
+        Row: { created_at: string; description: string; language: string; project_id: string; provider: string; source_language: string; title: string }
+        Insert: { created_at?: string; description: string; language: string; project_id: string; provider: string; source_language: string; title: string }
+        Update: { created_at?: string; description?: string; language?: string; project_id?: string; provider?: string; source_language?: string; title?: string }
+        Relationships: [
+          { foreignKeyName: "project_translations_project_id_fkey"; columns: ["project_id"]; isOneToOne: false; referencedRelation: "projects"; referencedColumns: ["id"] },
+        ]
+      }
       message_attachments: {
         Row: { created_at: string; file_name: string; id: string; kind: string; message_id: string; path: string; size_bytes: number }
         Insert: { created_at?: string; file_name: string; id?: string; kind: string; message_id: string; path: string; size_bytes: number }

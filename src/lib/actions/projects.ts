@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { isMockMode } from "@/lib/config";
 import { isEnabledLocale } from "@/i18n/config";
 import { requireSupabaseUser } from "@/lib/data/session";
@@ -326,4 +326,22 @@ export async function withdrawApplication(
   }
   revalidateProjects(projectId);
   return { success: t("withdrawn") };
+}
+
+/* ── Creator: translate a brief ───────────────────────────────────────────── */
+
+/** Asks the translate-project edge function to translate (and store) a brief for the reader. */
+export async function translateProject(projectId: string): Promise<{ error?: string }> {
+  const t = await getTranslations("app.projectErrors");
+  if (isMockMode) return { error: t("translateUnavailable") };
+  if (!UUID_PATTERN.test(projectId)) return { error: t("translateFailed") };
+
+  const { supabase } = await requireSupabaseUser();
+  const language = await getLocale();
+  const { error } = await supabase.functions.invoke("translate-project", {
+    body: { project_id: projectId, language },
+  });
+  if (error) return { error: t("translateFailed") };
+  revalidatePath(`/creator/projects/${projectId}`);
+  return {};
 }

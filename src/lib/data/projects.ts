@@ -358,3 +358,25 @@ export async function getCreatorProject(id: string): Promise<CreatorProject | nu
   const project = projects.find((p) => p.id === id);
   return project ? { ...project, references: await loadReferences(id) } : null;
 }
+
+export interface ProjectTranslation {
+  title: string;
+  description: string;
+  sourceLanguage: string;
+}
+
+/** The stored translation of a brief into the reader's language, if one exists yet. */
+export async function getProjectTranslation(projectId: string): Promise<ProjectTranslation | null> {
+  if (isMockMode) return null;
+  const { supabase } = await getSupabaseSession();
+  const language = await getLocale();
+  const { data } = await supabase
+    .from("project_translations")
+    .select("title, description, source_language")
+    .eq("project_id", projectId)
+    .eq("language", language)
+    .maybeSingle();
+  return data
+    ? { title: data.title, description: data.description, sourceLanguage: data.source_language }
+    : null;
+}

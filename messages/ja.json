@@ -655,6 +655,13 @@
       "statusButton": {
         "close": "プロジェクトを終了",
         "reopen": "プロジェクトを再開"
+      },
+      "translate": {
+        "translate": "{language}に翻訳",
+        "translating": "翻訳中…",
+        "showOriginal": "原文を表示",
+        "showTranslation": "翻訳を表示",
+        "translatedFrom": "{language}から自動翻訳"
       }
     },
     "filters": {
@@ -712,7 +719,9 @@
       "withdrawFailed": "応募を取り下げられませんでした。もう一度お試しください。",
       "withdrawn": "応募を取り下げました。",
       "projectClosed": "プロジェクトを終了しました。",
-      "projectReopened": "プロジェクトを再開しました。"
+      "projectReopened": "プロジェクトを再開しました。",
+      "translateUnavailable": "デモモードでは翻訳を利用できません。",
+      "translateFailed": "このプロジェクトを翻訳できませんでした。もう一度お試しください。"
     },
     "prefectures": {
       "Hokkaido": "北海道",
