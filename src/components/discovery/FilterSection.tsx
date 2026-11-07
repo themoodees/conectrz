@@ -1,9 +1,8 @@
+import { useTranslations } from "next-intl";
 import type { DiscoveryFilterOptions, DiscoveryFilters, FilterKey } from "@/types/discovery";
 import {
-  FILTER_LABELS,
   FOLLOWER_RANGES,
   AGE_SLIDER,
-  GENDER_LABELS,
   GENDER_OPTIONS,
   PRICE_SLIDER,
   getFilterOptions,
@@ -12,6 +11,7 @@ import {
 import { OptionButton } from "./OptionButton";
 import { RangeSlider } from "./RangeSlider";
 import type { FilterActions } from "./useDiscoveryFilters";
+import { useDiscoveryLabels } from "./useDiscoveryLabels";
 
 interface FilterSectionProps {
   filterKey: FilterKey;
@@ -22,12 +22,7 @@ interface FilterSectionProps {
   showTitle?: boolean;
 }
 
-const HINTS: Partial<Record<FilterKey, string>> = {
-  price: "Based on the creator's lowest listed rate.",
-  age: "Creators who have not shared their age are hidden while this is on.",
-  gender: "Creators who have not shared their gender are hidden while this is on.",
-  followers: "Largest audience on any platform. Creators without follower data are hidden.",
-};
+const HINT_KEYS: FilterKey[] = ["price", "age", "gender", "followers"];
 
 /** The controls for one filter. Shared by desktop dropdowns and the filter panel. */
 export function FilterSection({
@@ -37,7 +32,9 @@ export function FilterSection({
   options,
   showTitle = true,
 }: FilterSectionProps) {
-  const hint = HINTS[filterKey];
+  const t = useTranslations("app.discovery");
+  const labels = useDiscoveryLabels();
+  const hint = HINT_KEYS.includes(filterKey) ? t(`hints.${filterKey}`) : null;
 
   function renderControls() {
     if (isMultiSelectFilter(filterKey)) {
@@ -55,7 +52,7 @@ export function FilterSection({
     if (filterKey === "price") {
       return (
         <RangeSlider
-          label="Price"
+          label={labels.filter.price}
           {...PRICE_SLIDER}
           value={filters.price}
           onChange={actions.setPrice}
@@ -67,7 +64,7 @@ export function FilterSection({
     if (filterKey === "age") {
       return (
         <RangeSlider
-          label="Age"
+          label={labels.filter.age}
           {...AGE_SLIDER}
           value={filters.age}
           onChange={actions.setAge}
@@ -80,7 +77,7 @@ export function FilterSection({
       return GENDER_OPTIONS.map((gender) => (
         <OptionButton
           key={gender}
-          label={GENDER_LABELS[gender]}
+          label={labels.gender[gender]}
           isSelected={filters.genders.includes(gender)}
           onClick={() => actions.toggleGender(gender)}
         />
@@ -91,7 +88,7 @@ export function FilterSection({
       return FOLLOWER_RANGES.map((range) => (
         <OptionButton
           key={range.id}
-          label={range.label}
+          label={labels.follower[range.id]}
           isSelected={filters.followers === range.id}
           onClick={() => actions.setFollowers(filters.followers === range.id ? null : range.id)}
         />
@@ -100,7 +97,7 @@ export function FilterSection({
 
     return (
       <OptionButton
-        label="Available now"
+        label={labels.availableNow}
         isSelected={filters.availableOnly}
         onClick={() => actions.setAvailableOnly(!filters.availableOnly)}
       />
@@ -110,7 +107,7 @@ export function FilterSection({
   return (
     <fieldset>
       <legend className={showTitle ? "mb-3 text-sm font-semibold text-ink" : "sr-only"}>
-        {FILTER_LABELS[filterKey]}
+        {labels.filter[filterKey]}
       </legend>
       {hint && <p className="-mt-1.5 mb-3 text-xs text-muted">{hint}</p>}
       <div className="flex flex-wrap gap-2">{renderControls()}</div>

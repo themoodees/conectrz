@@ -60,7 +60,7 @@ export function FilterDropdown({ label, selectedCount, onClear, children }: Filt
               onClick={close}
               className="rounded-lg px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary-light"
             >
-              Done
+              {t("done")}
             </button>
           </div>
         </div>

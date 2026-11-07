@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { ConversationUsage } from "@/lib/data/messages";
 import type { Plan } from "@/types/plans";
 import { ReportDialog } from "@/components/reports/ReportDialog";
@@ -28,6 +29,7 @@ export function ProfileActions({
   usage,
   upgradePlans,
 }: ProfileActionsProps) {
+  const t = useTranslations("app.discovery.profile");
   const { savedIds, toggleSave } = useSavedCreators(isSaved ? [creatorId] : []);
   const saved = savedIds.has(creatorId);
 
@@ -36,7 +38,7 @@ export function ProfileActions({
       {conversationId ? (
         <Link href={`/messages/${conversationId}`} className={buttonClass()}>
           <MessageIcon className="size-4" />
-          Open conversation
+          {t("openConversation")}
         </Link>
       ) : (
         <ContactCreator
@@ -57,7 +59,7 @@ export function ProfileActions({
         })}
       >
         <BookmarkIcon filled={saved} className="size-4" />
-        {saved ? "Saved" : "Save"}
+        {saved ? t("saved") : t("save")}
       </button>
 
       <div className="flex h-11 items-center px-1">

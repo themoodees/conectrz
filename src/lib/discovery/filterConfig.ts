@@ -9,23 +9,10 @@ import type {
 } from "@/types/discovery";
 
 /*
- * Creator Discovery filter configuration — labels, ranges and layout.
- * Edit here to rename filters, change ranges, or move a filter between the
+ * Creator Discovery filter configuration — ranges and layout. Filter names are in the
+ * translations (app.discovery). Edit here to change ranges, or move a filter between the
  * visible toolbar and the "More filters" panel.
  */
-
-export const FILTER_LABELS: Record<FilterKey, string> = {
-  niches: "Niche",
-  locations: "Location",
-  languages: "Language",
-  platforms: "Platform",
-  services: "Services",
-  price: "Price",
-  age: "Age",
-  gender: "Gender",
-  followers: "Followers",
-  availability: "Availability",
-};
 
 /** Shown directly in the desktop toolbar. */
 export const PRIMARY_FILTERS: FilterKey[] = ["niches", "platforms", "services", "locations"];
@@ -51,7 +38,6 @@ export const PLATFORM_OPTIONS = Object.keys(PLATFORM_LABELS) as SocialPlatform[]
 
 interface Range<Id extends string> {
   id: Id;
-  label: string;
   min: number;
   /** Exclusive upper bound; `null` = no upper limit. */
   max: number | null;
@@ -63,26 +49,22 @@ export const PRICE_SLIDER = { min: 0, max: 3000, step: 50 };
 /** Age slider (the top stop means "and above"). Creators must be 18 or older. */
 export const AGE_SLIDER = { min: 18, max: 65, step: 1 };
 
-export const GENDER_LABELS: Record<Gender, string> = {
-  woman: "Woman",
-  man: "Man",
-  other: "Other",
-};
-export const GENDER_OPTIONS = Object.keys(GENDER_LABELS) as Gender[];
+export const GENDER_OPTIONS: Gender[] = ["woman", "man", "other"];
 
 /** Matched against a creator's largest reported audience on any platform. */
 export const FOLLOWER_RANGES: Range<FollowerRangeId>[] = [
-  { id: "under-10k", label: "Under 10K", min: 0, max: 10000 },
-  { id: "10k-50k", label: "10K – 50K", min: 10000, max: 50000 },
-  { id: "50k-100k", label: "50K – 100K", min: 50000, max: 100000 },
-  { id: "100k-plus", label: "100K+", min: 100000, max: null },
+  { id: "under-10k", min: 0, max: 10000 },
+  { id: "10k-50k", min: 10000, max: 50000 },
+  { id: "50k-100k", min: 50000, max: 100000 },
+  { id: "100k-plus", min: 100000, max: null },
 ];
 
-export const SORT_OPTIONS: { value: SortOption; label: string; disabled?: boolean }[] = [
-  { value: "recommended", label: "Recommended" },
+/** Labels live in the translations (app.discovery.sorts). */
+export const SORT_OPTIONS: { value: SortOption; disabled?: boolean }[] = [
+  { value: "recommended" },
   // No activity data exists yet, so this stays a visual placeholder.
-  { value: "recently-active", label: "Recently active", disabled: true },
-  { value: "followers", label: "Followers" },
+  { value: "recently-active", disabled: true },
+  { value: "followers" },
 ];
 
 export const EMPTY_FILTERS: DiscoveryFilters = {

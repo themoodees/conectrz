@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { CreatorProfileView } from "@/components/creator/CreatorProfileView";
 import { ReviewForm } from "@/components/creator/ReviewForm";
 import { deleteReview, saveReview } from "@/lib/actions/reviews";
@@ -15,11 +16,13 @@ import { getPlans } from "@/lib/data/plans";
 export async function generateMetadata({ params }: PageProps<"/creators/[id]">): Promise<Metadata> {
   const { id } = await params;
   const creator = await getCreatorProfile(id);
-  return { title: creator?.displayName ?? "Creator" };
+  const t = await getTranslations("app.discovery.profile");
+  return { title: creator?.displayName ?? t("metaCreator") };
 }
 
 export default async function CreatorProfilePage({ params }: PageProps<"/creators/[id]">) {
   const { id } = await params;
+  const t = await getTranslations("app.discovery.profile");
   const [creator, savedIds, conversationId, usage, plans] = await Promise.all([
     getCreatorProfile(id),
     getSavedCreatorIds(),
@@ -43,7 +46,7 @@ export default async function CreatorProfilePage({ params }: PageProps<"/creator
         className="mt-6 mb-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-graphite hover:text-ink md:mt-8"
       >
         <ArrowLeftIcon className="size-4" />
-        Back to Discover
+        {t("back")}
       </Link>
 
       <CreatorProfileView
