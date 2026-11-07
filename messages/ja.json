@@ -384,5 +384,8 @@
       "confirmationSent": "{email} に確認リンクを送信しました。リンクを開いて登録を完了してください。",
       "resetSent": "{email} のアカウントが存在する場合、パスワード再設定用のリンクを送信しました。"
     }
+  },
+  "legal": {
+    "lastUpdated": "最終更新日：{date}"
   }
 }
