@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -20,10 +20,15 @@ import { getBillingStatus } from "@/lib/data/billing";
 import { getConversationUsage } from "@/lib/data/messages";
 import { formatShortDate } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Account settings" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("app.companySettings");
+  return { title: t("title") };
+}
 
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
   const t = await getTranslations("app.settings");
+  const tc = await getTranslations("app.companySettings");
+  const locale = await getLocale();
   const [account, usage, billing, reviews, { billing: billingResult }] = await Promise.all([
     getCurrentCompanyAccount(),
     getConversationUsage(),
@@ -37,22 +42,21 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
     <PageContainer>
       <header className="pt-7 pb-6 md:pt-10 md:pb-7">
         <h1 className="text-[1.75rem] leading-tight font-semibold text-ink md:text-4xl">
-          Account settings
+          {tc("title")}
         </h1>
       </header>
 
       <div className="max-w-3xl space-y-5">
         <SettingsSection
-          title="Plan"
-          description="Your plan sets how many new conversations you can start."
+          title={tc("planTitle")}
+          description={tc("planDescription")}
         >
           {billingResult === "success" && (
             <p
               role="status"
               className="mb-4 rounded-control bg-primary-light px-3.5 py-2.5 text-sm text-ink"
             >
-              Thank you! Your payment went through. Your plan is being activated; this page updates
-              by itself in a few seconds.
+              {tc("paymentThanks")}
             </p>
           )}
           {billingResult === "success" && <AutoRefresh times={12} />}
@@ -62,7 +66,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
               role="alert"
               className="mb-4 rounded-control bg-danger-light px-3.5 py-2.5 text-sm text-danger"
             >
-              Couldn&apos;t open billing. Please try again.
+              {tc("billingError")}
             </p>
           )}
           {usage ? (
@@ -71,42 +75,49 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
                 <p className="font-semibold text-ink">{usage.planName}</p>
                 <p className="mt-0.5 text-sm text-muted">
                   {usage.isFree
-                    ? "Free plan: upgrade to start conversations with creators"
+                    ? tc("usageFree")
                     : usage.quota === null
-                      ? `${usage.used} new conversations this period · unlimited · renews ${formatShortDate(usage.periodEnd)}`
-                      : `${usage.used} of ${usage.quota} conversations used · renews ${formatShortDate(usage.periodEnd)}`}
+                      ? tc("usageUnlimited", {
+                          used: usage.used,
+                          date: formatShortDate(usage.periodEnd, locale),
+                        })
+                      : tc("usageQuota", {
+                          used: usage.used,
+                          quota: usage.quota,
+                          date: formatShortDate(usage.periodEnd, locale),
+                        })}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {billing.hasCustomer && (
                   <form action={openBillingPortal}>
                     <button type="submit" className={buttonClass({ size: "sm" })}>
-                      Manage billing
+                      {tc("manageBilling")}
                     </button>
                   </form>
                 )}
                 <Link href="/plans" className={buttonClass({ variant: "secondary", size: "sm" })}>
-                  View plans
+                  {tc("viewPlans")}
                 </Link>
               </div>
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <p className="text-sm text-muted">You don&apos;t have an active plan.</p>
+              <p className="text-sm text-muted">{tc("noPlan")}</p>
               <Link href="/plans" className={buttonClass({ size: "sm" })}>
-                View plans
+                {tc("viewPlans")}
               </Link>
             </div>
           )}
         </SettingsSection>
 
-        <SettingsSection title="Company details">
+        <SettingsSection title={tc("detailsTitle")}>
           <CompanyDetailsForm name={account.companyName} contactEmail={account.contactEmail} />
         </SettingsSection>
 
         <SettingsSection
-          title="Reviews from creators"
-          description="What creators you have talked with say about working with you. Creators can read these too."
+          title={tc("reviewsTitle")}
+          description={tc("reviewsDescription")}
         >
           {reviews.length > 0 && (
             <p className="mb-4">
@@ -123,7 +134,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           <LanguageSwitcher />
         </SettingsSection>
 
-        <SettingsSection title="Password">
+        <SettingsSection title={tc("passwordTitle")}>
           <PasswordForm />
         </SettingsSection>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { changePlan } from "@/lib/actions/billing";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -20,6 +21,7 @@ export function ChangePlanButton({
   primary: boolean;
   note: string;
 }) {
+  const t = useTranslations("app.plans");
   const [confirming, setConfirming] = useState(false);
 
   if (!confirming) {
@@ -29,7 +31,7 @@ export function ChangePlanButton({
         onClick={() => setConfirming(true)}
         className={buttonClass({ variant: primary ? "primary" : "secondary", className: "mt-6" })}
       >
-        Change to {planName}
+        {t("changeTo", { plan: planName })}
       </button>
     );
   }
@@ -39,15 +41,15 @@ export function ChangePlanButton({
       <input type="hidden" name="planId" value={planId} />
       <p className="text-sm text-graphite">{note}</p>
       <div className="mt-3 flex gap-2">
-        <SubmitButton pendingLabel="Changing plan…" className={buttonClass({ size: "sm" })}>
-          Confirm
+        <SubmitButton pendingLabel={t("changing")} className={buttonClass({ size: "sm" })}>
+          {t("confirm")}
         </SubmitButton>
         <button
           type="button"
           onClick={() => setConfirming(false)}
           className={buttonClass({ variant: "ghost", size: "sm" })}
         >
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </form>
