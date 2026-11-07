@@ -1,4 +1,5 @@
-import { PAYMENT_LABELS, PAYMENT_NOTICE, type PaymentMethod } from "@/lib/payments";
+import { useTranslations } from "next-intl";
+import type { PaymentMethod } from "@/lib/payments";
 
 /** The methods as small tags; methods in `highlight` get a check mark. */
 export function PaymentMethodTags({
@@ -8,18 +9,21 @@ export function PaymentMethodTags({
   methods: readonly PaymentMethod[];
   highlight?: readonly PaymentMethod[];
 }) {
-  if (methods.length === 0) return <span className="text-sm text-muted">Not specified</span>;
+  const t = useTranslations("app.payments");
+  if (methods.length === 0) return <span className="text-sm text-muted">{t("notSpecified")}</span>;
   return (
     <ul className="flex flex-wrap gap-2">
       {methods.map((method) => (
         <li
           key={method}
           className={`rounded-md px-2.5 py-1 text-sm font-medium ${
-            highlight.includes(method) ? "bg-primary-light text-primary" : "bg-surface text-graphite"
+            highlight.includes(method)
+              ? "bg-primary-light text-primary"
+              : "bg-surface text-graphite"
           }`}
         >
           {highlight.includes(method) && <span aria-hidden="true">✓ </span>}
-          {PAYMENT_LABELS[method]}
+          {t(`methods.${method}`)}
         </li>
       ))}
     </ul>
@@ -27,5 +31,6 @@ export function PaymentMethodTags({
 }
 
 export function PaymentNotice({ className = "" }: { className?: string }) {
-  return <p className={`text-xs text-muted ${className}`}>{PAYMENT_NOTICE}</p>;
+  const t = useTranslations("app.payments");
+  return <p className={`text-xs text-muted ${className}`}>{t("notice")}</p>;
 }

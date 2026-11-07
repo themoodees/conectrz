@@ -56,6 +56,9 @@ export function getInitials(name: string) {
     .toUpperCase();
 }
 
+export const PROFICIENCY_ORDER: LanguageProficiency[] = ["native", "fluent", "conversational"];
+
+/** English labels. UI uses `app.proficiency` in the message files. */
 export const PROFICIENCY_LABELS: Record<LanguageProficiency, string> = {
   native: "Native",
   fluent: "Fluent",
@@ -63,9 +66,13 @@ export const PROFICIENCY_LABELS: Record<LanguageProficiency, string> = {
 };
 
 /** "$250" for flat rates, "From $250" for starting-from rates. */
-export function formatRate(service: CreatorService) {
+export function formatRate(
+  service: CreatorService,
+  t?: (key: "from", values: { amount: string }) => string,
+) {
   const amount = formatUsd(service.rateAmountUsd);
-  return service.rateType === "starting_from" ? `From ${amount}` : amount;
+  if (service.rateType !== "starting_from") return amount;
+  return t ? t("from", { amount }) : `From ${amount}`;
 }
 
 /*

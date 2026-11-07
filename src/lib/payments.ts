@@ -18,10 +18,6 @@ export const PAYMENT_LABELS = Object.fromEntries(
   PAYMENT_METHODS.map((m) => [m.id, m.label]),
 ) as Record<PaymentMethod, string>;
 
-/** Shown wherever payment methods appear. Have a lawyer review the wording before launch. */
-export const PAYMENT_NOTICE =
-  "Payment is arranged directly between the company and the creator. Conectrz does not process, hold or guarantee payments.";
-
 /** Keeps only valid, unique method ids (input comes from forms and the database). */
 export function parsePaymentMethods(values: readonly string[] | null | undefined): PaymentMethod[] {
   const valid = new Set<string>(PAYMENT_METHODS.map((m) => m.id));

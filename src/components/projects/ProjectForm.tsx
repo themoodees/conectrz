@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { ProjectFormOptions } from "@/types/projects";
 import { createProject, type ProjectActionState } from "@/lib/actions/projects";
 import { OptionButton } from "@/components/discovery/OptionButton";
@@ -50,6 +51,7 @@ function ChipPicker({
 
 /** "Post a project" form. */
 export function ProjectForm({ options }: { options: ProjectFormOptions }) {
+  const t = useTranslations("app.projects.form");
   const [state, formAction, pending] = useActionState<ProjectActionState, FormData>(
     createProject,
     {},
@@ -60,44 +62,41 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
     <form action={formAction} className="space-y-6">
       {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
       <TextField
-        label="Project title"
+        label={t("titleLabel")}
         name="title"
         required
         maxLength={120}
-        placeholder="e.g. Autumn skincare UGC videos"
+        placeholder={t("titlePlaceholder")}
       />
       <TextAreaField
-        label="What do you need?"
+        label={t("descLabel")}
         name="description"
         required
         rows={7}
         maxLength={3000}
-        hint="Describe the deliverables, style, how many, and anything creators should know."
+        hint={t("descHint")}
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
-          label="Budget (USD)"
+          label={t("budgetLabel")}
           name="budget"
           required
           inputMode="numeric"
           placeholder="600"
-          hint="Whole US dollars."
+          hint={t("budgetHint")}
         />
-        <TextField label="Deliver by" name="deadline" type="date" required min={today} />
+        <TextField label={t("deadlineLabel")} name="deadline" type="date" required min={today} />
       </div>
-      <ChipPicker legend="Services wanted" name="serviceIds" options={options.services} />
-      <ChipPicker legend="Niches" name="nicheIds" options={options.niches} />
-      <ChipPicker legend="Languages" name="languageIds" options={options.languages} />
+      <ChipPicker legend={t("services")} name="serviceIds" options={options.services} />
+      <ChipPicker legend={t("niches")} name="nicheIds" options={options.niches} />
+      <ChipPicker legend={t("languages")} name="languageIds" options={options.languages} />
       <ReferencesField />
       <div className="space-y-2">
-        <PaymentMethodsPicker
-          legend="How will you pay the creator?"
-          hint="Choose every method you can use. Creators see this before they apply."
-        />
+        <PaymentMethodsPicker legend={t("payLegend")} hint={t("payHint")} />
         <PaymentNotice />
       </div>
       <button type="submit" disabled={pending} className={buttonClass()}>
-        {pending ? "Posting…" : "Post project"}
+        {pending ? t("posting") : t("post")}
       </button>
     </form>
   );

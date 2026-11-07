@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { saveSocialAccounts } from "@/lib/actions/creatorProfile";
@@ -17,6 +18,7 @@ type Row = CreatorEditorData["socialAccounts"][number];
  * and their card simply won't show an audience.
  */
 export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
+  const t = useTranslations("app.editor.social");
   const [rows, setRows] = useState<Row[]>(initialRows);
   const { save, pending, result } = useSave();
 
@@ -32,7 +34,7 @@ export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
             className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[9rem_1fr_1fr_8rem_auto]"
           >
             <select
-              aria-label="Platform"
+              aria-label={t("platform")}
               value={row.platform}
               onChange={(e) => update(index, { platform: e.target.value as SocialPlatform })}
               className={rowInputClass}
@@ -45,21 +47,21 @@ export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
             </select>
             <button
               type="button"
-              aria-label="Remove account"
+              aria-label={t("remove")}
               onClick={() => setRows((current) => current.filter((_, i) => i !== index))}
               className={`${rowRemoveClass} sm:order-last`}
             >
               <TrashIcon className="size-4" />
             </button>
             <input
-              aria-label="Handle"
+              aria-label={t("handle")}
               value={row.handle}
               onChange={(e) => update(index, { handle: e.target.value })}
               placeholder="@handle"
               className={`${rowInputClass} col-span-2 sm:col-span-1`}
             />
             <input
-              aria-label="Profile link"
+              aria-label={t("link")}
               type="url"
               value={row.profileUrl}
               onChange={(e) => update(index, { profileUrl: e.target.value })}
@@ -67,7 +69,7 @@ export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
               className={`${rowInputClass} col-span-2 sm:col-span-1`}
             />
             <input
-              aria-label="Followers (optional)"
+              aria-label={t("followersAria")}
               type="number"
               inputMode="numeric"
               min={0}
@@ -77,7 +79,7 @@ export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
                   followerCount: e.target.value === "" ? null : Number(e.target.value),
                 })
               }
-              placeholder="Followers"
+              placeholder={t("followers")}
               className={`${rowInputClass} col-span-2 sm:col-span-1`}
             />
           </li>
@@ -94,7 +96,7 @@ export function SocialAccountsEditor({ initialRows }: { initialRows: Row[] }) {
         className={buttonClass({ variant: "ghost", size: "sm", className: "mt-3 -ml-3" })}
       >
         <PlusIcon className="size-4" />
-        Add account
+        {t("add")}
       </button>
       <SaveRow
         pending={pending}

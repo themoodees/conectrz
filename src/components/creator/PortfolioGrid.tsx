@@ -1,15 +1,17 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import type { PortfolioItem } from "@/types/creator";
 
 /** Creator's portfolio: images and videos in a consistent 4:5 grid. */
 export function PortfolioGrid({ items }: { items: PortfolioItem[] }) {
+  const t = useTranslations("app.creatorView");
   if (items.length === 0) {
     return (
       <p className="rounded-card border border-dashed border-border px-6 py-10 text-center text-sm text-muted">
-        This creator hasn&apos;t added portfolio work yet.
+        {t("emptyPortfolio")}
       </p>
     );
   }
@@ -29,7 +31,8 @@ export function PortfolioGrid({ items }: { items: PortfolioItem[] }) {
 
 function PortfolioMedia({ item }: { item: PortfolioItem }) {
   const [hasError, setHasError] = useState(false);
-  const label = item.title ?? "Portfolio item";
+  const t = useTranslations("app.creatorView");
+  const label = item.title ?? t("portfolioItem");
 
   return (
     <div className="relative aspect-[4/5] overflow-hidden rounded-card bg-surface">

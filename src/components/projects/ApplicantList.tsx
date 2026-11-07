@@ -4,6 +4,7 @@ import { PaymentMethodTags } from "@/components/payments/PaymentInfo";
 import type { PaymentMethod } from "@/lib/payments";
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { Applicant } from "@/types/projects";
 import { declineApplication } from "@/lib/actions/projects";
 import { formatShortDate, formatUsd } from "@/lib/format";
@@ -22,6 +23,8 @@ function ApplicantCard({
   canDecline: boolean;
   projectMethods: PaymentMethod[];
 }) {
+  const t = useTranslations("app.projects.applicants");
+  const locale = useLocale();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
 
@@ -37,28 +40,29 @@ function ApplicantCard({
             >
               {applicant.name}
             </Link>
-            {applicant.status !== "submitted" && <ApplicationStatusBadge status={applicant.status} />}
+            {applicant.status !== "submitted" && (
+              <ApplicationStatusBadge status={applicant.status} />
+            )}
           </div>
-          <p className="text-xs text-muted">Applied {formatShortDate(applicant.createdAt)}</p>
+          <p className="text-xs text-muted">
+            {t("applied", { date: formatShortDate(applicant.createdAt, locale) })}
+          </p>
         </div>
         <p className="text-right">
           <span className="block text-lg font-semibold text-ink">
             {formatUsd(applicant.proposedAmountUsd)}
           </span>
-          <span className="text-xs text-muted">proposed price</span>
+          <span className="text-xs text-muted">{t("proposed")}</span>
         </p>
       </div>
       <p className="mt-3 text-sm whitespace-pre-line text-graphite">{applicant.message}</p>
       <div className="mt-3">
-        <p className="mb-1.5 text-xs font-medium text-muted">Accepts payment by</p>
+        <p className="mb-1.5 text-xs font-medium text-muted">{t("acceptsBy")}</p>
         <PaymentMethodTags methods={applicant.paymentMethods} highlight={projectMethods} />
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Link
-          href={`/creators/${applicant.creatorId}`}
-          className={buttonClass({ size: "sm" })}
-        >
-          View profile &amp; message
+        <Link href={`/creators/${applicant.creatorId}`} className={buttonClass({ size: "sm" })}>
+          {t("view")}
         </Link>
         {canDecline && applicant.status === "submitted" && (
           <button
@@ -72,7 +76,7 @@ function ApplicantCard({
             }
             className={buttonClass({ variant: "danger", size: "sm" })}
           >
-            Decline
+            {t("decline")}
           </button>
         )}
       </div>

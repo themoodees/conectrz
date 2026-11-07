@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { CategoryOption } from "@/types/creatorEditor";
 import { saveNiches } from "@/lib/actions/creatorProfile";
 import { OptionButton } from "@/components/discovery/OptionButton";
@@ -17,6 +18,7 @@ export function NichesEditor({
   options: CategoryOption[];
   initialIds: string[];
 }) {
+  const t = useTranslations("app.editor.niches");
   const [selected, setSelected] = useState(initialIds);
   const { save, pending, result } = useSave();
 
@@ -42,7 +44,7 @@ export function NichesEditor({
         ))}
       </div>
       <p className="mt-3 text-xs text-muted">
-        {selected.length} of {MAX_NICHES} selected
+        {t("selected", { count: selected.length, max: MAX_NICHES })}
       </p>
       <SaveRow pending={pending} result={result} onSave={() => save(() => saveNiches(selected))} />
     </div>

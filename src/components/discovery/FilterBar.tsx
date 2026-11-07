@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { DiscoveryFilterOptions, DiscoveryFilters } from "@/types/discovery";
 import { countActiveFilters } from "@/lib/discovery/applyFilters";
 import { FILTER_LABELS, PRIMARY_FILTERS, SECONDARY_FILTERS } from "@/lib/discovery/filterConfig";
@@ -15,6 +16,7 @@ interface FilterBarProps {
 
 /** Desktop/tablet toolbar: primary filter dropdowns + "More filters". Hidden on phones. */
 export function FilterBar({ filters, actions, options, onOpenMoreFilters }: FilterBarProps) {
+  const t = useTranslations("app.filters");
   const secondaryCount = countActiveFilters(filters, SECONDARY_FILTERS);
 
   return (
@@ -36,7 +38,11 @@ export function FilterBar({ filters, actions, options, onOpenMoreFilters }: Filt
         </FilterDropdown>
       ))}
 
-      <MoreFiltersButton count={secondaryCount} onClick={onOpenMoreFilters} label="More filters" />
+      <MoreFiltersButton
+        count={secondaryCount}
+        onClick={onOpenMoreFilters}
+        label={t("moreFilters")}
+      />
     </div>
   );
 }

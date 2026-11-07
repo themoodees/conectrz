@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { CloseIcon } from "@/components/ui/icons";
 
 interface FilterPanelProps {
@@ -11,7 +12,7 @@ interface FilterPanelProps {
   canClear: boolean;
   resultCount: number;
   /** What is being counted on the confirm button. */
-  noun?: string;
+  noun?: "creator" | "project";
   children: ReactNode;
 }
 
@@ -30,6 +31,7 @@ export function FilterPanel({
   noun = "creator",
   children,
 }: FilterPanelProps) {
+  const t = useTranslations("app.filters");
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export function FilterPanel({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close filters"
+            aria-label={t("close")}
             className="grid size-9 place-items-center rounded-full text-graphite hover:bg-surface"
           >
             <CloseIcon className="size-5" />
@@ -72,14 +74,14 @@ export function FilterPanel({
             disabled={!canClear}
             className="h-11 rounded-control px-4 text-sm font-medium text-graphite hover:bg-surface disabled:cursor-not-allowed disabled:text-muted/60 disabled:hover:bg-transparent"
           >
-            Clear
+            {t("clear")}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="h-11 flex-1 rounded-control bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
           >
-            Show {resultCount} {resultCount === 1 ? noun : `${noun}s`}
+            {t(noun === "project" ? "showProjects" : "showCreators", { count: resultCount })}
           </button>
         </div>
       </div>

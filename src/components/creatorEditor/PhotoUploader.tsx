@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { isMockMode } from "@/lib/config";
 import { setProfilePhoto } from "@/lib/actions/creatorProfile";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -24,12 +25,13 @@ export function PhotoUploader({
   name: string;
   photoUrl: string | null;
 }) {
+  const t = useTranslations("app.editor.photo");
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<{ error?: string; pending?: boolean }>({});
 
   async function upload(file: File) {
-    if (!ACCEPTED.includes(file.type)) return setStatus({ error: "Use a JPG, PNG or WebP image." });
-    if (file.size > MAX_BYTES) return setStatus({ error: "Images can be up to 5 MB." });
+    if (!ACCEPTED.includes(file.type)) return setStatus({ error: t("fileTypes") });
+    if (file.size > MAX_BYTES) return setStatus({ error: t("fileSize") });
 
     setStatus({ pending: true });
     const supabase = createSupabaseBrowserClient();
@@ -38,7 +40,7 @@ export function PhotoUploader({
     const { error } = await supabase.storage
       .from("creator-photos")
       .upload(path, file, { contentType: file.type });
-    if (error) return setStatus({ error: "Upload failed. Please try again." });
+    if (error) return setStatus({ error: t("uploadFailed") });
 
     const result = await setProfilePhoto(path);
     setStatus({ error: result.error });
@@ -68,13 +70,9 @@ export function PhotoUploader({
           className={buttonClass({ variant: "secondary", size: "sm" })}
         >
           <UploadIcon className="size-4" />
-          {status.pending ? "Uploading…" : photoUrl ? "Change photo" : "Upload photo"}
+          {status.pending ? t("uploading") : photoUrl ? t("change") : t("upload")}
         </button>
-        <p className="mt-2 text-xs text-muted">
-          {isMockMode
-            ? "Uploads are available in Supabase mode."
-            : "A clear, well-lit photo of you. JPG, PNG or WebP, up to 5 MB."}
-        </p>
+        <p className="mt-2 text-xs text-muted">{isMockMode ? t("mockNote") : t("help")}</p>
         {status.error && (
           <p role="alert" className="mt-1 text-sm text-danger">
             {status.error}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { LanguageProficiency } from "@/types/creator";
 import type { CategoryOption, CreatorEditorData } from "@/types/creatorEditor";
 import { saveLanguages } from "@/lib/actions/creatorProfile";
-import { PROFICIENCY_LABELS } from "@/lib/format";
+import { PROFICIENCY_ORDER } from "@/lib/format";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { PlusIcon, TrashIcon } from "@/components/ui/icons";
 import { SaveRow, rowInputClass, rowRemoveClass } from "./EditorSection";
@@ -20,6 +21,8 @@ export function LanguagesEditor({
   options: CategoryOption[];
   initialRows: Row[];
 }) {
+  const t = useTranslations("app.editor.languages");
+  const tl = useTranslations("app.proficiency");
   const [rows, setRows] = useState<Row[]>(initialRows);
   const { save, pending, result } = useSave();
 
@@ -32,12 +35,12 @@ export function LanguagesEditor({
         {rows.map((row, index) => (
           <li key={index} className="flex gap-2">
             <select
-              aria-label="Language"
+              aria-label={t("language")}
               value={row.languageId}
               onChange={(e) => update(index, { languageId: e.target.value })}
               className={rowInputClass}
             >
-              <option value="">Language…</option>
+              <option value="">{t("choose")}</option>
               {options.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.name}
@@ -45,22 +48,22 @@ export function LanguagesEditor({
               ))}
             </select>
             <select
-              aria-label="Level"
+              aria-label={t("level")}
               value={row.proficiency}
               onChange={(e) =>
                 update(index, { proficiency: e.target.value as LanguageProficiency })
               }
               className={`${rowInputClass} sm:max-w-48`}
             >
-              {Object.entries(PROFICIENCY_LABELS).map(([value, label]) => (
+              {PROFICIENCY_ORDER.map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {tl(value)}
                 </option>
               ))}
             </select>
             <button
               type="button"
-              aria-label="Remove language"
+              aria-label={t("remove")}
               onClick={() => setRows((current) => current.filter((_, i) => i !== index))}
               className={rowRemoveClass}
             >
@@ -77,7 +80,7 @@ export function LanguagesEditor({
         className={buttonClass({ variant: "ghost", size: "sm", className: "mt-3 -ml-3" })}
       >
         <PlusIcon className="size-4" />
-        Add language
+        {t("add")}
       </button>
       <SaveRow pending={pending} result={result} onSave={() => save(() => saveLanguages(rows))} />
     </div>

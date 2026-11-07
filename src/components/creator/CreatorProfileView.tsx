@@ -1,9 +1,9 @@
+import { useLocale, useTranslations } from "next-intl";
 import type { CreatorProfile } from "@/types/creator";
-import { PROFICIENCY_LABELS, formatFollowers, formatLocation, formatRate } from "@/lib/format";
+import { formatFollowers, formatLocation, formatRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
 import { CreatorImage } from "@/components/discovery/CreatorImage";
 import { MapPinIcon, PlatformIcon } from "@/components/ui/icons";
-import { GENDER_LABELS } from "@/lib/discovery/filterConfig";
 import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { PortfolioGrid } from "./PortfolioGrid";
 import { RatingSummary } from "./RatingSummary";
@@ -25,6 +25,10 @@ interface CreatorProfileViewProps {
  * portfolio full-width below. On phones everything stacks.
  */
 export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProfileViewProps) {
+  const t = useTranslations("app.creatorView");
+  const tg = useTranslations("app.gender");
+  const tl = useTranslations("app.proficiency");
+  const locale = useLocale();
   return (
     <>
       <div className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
@@ -45,8 +49,8 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
           </p>
           {(creator.age != null || creator.gender || creator.reviewCount) && (
             <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
-              {creator.age != null && <span>{creator.age} years old</span>}
-              {creator.gender && <span>{GENDER_LABELS[creator.gender]}</span>}
+              {creator.age != null && <span>{t("years", { age: creator.age })}</span>}
+              {creator.gender && <span>{tg(creator.gender)}</span>}
               <RatingSummary average={creator.ratingAverage} count={creator.reviewCount} />
             </p>
           )}
@@ -55,13 +59,13 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
 
           <div className="mt-8 divide-y divide-border border-t border-border">
             {creator.bio && (
-              <ProfileSection title="About">
+              <ProfileSection title={t("about")}>
                 <p className="leading-relaxed whitespace-pre-line text-graphite">{creator.bio}</p>
               </ProfileSection>
             )}
 
             {creator.niches.length > 0 && (
-              <ProfileSection title="Niches">
+              <ProfileSection title={t("niches")}>
                 <ul className="flex flex-wrap gap-2">
                   {creator.niches.map((niche) => (
                     <li
@@ -76,14 +80,12 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
             )}
 
             {creator.languages.length > 0 && (
-              <ProfileSection title="Languages">
+              <ProfileSection title={t("languages")}>
                 <ul className="flex flex-wrap gap-x-6 gap-y-2">
                   {creator.languages.map((language) => (
                     <li key={language.name} className="text-sm">
                       <span className="font-medium text-ink">{language.name}</span>{" "}
-                      <span className="text-muted">
-                        · {PROFICIENCY_LABELS[language.proficiency]}
-                      </span>
+                      <span className="text-muted">· {tl(language.proficiency)}</span>
                     </li>
                   ))}
                 </ul>
@@ -91,7 +93,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
             )}
 
             {creator.socialAccounts.length > 0 && (
-              <ProfileSection title="Social presence">
+              <ProfileSection title={t("social")}>
                 <ul className="space-y-3">
                   {creator.socialAccounts.map((account) => (
                     <li key={account.platform} className="flex items-center gap-3 text-sm">
@@ -103,7 +105,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
                           {PLATFORM_LABELS[account.platform]}
                         </span>
                         {account.handle === null ? (
-                          <span className="text-muted">Handle and link on paid plans</span>
+                          <span className="text-muted">{t("paidOnly")}</span>
                         ) : account.profileUrl ? (
                           <a
                             href={account.profileUrl}
@@ -120,9 +122,9 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
                       {account.followerCount !== null && (
                         <span className="text-right">
                           <span className="block font-semibold text-ink">
-                            {formatFollowers(account.followerCount)}
+                            {formatFollowers(account.followerCount, locale)}
                           </span>
-                          <span className="text-xs text-muted">followers</span>
+                          <span className="text-xs text-muted">{t("followers")}</span>
                         </span>
                       )}
                     </li>
@@ -132,14 +134,14 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
             )}
 
             {creator.paymentMethods && creator.paymentMethods.length > 0 && (
-              <ProfileSection title="Accepted payment methods">
+              <ProfileSection title={t("payments")}>
                 <PaymentMethodTags methods={creator.paymentMethods} />
                 <PaymentNotice className="mt-2" />
               </ProfileSection>
             )}
 
             {creator.services.length > 0 && (
-              <ProfileSection title="Services & rates">
+              <ProfileSection title={t("services")}>
                 <ul className="divide-y divide-border rounded-card border border-border">
                   {creator.services.map((service) => (
                     <li
@@ -147,11 +149,13 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
                       className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
                     >
                       <span className="text-ink">{service.name}</span>
-                      <span className="shrink-0 font-semibold text-ink">{formatRate(service)}</span>
+                      <span className="shrink-0 font-semibold text-ink">
+                        {formatRate(service, (key, values) => t(key, values))}
+                      </span>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-2 text-xs text-muted">Rates are set by the creator, in US dollars.</p>
+                <p className="mt-2 text-xs text-muted">{t("ratesNote")}</p>
               </ProfileSection>
             )}
           </div>
@@ -160,7 +164,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
 
       <section className="mt-14" aria-labelledby="portfolio-heading">
         <h2 id="portfolio-heading" className="mb-5 text-2xl font-semibold text-ink">
-          Portfolio
+          {t("portfolio")}
         </h2>
         <PortfolioGrid items={creator.portfolio} />
       </section>
@@ -183,13 +187,14 @@ function ProfileSection({ title, children }: { title: string; children: React.Re
 }
 
 function AvailabilityStatus({ isAvailable }: { isAvailable: boolean }) {
+  const t = useTranslations("app.creatorView");
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-graphite">
       <span
         aria-hidden="true"
         className={`size-1.5 rounded-full ${isAvailable ? "bg-success" : "bg-muted"}`}
       />
-      {isAvailable ? "Available for new work" : "Currently unavailable"}
+      {isAvailable ? t("available") : t("unavailable")}
     </span>
   );
 }

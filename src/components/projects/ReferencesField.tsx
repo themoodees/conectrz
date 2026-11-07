@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { isMockMode } from "@/lib/config";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { buttonClass } from "@/components/ui/buttonStyles";
@@ -23,6 +24,7 @@ interface UploadedImage {
  * company's own folder; the form then submits their paths and the links as hidden/regular inputs.
  */
 export function ReferencesField() {
+  const t = useTranslations("app.projects.refs");
   const [links, setLinks] = useState<string[]>([""]);
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [status, setStatus] = useState<{ error?: string; pending?: boolean }>({});
@@ -31,21 +33,21 @@ export function ReferencesField() {
   async function upload(files: FileList) {
     const room = MAX_IMAGES - images.length;
     const chosen = [...files].slice(0, room);
-    if (files.length > room) setStatus({ error: `You can add up to ${MAX_IMAGES} images.` });
+    if (files.length > room) setStatus({ error: t("maxImages", { max: MAX_IMAGES }) });
     else setStatus({ pending: true });
 
     const supabase = createSupabaseBrowserClient();
     const { data } = await supabase.auth.getUser();
-    if (!data.user) return setStatus({ error: "Please sign in again." });
+    if (!data.user) return setStatus({ error: t("signIn") });
 
     const added: UploadedImage[] = [];
     for (const file of chosen) {
       if (!ACCEPTED.includes(file.type)) {
-        setStatus({ error: "Use JPG, PNG or WebP images." });
+        setStatus({ error: t("fileTypes") });
         continue;
       }
       if (file.size > MAX_BYTES) {
-        setStatus({ error: "Each image can be up to 5 MB." });
+        setStatus({ error: t("fileSize") });
         continue;
       }
       const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
@@ -54,7 +56,7 @@ export function ReferencesField() {
         .from("project-references")
         .upload(path, file, { contentType: file.type });
       if (error) {
-        setStatus({ error: "Upload failed. Please try again." });
+        setStatus({ error: t("uploadFailed") });
         continue;
       }
       added.push({ path, previewUrl: URL.createObjectURL(file) });
@@ -71,11 +73,8 @@ export function ReferencesField() {
 
   return (
     <fieldset className="space-y-4">
-      <legend className="text-sm font-medium text-ink">References (optional)</legend>
-      <p className="-mt-2 text-xs text-muted">
-        Add links (a mood board, an Instagram account, a product page) and images that show the
-        style you want. Creators see them on the project page.
-      </p>
+      <legend className="text-sm font-medium text-ink">{t("legend")}</legend>
+      <p className="-mt-2 text-xs text-muted">{t("hint")}</p>
 
       <div className="space-y-2">
         {links.map((link, index) => (
@@ -86,7 +85,7 @@ export function ReferencesField() {
               value={link}
               maxLength={500}
               placeholder="https://…"
-              aria-label={`Reference link ${index + 1}`}
+              aria-label={t("linkAria", { n: index + 1 })}
               onChange={(e) =>
                 setLinks((current) => current.map((l, i) => (i === index ? e.target.value : l)))
               }
@@ -95,7 +94,7 @@ export function ReferencesField() {
             {links.length > 1 && (
               <button
                 type="button"
-                aria-label={`Remove link ${index + 1}`}
+                aria-label={t("removeLink", { n: index + 1 })}
                 onClick={() => setLinks((current) => current.filter((_, i) => i !== index))}
                 className="grid size-11 place-items-center rounded-control text-graphite hover:bg-surface"
               >
@@ -111,7 +110,7 @@ export function ReferencesField() {
             className={buttonClass({ variant: "ghost", size: "sm" })}
           >
             <PlusIcon className="size-4" />
-            Add another link
+            {t("addLink")}
           </button>
         )}
       </div>
@@ -136,7 +135,7 @@ export function ReferencesField() {
                 <Image src={image.previewUrl} alt="" fill unoptimized className="object-cover" />
                 <button
                   type="button"
-                  aria-label="Remove image"
+                  aria-label={t("removeImage")}
                   onClick={() => void remove(image)}
                   className="absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-full bg-white/95 text-graphite hover:text-danger"
                 >
@@ -154,12 +153,10 @@ export function ReferencesField() {
           className={buttonClass({ variant: "secondary", size: "sm" })}
         >
           <UploadIcon className="size-4" />
-          {status.pending ? "Uploading…" : "Add images"}
+          {status.pending ? t("uploading") : t("addImages")}
         </button>
         <p className="mt-2 text-xs text-muted">
-          {isMockMode
-            ? "Uploads are available in Supabase mode."
-            : `Up to ${MAX_IMAGES} images, JPG, PNG or WebP, 5 MB each.`}
+          {isMockMode ? t("mockNote") : t("limits", { max: MAX_IMAGES })}
         </p>
         {status.error && (
           <p role="alert" className="mt-1 text-sm text-danger">

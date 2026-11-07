@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { usdToCents } from "@/lib/format";
@@ -56,6 +57,7 @@ export async function createProject(
   _previous: ProjectActionState,
   formData: FormData,
 ): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const budget = wholeDollars(formData.get("budget"));
@@ -70,28 +72,31 @@ export async function createProject(
     .filter(Boolean);
   const referenceImages = formData.getAll("referenceImages").map(String).filter(Boolean);
 
-  if (!title) return { error: "Enter a title." };
-  if (title.length > MAX_TITLE) return { error: `Titles can be up to ${MAX_TITLE} characters.` };
-  if (!description) return { error: "Describe what you need." };
+  if (!title) return { error: t("enterTitle") };
+  if (title.length > MAX_TITLE) return { error: t("titleTooLong", { max: MAX_TITLE }) };
+  if (!description) return { error: t("describe") };
   if (description.length > MAX_DESCRIPTION) {
-    return { error: `Descriptions can be up to ${MAX_DESCRIPTION.toLocaleString()} characters.` };
+    return { error: t("descTooLong", { max: MAX_DESCRIPTION.toLocaleString() }) };
   }
   if (!Number.isInteger(budget) || budget <= 0 || budget > MAX_AMOUNT_USD) {
-    return { error: "Enter a budget in whole US dollars." };
+    return { error: t("budgetInvalid") };
   }
-  if (referenceLinks.length > MAX_REFERENCE_LINKS || referenceImages.length > MAX_REFERENCE_IMAGES) {
+  if (
+    referenceLinks.length > MAX_REFERENCE_LINKS ||
+    referenceImages.length > MAX_REFERENCE_IMAGES
+  ) {
     return {
-      error: `You can add up to ${MAX_REFERENCE_LINKS} links and ${MAX_REFERENCE_IMAGES} images.`,
+      error: t("tooManyRefs", { links: MAX_REFERENCE_LINKS, images: MAX_REFERENCE_IMAGES }),
     };
   }
   if (!referenceLinks.every(isWebLink)) {
-    return { error: "Reference links must be full web addresses starting with http:// or https://." };
+    return { error: t("refLinkInvalid") };
   }
   if (paymentMethods.length === 0) {
-    return { error: "Choose at least one way you will pay the creator." };
+    return { error: t("choosePayment") };
   }
   if (!DATE_PATTERN.test(deadline) || deadline < todayIso()) {
-    return { error: "Choose a delivery deadline that is today or later." };
+    return { error: t("deadlinePast") };
   }
 
   let projectId: string;
@@ -116,12 +121,12 @@ export async function createProject(
     });
   } else {
     if (![...serviceIds, ...nicheIds, ...languageIds].every((id) => UUID_PATTERN.test(id))) {
-      return { error: "Invalid selection." };
+      return { error: t("invalidSelection") };
     }
     const { supabase, user } = await requireSupabaseUser();
     // Images were uploaded from the browser into the company's own folder; accept nothing else.
     if (!referenceImages.every((path) => path.startsWith(`${user.id}/`) && !path.includes(".."))) {
-      return { error: "Invalid image." };
+      return { error: t("invalidImage") };
     }
     const { data, error } = await supabase
       .from("projects")
@@ -135,7 +140,7 @@ export async function createProject(
       })
       .select("id")
       .single();
-    if (error || !data) return { error: "Couldn't post your project. Please try again." };
+    if (error || !data) return { error: t("postFailed") };
     projectId = data.id;
 
     const results = await Promise.all([
@@ -155,16 +160,18 @@ export async function createProject(
             .insert(languageIds.map((language_id) => ({ project_id: projectId, language_id })))
         : null,
       referenceLinks.length + referenceImages.length > 0
-        ? supabase.from("project_references").insert([
-            ...referenceLinks.map((url) => ({ project_id: projectId, kind: "link", url })),
-            ...referenceImages.map((url) => ({ project_id: projectId, kind: "image", url })),
-          ])
+        ? supabase
+            .from("project_references")
+            .insert([
+              ...referenceLinks.map((url) => ({ project_id: projectId, kind: "link", url })),
+              ...referenceImages.map((url) => ({ project_id: projectId, kind: "image", url })),
+            ])
         : null,
     ]);
     if (results.some((result) => result?.error)) {
       // Don't leave a half-saved project behind: close it so creators don't see it.
       await supabase.from("projects").update({ status: "closed" }).eq("id", projectId);
-      return { error: "Couldn't save the project details. Please try again." };
+      return { error: t("saveDetailsFailed") };
     }
   }
 
@@ -176,9 +183,10 @@ export async function setProjectStatus(
   projectId: string,
   status: "open" | "closed",
 ): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
   if (isMockMode) {
     const project = mockStore.projects.find((p) => p.id === projectId);
-    if (!project) return { error: "Project not found." };
+    if (!project) return { error: t("notFound") };
     project.status = status;
   } else {
     const { supabase, user } = await requireSupabaseUser();
@@ -189,24 +197,23 @@ export async function setProjectStatus(
       .eq("company_id", user.id);
     if (error) {
       return {
-        error: error.message.includes("company_not_active")
-          ? "Your account is paused, so projects can't be reopened."
-          : "Couldn't update the project. Please try again.",
+        error: error.message.includes("company_not_active") ? t("pausedReopen") : t("updateFailed"),
       };
     }
   }
   revalidateProjects(projectId);
-  return { success: status === "closed" ? "Project closed." : "Project reopened." };
+  return { success: status === "closed" ? t("projectClosed") : t("projectReopened") };
 }
 
 export async function declineApplication(
   applicationId: string,
   projectId: string,
 ): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
   if (isMockMode) {
     const application = mockStore.applications.find((a) => a.id === applicationId);
     if (!application || application.status !== "submitted") {
-      return { error: "This application can't be changed." };
+      return { error: t("cantChange") };
     }
     application.status = "declined";
   } else {
@@ -217,14 +224,12 @@ export async function declineApplication(
       .eq("id", applicationId);
     if (error) {
       return {
-        error: error.message.includes("project_closed")
-          ? "This project is closed. Reopen it to decline applications."
-          : "Couldn't decline this application. Please try again.",
+        error: error.message.includes("project_closed") ? t("closedDecline") : t("declineFailed"),
       };
     }
   }
   revalidateProjects(projectId);
-  return { success: "Application declined." };
+  return { success: t("declined") };
 }
 
 /* ── Creator: apply and withdraw ──────────────────────────────────────────── */
@@ -233,23 +238,28 @@ export async function applyToProject(
   _previous: ProjectActionState,
   formData: FormData,
 ): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
   const projectId = String(formData.get("projectId") ?? "");
   const message = String(formData.get("message") ?? "").trim();
   const amount = wholeDollars(formData.get("amount"));
 
-  if (!message) return { error: "Write a short message to the company." };
+  if (!message) return { error: t("enterMessage") };
   if (message.length > MAX_MESSAGE) {
-    return { error: `Messages can be up to ${MAX_MESSAGE.toLocaleString()} characters.` };
+    return { error: t("msgTooLong", { max: MAX_MESSAGE.toLocaleString() }) };
   }
   if (!Number.isInteger(amount) || amount <= 0 || amount > MAX_AMOUNT_USD) {
-    return { error: "Enter your price in whole US dollars." };
+    return { error: t("enterPrice") };
   }
 
   if (isMockMode) {
     const project = mockStore.projects.find((p) => p.id === projectId);
-    if (!project || project.status !== "open") return { error: "This project is closed." };
-    if (mockStore.applications.some((a) => a.projectId === projectId && a.creatorId === MOCK_CREATOR_ID)) {
-      return { error: "You've already applied to this project." };
+    if (!project || project.status !== "open") return { error: t("closed") };
+    if (
+      mockStore.applications.some(
+        (a) => a.projectId === projectId && a.creatorId === MOCK_CREATOR_ID,
+      )
+    ) {
+      return { error: t("alreadyApplied") };
     }
     mockStore.applications.push({
       id: `ap-${Date.now()}`,
@@ -261,7 +271,7 @@ export async function applyToProject(
       createdAt: new Date().toISOString(),
     });
   } else {
-    if (!UUID_PATTERN.test(projectId)) return { error: "Project not found." };
+    if (!UUID_PATTERN.test(projectId)) return { error: t("notFound") };
     const { supabase, user } = await requireSupabaseUser();
     const { error } = await supabase.from("project_applications").insert({
       project_id: projectId,
@@ -270,31 +280,31 @@ export async function applyToProject(
       proposed_amount_usd_cents: usdToCents(amount),
     });
     if (error) {
-      if (error.code === "23505") return { error: "You've already applied to this project." };
+      if (error.code === "23505") return { error: t("alreadyApplied") };
       if (error.code === "42501") {
         return {
-          error:
-            "You can apply once your profile is published: add your prefecture, at least one language and one service. The project must also still be open.",
+          error: t("notPublished"),
         };
       }
-      return { error: "Couldn't send your application. Please try again." };
+      return { error: t("sendFailed") };
     }
   }
 
   revalidateProjects(projectId);
-  return { success: "Application sent." };
+  return { success: t("sent") };
 }
 
 export async function withdrawApplication(
   applicationId: string,
   projectId: string,
 ): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
   if (isMockMode) {
     const application = mockStore.applications.find(
       (a) => a.id === applicationId && a.creatorId === MOCK_CREATOR_ID,
     );
     if (!application || application.status !== "submitted") {
-      return { error: "This application can't be changed." };
+      return { error: t("cantChange") };
     }
     application.status = "withdrawn";
   } else {
@@ -303,8 +313,8 @@ export async function withdrawApplication(
       .from("project_applications")
       .update({ status: "withdrawn" })
       .eq("id", applicationId);
-    if (error) return { error: "Couldn't withdraw your application. Please try again." };
+    if (error) return { error: t("withdrawFailed") };
   }
   revalidateProjects(projectId);
-  return { success: "Application withdrawn." };
+  return { success: t("withdrawn") };
 }

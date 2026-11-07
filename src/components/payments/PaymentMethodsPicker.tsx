@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { PAYMENT_METHODS, type PaymentMethod } from "@/lib/payments";
 import { OptionButton } from "@/components/discovery/OptionButton";
 
@@ -14,6 +15,7 @@ export function PaymentMethodsPicker({
   hint?: string;
   initial?: PaymentMethod[];
 }) {
+  const t = useTranslations("app.payments.methods");
   const [selected, setSelected] = useState<PaymentMethod[]>(initial);
   const toggle = (id: PaymentMethod) =>
     setSelected((current) =>
@@ -28,7 +30,7 @@ export function PaymentMethodsPicker({
         {PAYMENT_METHODS.map((method) => (
           <OptionButton
             key={method.id}
-            label={method.label}
+            label={t(method.id)}
             isSelected={selected.includes(method.id)}
             onClick={() => toggle(method.id)}
           />

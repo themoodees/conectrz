@@ -1,4 +1,5 @@
-import { GENDER_LABELS, GENDER_OPTIONS } from "@/lib/discovery/filterConfig";
+import { useTranslations } from "next-intl";
+import { GENDER_OPTIONS } from "@/lib/discovery/filterConfig";
 import { SelectField } from "@/components/ui/SelectField";
 import { TextField } from "@/components/ui/TextField";
 
@@ -10,22 +11,24 @@ export function PersonalDetailsFields({
   birthDate: string;
   gender: string;
 }) {
+  const t = useTranslations("app.editor.personal");
+  const tg = useTranslations("app.gender");
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <TextField
-        label="Birth date (optional)"
+        label={t("birth")}
         name="birthDate"
         type="date"
         defaultValue={birthDate}
         max={new Date().toISOString().slice(0, 10)}
-        hint="Private. Brands only see your age, so they can filter by it."
+        hint={t("birthHint")}
       />
       <SelectField
-        label="Gender (optional)"
+        label={t("gender")}
         name="gender"
         defaultValue={gender}
-        placeholder="Prefer not to say"
-        options={GENDER_OPTIONS.map((g) => ({ value: g, label: GENDER_LABELS[g] }))}
+        placeholder={t("preferNot")}
+        options={GENDER_OPTIONS.map((g) => ({ value: g, label: tg(g) }))}
       />
     </div>
   );
