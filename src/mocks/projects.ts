@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/config";
 import type { PaymentMethod } from "@/lib/payments";
 import type { ApplicationStatus, ProjectStatus } from "@/types/projects";
 
@@ -9,6 +10,7 @@ export interface MockProject {
   companyName: string;
   title: string;
   description: string;
+  writtenLanguage: Locale;
   budgetUsd: number;
   deliveryDeadline: string;
   status: ProjectStatus;
@@ -36,6 +38,7 @@ export const mockProjects: MockProject[] = [
     companyId: "co-001",
     companyName: "Hanami Cosmetics",
     title: "Autumn skincare UGC videos",
+    writtenLanguage: "en",
     description:
       "We're launching a new sensitive-skin line and need three short vertical videos (15–30 seconds) showing a real morning routine. Natural light, no heavy editing. Products are shipped to you free of charge.",
     budgetUsd: 600,
@@ -53,6 +56,7 @@ export const mockProjects: MockProject[] = [
     companyId: "co-001",
     companyName: "Hanami Cosmetics",
     title: "Product photos for the winter set",
+    writtenLanguage: "en",
     description: "Ten styled product photos of our winter gift set, for the website and Instagram.",
     budgetUsd: 350,
     deliveryDeadline: "2026-11-30",
@@ -68,6 +72,7 @@ export const mockProjects: MockProject[] = [
     companyId: "co-050",
     companyName: "Kumo Travel Co.",
     title: "Weekend trips around Japan: Reels series",
+    writtenLanguage: "en",
     description:
       "A four-part Instagram Reel series showing weekend getaways from Tokyo for English-speaking travellers. Storyline and shot list provided; you bring the voice and the eye.",
     budgetUsd: 1200,
@@ -84,6 +89,7 @@ export const mockProjects: MockProject[] = [
     companyId: "co-051",
     companyName: "Mochi Home",
     title: "Home organisation TikToks",
+    writtenLanguage: "en",
     description: "Three TikTok videos using our storage range in a real home. Cosy, honest, not salesy.",
     budgetUsd: 450,
     deliveryDeadline: "2026-12-05",

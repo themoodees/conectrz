@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { ENABLED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/config";
 import type { CreatorProject, ProjectFormOptions } from "@/types/projects";
 import type { NumberRange } from "@/types/discovery";
 import { PAYMENT_METHODS, type PaymentMethod } from "@/lib/payments";
@@ -17,7 +18,7 @@ import { ProjectCard } from "./ProjectCard";
 type Deadline = "week" | "month" | "later";
 type Sort = "newest" | "budget" | "deadline";
 type ListKey = "niches" | "services" | "languages";
-type FilterId = ListKey | "payments" | "budget" | "deadline";
+type FilterId = ListKey | "written" | "payments" | "budget" | "deadline";
 
 const DEADLINES: Deadline[] = ["week", "month", "later"];
 const SORTS: Sort[] = ["newest", "budget", "deadline"];
@@ -25,7 +26,7 @@ const SORTS: Sort[] = ["newest", "budget", "deadline"];
 const BUDGET_SLIDER = { min: 0, max: 3000, step: 50 };
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 const PRIMARY: FilterId[] = ["niches", "services", "budget"];
-const SECONDARY: FilterId[] = ["languages", "payments", "deadline"];
+const SECONDARY: FilterId[] = ["written", "languages", "payments", "deadline"];
 const ALL: FilterId[] = [...PRIMARY, ...SECONDARY];
 
 /** Days from today until a yyyy-mm-dd deadline (can be negative). */
@@ -64,6 +65,7 @@ export function CreatorProjectBrowser({
     services: [],
     languages: [],
   });
+  const [written, setWritten] = useState<Locale[]>([]);
   const [payments, setPayments] = useState<PaymentMethod[]>([]);
   const [budget, setBudget] = useState<NumberRange | null>(null);
   const [deadline, setDeadline] = useState<Deadline | null>(null);
@@ -82,6 +84,15 @@ export function CreatorProjectBrowser({
     };
     return { niches: build("niches"), services: build("services"), languages: build("languages") };
   }, [projects, options]);
+
+  const writtenCounts = useMemo(
+    () =>
+      ENABLED_LOCALES.map((code) => ({
+        code,
+        count: projects.filter((p) => p.writtenLanguage === code).length,
+      })),
+    [projects],
+  );
 
   const paymentCounts = useMemo(
     () =>
@@ -104,7 +115,8 @@ export function CreatorProjectBrowser({
         !any(selected.niches, p.niches) ||
         !any(selected.services, p.services) ||
         !any(selected.languages, p.languages) ||
-        !any(payments, p.paymentMethods)
+        !any(payments, p.paymentMethods) ||
+        (written.length > 0 && !written.includes(p.writtenLanguage))
       ) {
         return false;
       }
@@ -123,7 +135,7 @@ export function CreatorProjectBrowser({
           ? a.deliveryDeadline.localeCompare(b.deliveryDeadline)
           : b.createdAt.localeCompare(a.createdAt),
     );
-  }, [projects, query, selected, payments, budget, deadline, sort]);
+  }, [projects, query, selected, written, payments, budget, deadline, sort]);
 
   const toggle = <T extends string>(list: T[], value: T) =>
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -131,7 +143,9 @@ export function CreatorProjectBrowser({
   const countFor = (id: FilterId) =>
     id === "payments"
       ? payments.length
-      : id === "budget"
+      : id === "written"
+        ? written.length
+        : id === "budget"
         ? budget
           ? 1
           : 0
@@ -144,6 +158,7 @@ export function CreatorProjectBrowser({
   const clear = (ids: FilterId[] = ALL) => {
     ids.forEach((id) => {
       if (id === "payments") setPayments([]);
+      else if (id === "written") setWritten([]);
       else if (id === "budget") setBudget(null);
       else if (id === "deadline") setDeadline(null);
       else setSelected((current) => ({ ...current, [id]: [] }));
@@ -169,6 +184,16 @@ export function CreatorProjectBrowser({
           label={t(`deadlines.${d}`)}
           isSelected={deadline === d}
           onClick={() => setDeadline(deadline === d ? null : d)}
+        />
+      ));
+    }
+    if (id === "written") {
+      return writtenCounts.map((w) => (
+        <OptionButton
+          key={w.code}
+          label={`${LOCALE_LABELS[w.code]} · ${w.count}`}
+          isSelected={written.includes(w.code)}
+          onClick={() => setWritten(toggle(written, w.code))}
         />
       ));
     }
@@ -203,6 +228,12 @@ export function CreatorProjectBrowser({
         remove: () => setSelected((c) => ({ ...c, [key]: c[key].filter((v) => v !== name) })),
       })),
     ),
+    ...written.map((code) => ({
+      id: `written:${code}`,
+      key: "written" as FilterId,
+      label: t("writtenIn", { language: LOCALE_LABELS[code] }),
+      remove: () => setWritten((c) => c.filter((v) => v !== code)),
+    })),
     ...payments.map((m) => ({
       id: `payments:${m}`,
       key: "payments" as FilterId,

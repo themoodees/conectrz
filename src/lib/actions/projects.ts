@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { isMockMode } from "@/lib/config";
+import { isEnabledLocale } from "@/i18n/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { usdToCents } from "@/lib/format";
 import { parsePaymentMethods } from "@/lib/payments";
@@ -60,6 +61,7 @@ export async function createProject(
   const t = await getTranslations("app.projectErrors");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  const writtenLanguageRaw = String(formData.get("writtenLanguage") ?? "");
   const budget = wholeDollars(formData.get("budget"));
   const deadline = String(formData.get("deadline") ?? "");
   const serviceIds = formData.getAll("serviceIds").map(String);
@@ -99,6 +101,11 @@ export async function createProject(
     return { error: t("deadlinePast") };
   }
 
+  if (!isEnabledLocale(writtenLanguageRaw)) {
+    return { error: t("invalidSelection") };
+  }
+  const writtenLanguage = writtenLanguageRaw;
+
   let projectId: string;
 
   if (isMockMode) {
@@ -109,6 +116,7 @@ export async function createProject(
       companyName: mockCompanyAccount.companyName,
       title,
       description,
+      writtenLanguage,
       budgetUsd: budget,
       deliveryDeadline: deadline,
       status: "open",
@@ -134,6 +142,7 @@ export async function createProject(
         company_id: user.id,
         title,
         description,
+        written_language: writtenLanguage,
         budget_usd_cents: usdToCents(budget),
         delivery_deadline: deadline,
         payment_methods: paymentMethods,

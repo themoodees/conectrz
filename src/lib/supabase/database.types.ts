@@ -136,9 +136,9 @@ export type Database = {
         Relationships: []
       }
       projects: {
-        Row: { payment_methods: string[]; budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
-        Insert: { payment_methods?: string[]; budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
-        Update: { payment_methods?: string[]; budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
+        Row: { written_language: string | null; payment_methods: string[]; budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
+        Insert: { written_language?: string | null; payment_methods?: string[]; budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
+        Update: { written_language?: string | null; payment_methods?: string[]; budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
         Relationships: []
       }
       project_applications: {
@@ -248,7 +248,7 @@ export type Database = {
         Relationships: []
       }
       project_listings: {
-        Row: { company_id: string | null; payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
+        Row: { written_language: string | null; company_id: string | null; payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
         Relationships: []
       }
       conversation_creators: {

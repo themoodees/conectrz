@@ -11,6 +11,7 @@ import type {
 } from "@/types/projects";
 import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/config";
 import { centsToUsd } from "@/lib/format";
 import { parsePaymentMethods } from "@/lib/payments";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
@@ -75,11 +76,15 @@ export async function getProjectFormOptions(): Promise<ProjectFormOptions> {
   return { services, niches, languages };
 }
 
+const toLocale = (value: string | null | undefined): Locale =>
+  isLocale(value) ? value : DEFAULT_LOCALE;
+
 const fromMock = (project: MockProject): Project => ({
   id: project.id,
   companyId: project.companyId,
   title: project.title,
   description: project.description,
+  writtenLanguage: project.writtenLanguage,
   budgetUsd: project.budgetUsd,
   deliveryDeadline: project.deliveryDeadline,
   status: project.status,
@@ -174,6 +179,7 @@ export async function getCompanyProjects(): Promise<CompanyProject[]> {
         companyId: user.id,
         title: p.title,
         description: p.description,
+        writtenLanguage: toLocale(p.written_language),
         budgetUsd: centsToUsd(p.budget_usd_cents),
         deliveryDeadline: p.delivery_deadline,
         status: p.status,
@@ -318,6 +324,7 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
           companyId: row.company_id ?? "",
           title: row.title ?? "",
           description: row.description ?? "",
+          writtenLanguage: toLocale(row.written_language),
           budgetUsd: centsToUsd(row.budget_usd_cents ?? 0),
           deliveryDeadline: row.delivery_deadline ?? "",
           status: row.status,
