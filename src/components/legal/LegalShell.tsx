@@ -1,18 +1,22 @@
+import { getTranslations } from "next-intl/server";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 
 /** Public page frame for legal documents, with a draft notice until the text is final. */
-export function LegalShell({
+export async function LegalShell({
   title,
   subtitle,
   lastUpdated,
+  translationNotice,
   children,
 }: {
   title: string;
   subtitle?: string;
   lastUpdated: string;
+  translationNotice?: string;
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("legal");
   const isDraft = lastUpdated.startsWith("[");
 
   return (
@@ -25,9 +29,14 @@ export function LegalShell({
             text in [brackets] with wording reviewed by a legal professional before launch.
           </p>
         )}
+        {translationNotice && (
+          <p className="mb-8 rounded-control bg-surface px-4 py-3 text-sm text-graphite">
+            {translationNotice}
+          </p>
+        )}
         <h1 className="text-3xl font-semibold text-ink md:text-4xl">{title}</h1>
         {subtitle && <p className="mt-2 text-muted">{subtitle}</p>}
-        <p className="mt-2 text-sm text-muted">Last updated: {lastUpdated}</p>
+        <p className="mt-2 text-sm text-muted">{t("lastUpdated", { date: lastUpdated })}</p>
         <div className="mt-10">{children}</div>
       </main>
       <MarketingFooter />

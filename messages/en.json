@@ -384,5 +384,8 @@
       "confirmationSent": "We sent a confirmation link to {email}. Open it to finish signing up.",
       "resetSent": "If an account exists for {email}, we've sent a link to reset your password."
     }
+  },
+  "legal": {
+    "lastUpdated": "Last updated: {date}"
   }
 }
