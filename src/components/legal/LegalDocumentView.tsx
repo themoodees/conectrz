@@ -4,7 +4,11 @@ import { LegalShell } from "./LegalShell";
 /** Renders a LegalDocument from src/content/legal. */
 export function LegalDocumentView({ document }: { document: LegalDocument }) {
   return (
-    <LegalShell title={document.title} lastUpdated={document.lastUpdated}>
+    <LegalShell
+      title={document.title}
+      lastUpdated={document.lastUpdated}
+      translationNotice={document.translationNotice}
+    >
       <p className="leading-relaxed text-graphite">{document.intro}</p>
       <div className="mt-8 space-y-8">
         {document.sections.map((section) => (

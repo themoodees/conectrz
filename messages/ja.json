@@ -385,6 +385,9 @@
       "resetSent": "{email} のアカウントが存在する場合、パスワード再設定用のリンクを送信しました。"
     }
   },
+  "legal": {
+    "lastUpdated": "最終更新日：{date}"
+  },
   "app": {
     "nav": {
       "discover": "探す",

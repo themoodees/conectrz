@@ -385,6 +385,9 @@
       "resetSent": "If an account exists for {email}, we've sent a link to reset your password."
     }
   },
+  "legal": {
+    "lastUpdated": "Last updated: {date}"
+  },
   "app": {
     "nav": {
       "discover": "Discover",

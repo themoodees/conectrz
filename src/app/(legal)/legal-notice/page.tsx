@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
 import { LegalShell } from "@/components/legal/LegalShell";
 import { legalNotice } from "@/content/legal/legalNotice";
 
 export const metadata: Metadata = { title: "Legal Notice (特定商取引法に基づく表記)" };
 
-/** Table content lives in src/content/legal/legalNotice.ts. */
-export default function LegalNoticePage() {
+/** Table content lives in src/content/legal/legalNotice.ts (English and Japanese values). */
+export default async function LegalNoticePage() {
+  const isJapanese = (await getLocale()) === "ja";
+
   return (
     <LegalShell
       title={legalNotice.title}
-      subtitle={legalNotice.subtitle}
+      subtitle={isJapanese ? legalNotice.subtitleJa : legalNotice.subtitle}
       lastUpdated={legalNotice.lastUpdated}
     >
       <dl className="divide-y divide-border rounded-card border border-border">
@@ -21,7 +24,7 @@ export default function LegalNoticePage() {
                 {row.en}
               </span>
             </dt>
-            <dd className="text-sm text-graphite">{row.value}</dd>
+            <dd className="text-sm text-graphite">{isJapanese ? row.valueJa : row.value}</dd>
           </div>
         ))}
       </dl>
