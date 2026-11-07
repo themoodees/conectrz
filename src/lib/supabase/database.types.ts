@@ -280,6 +280,7 @@ export type Database = {
       delete_my_creator_account: { Args: never; Returns: undefined }
       creator_is_published: { Args: { p_creator_id: string }; Returns: boolean }
       has_paid_plan: { Args: never; Returns: boolean }
+      admin_account_emails: { Args: never; Returns: { id: string; email: string }[] }
       is_admin: { Args: never; Returns: boolean }
       my_conversation_usage: {
         Args: never
