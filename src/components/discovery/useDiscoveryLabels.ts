@@ -2,11 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import type { DiscoveryLabels } from "@/lib/discovery/applyFilters";
+import { usePrefectureName } from "@/components/i18n/usePrefectureName";
 
 /** Translated names for the filters, genders and follower ranges. */
 export function useDiscoveryLabels(): DiscoveryLabels {
   const t = useTranslations("app.discovery");
   const tGender = useTranslations("app.gender");
+  const prefecture = usePrefectureName();
   return {
     filter: {
       niches: t("filterLabels.niches"),
@@ -28,5 +30,6 @@ export function useDiscoveryLabels(): DiscoveryLabels {
       "100k-plus": t("followerRanges.100k-plus"),
     },
     availableNow: t("availableNow"),
+    prefecture,
   };
 }

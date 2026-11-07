@@ -128,6 +128,8 @@ export interface DiscoveryLabels {
   gender: Record<Gender, string>;
   follower: Record<FollowerRangeId, string>;
   availableNow: string;
+  /** Translates a prefecture name ("Tokyo") for location chips. */
+  prefecture: (name: string) => string;
 }
 
 export interface ActiveFilterChip {
@@ -147,7 +149,12 @@ export function getActiveFilterChips(
   const chips: ActiveFilterChip[] = [];
   const multi = (key: "niches" | "locations" | "languages" | "services") =>
     filters[key].forEach((value) =>
-      chips.push({ id: `${key}:${value}`, key, value, label: value }),
+      chips.push({
+        id: `${key}:${value}`,
+        key,
+        value,
+        label: key === "locations" ? labels.prefecture(value) : value,
+      }),
     );
 
   multi("niches");

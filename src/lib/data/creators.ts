@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { getLocale } from "next-intl/server";
 import type {
   Creator,
   Gender,
@@ -17,6 +18,7 @@ import { mockFilterOptions } from "@/mocks/filterOptions";
 import { PREFECTURES } from "@/lib/prefectures";
 import { mockPortfolio } from "@/mocks/portfolio";
 import { mockStore } from "@/mocks/store";
+import { localizedName } from "@/lib/i18n/names";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
 import { getCreatorReviews } from "./reviews";
@@ -79,6 +81,7 @@ function ageFromBirthDate(birthDate: string | null | undefined): number | null {
 /** Creators, optionally limited to specific ids. `own` reads the base tables (the creator's own view). */
 async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Creator[]> {
   const { supabase } = await getSupabaseSession();
+  const locale = await getLocale();
   const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, is_available";
   // Companies get a calculated age and rating; the creator's own view reads the birth date.
   const ownColumns = `${columns}, gender, birth_date, payment_methods`;
@@ -104,15 +107,15 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
   const [languages, niches, services, social, photos] = await Promise.all([
     supabase
       .from("creator_languages")
-      .select("creator_id, proficiency, languages ( name )")
+      .select("creator_id, proficiency, languages ( name, name_i18n )")
       .in("creator_id", creatorIds),
     supabase
       .from("creator_niches")
-      .select("creator_id, niches ( name )")
+      .select("creator_id, niches ( name, name_i18n )")
       .in("creator_id", creatorIds),
     supabase
       .from("creator_services")
-      .select("creator_id, rate_type, rate_amount_usd_cents, services ( name )")
+      .select("creator_id, rate_type, rate_amount_usd_cents, services ( name, name_i18n )")
       .in("creator_id", creatorIds),
     own
       ? supabase
@@ -153,19 +156,19 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     reviewCount: row.review_count ?? 0,
     paymentMethods: parsePaymentMethods(row.payment_methods),
     languages: byCreator(languages.data!, row.id).flatMap((l) => {
-      const language = l.languages as { name: string } | null;
-      return language ? [{ name: language.name, proficiency: l.proficiency }] : [];
+      const language = l.languages as { name: string; name_i18n: unknown } | null;
+      return language ? [{ name: localizedName(language, locale), proficiency: l.proficiency }] : [];
     }),
     niches: byCreator(niches.data!, row.id).flatMap((n) => {
-      const niche = n.niches as { name: string } | null;
-      return niche ? [niche.name] : [];
+      const niche = n.niches as { name: string; name_i18n: unknown } | null;
+      return niche ? [localizedName(niche, locale)] : [];
     }),
     services: byCreator(services.data!, row.id).flatMap((s) => {
-      const service = s.services as { name: string } | null;
+      const service = s.services as { name: string; name_i18n: unknown } | null;
       return service
         ? [
             {
-              name: service.name,
+              name: localizedName(service, locale),
               rateType: s.rate_type,
               rateAmountUsd: centsToUsd(s.rate_amount_usd_cents),
             },
@@ -268,14 +271,15 @@ export async function getDiscoveryFilterOptions(): Promise<DiscoveryFilterOption
   if (isMockMode) return mockFilterOptions;
 
   const { supabase } = await getSupabaseSession();
+  const locale = await getLocale();
   const activeNames = async (table: "niches" | "languages" | "services") => {
     const { data, error } = await supabase
       .from(table)
-      .select("name")
+      .select("name, name_i18n")
       .eq("is_active", true)
       .order("name");
     if (error) throw error;
-    return data.map((row) => row.name);
+    return data.map((row) => localizedName(row, locale));
   };
 
   const [niches, languages, services] = await Promise.all([

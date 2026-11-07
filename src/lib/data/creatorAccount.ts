@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { getLocale } from "next-intl/server";
 import type { AccountStatus } from "@/types/account";
 import type { Gender, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData, CreatorEditorOptions } from "@/types/creatorEditor";
@@ -12,6 +13,7 @@ import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
 import { mockPortfolio } from "@/mocks/portfolio";
 import { mockStore } from "@/mocks/store";
+import { localizedName } from "@/lib/i18n/names";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
 
@@ -57,14 +59,15 @@ export async function getEditorOptions(): Promise<CreatorEditorOptions> {
   }
 
   const { supabase } = await getSupabaseSession();
+  const locale = await getLocale();
   const load = async (table: "niches" | "languages" | "services") => {
     const { data, error } = await supabase
       .from(table)
-      .select("id, name")
+      .select("id, name, name_i18n")
       .eq("is_active", true)
       .order("name");
     if (error) throw error;
-    return data;
+    return data.map((row) => ({ id: row.id, name: localizedName(row, locale) }));
   };
   const [niches, languages, services] = await Promise.all([
     load("niches"),
