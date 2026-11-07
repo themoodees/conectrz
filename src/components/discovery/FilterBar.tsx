@@ -1,11 +1,12 @@
 import { useTranslations } from "next-intl";
 import type { DiscoveryFilterOptions, DiscoveryFilters } from "@/types/discovery";
 import { countActiveFilters } from "@/lib/discovery/applyFilters";
-import { FILTER_LABELS, PRIMARY_FILTERS, SECONDARY_FILTERS } from "@/lib/discovery/filterConfig";
+import { PRIMARY_FILTERS, SECONDARY_FILTERS } from "@/lib/discovery/filterConfig";
 import { SlidersIcon } from "@/components/ui/icons";
 import { FilterDropdown } from "./FilterDropdown";
 import { FilterSection } from "./FilterSection";
 import type { FilterActions } from "./useDiscoveryFilters";
+import { useDiscoveryLabels } from "./useDiscoveryLabels";
 
 interface FilterBarProps {
   filters: DiscoveryFilters;
@@ -17,15 +18,16 @@ interface FilterBarProps {
 /** Desktop/tablet toolbar: primary filter dropdowns + "More filters". Hidden on phones. */
 export function FilterBar({ filters, actions, options, onOpenMoreFilters }: FilterBarProps) {
   const t = useTranslations("app.filters");
-  const secondaryCount = countActiveFilters(filters, SECONDARY_FILTERS);
+  const labels = useDiscoveryLabels();
+  const secondaryCount = countActiveFilters(filters, labels, SECONDARY_FILTERS);
 
   return (
     <div className="hidden flex-wrap items-center gap-2 md:flex">
       {PRIMARY_FILTERS.map((key) => (
         <FilterDropdown
           key={key}
-          label={FILTER_LABELS[key]}
-          selectedCount={countActiveFilters(filters, [key])}
+          label={labels.filter[key]}
+          selectedCount={countActiveFilters(filters, labels, [key])}
           onClear={() => actions.clear([key])}
         >
           <FilterSection
