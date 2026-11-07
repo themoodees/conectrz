@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ApplicantList } from "@/components/projects/ApplicantList";
-import { ProjectStatusBadge, TagList, WrittenLanguageBadge } from "@/components/projects/ProjectBadges";
+import { ProjectStatusBadge, TagList } from "@/components/projects/ProjectBadges";
 import { ProjectReferences } from "@/components/projects/ProjectReferences";
 import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { ProjectStatusButton } from "@/components/projects/ProjectStatusButton";
@@ -48,7 +48,6 @@ export default async function ProjectDetailPage({ params }: PageProps<"/projects
         <section>
           <div className="flex flex-wrap items-center gap-3">
             <ProjectStatusBadge status={project.status} />
-            <WrittenLanguageBadge language={project.writtenLanguage} />
             <span className="text-xs text-muted">{t("posted", { date: formatShortDate(project.createdAt, locale) })}</span>
             {project.editedAt && (
               <span className="text-xs text-muted">

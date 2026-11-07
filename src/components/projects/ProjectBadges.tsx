@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { LOCALE_LABELS, type Locale } from "@/i18n/config";
 import type { ApplicationStatus, ProjectStatus } from "@/types/projects";
 
 const BADGE = "rounded-md px-2 py-0.5 text-xs font-semibold";
@@ -43,15 +42,5 @@ export function TagList({ label, items }: { label: string; items: string[] }) {
         ))}
       </dd>
     </div>
-  );
-}
-
-/** Which language the brief is written in, so creators can tell at a glance. */
-export function WrittenLanguageBadge({ language }: { language: Locale }) {
-  const t = useTranslations("app.projects.card");
-  return (
-    <span className={`${BADGE} bg-surface text-graphite`}>
-      {t("writtenIn", { language: LOCALE_LABELS[language] })}
-    </span>
   );
 }

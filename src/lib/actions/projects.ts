@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { isMockMode } from "@/lib/config";
-import { isEnabledLocale, type Locale } from "@/i18n/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { usdToCents } from "@/lib/format";
 import { parsePaymentMethods, type PaymentMethod } from "@/lib/payments";
@@ -54,20 +53,9 @@ function isWebLink(value: string) {
   }
 }
 
-const JAPANESE = /[ぁ-んァ-ヶ一-龥]/;
-
-/** The "written in" choice, corrected when the text clearly says otherwise (Japanese or not). */
-function resolveWrittenLanguage(chosen: Locale, text: string): Locale {
-  const hasJapanese = JAPANESE.test(text);
-  if (chosen === "ja" && !hasJapanese) return "en";
-  if (chosen !== "ja" && hasJapanese) return "ja";
-  return chosen;
-}
-
 interface ProjectValues {
   title: string;
   description: string;
-  writtenLanguage: Locale;
   budget: number;
   deadline: string;
   serviceIds: string[];
@@ -85,7 +73,6 @@ async function parseProjectForm(
   const t = await getTranslations("app.projectErrors");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const writtenLanguageRaw = String(formData.get("writtenLanguage") ?? "");
   const budget = wholeDollars(formData.get("budget"));
   const deadline = String(formData.get("deadline") ?? "");
   const serviceIds = formData.getAll("serviceIds").map(String);
@@ -125,16 +112,10 @@ async function parseProjectForm(
     return { error: t("deadlinePast") };
   }
 
-  if (!isEnabledLocale(writtenLanguageRaw)) {
-    return { error: t("invalidSelection") };
-  }
-  const writtenLanguage = resolveWrittenLanguage(writtenLanguageRaw, `${title} ${description}`);
-
   return {
     values: {
       title,
       description,
-      writtenLanguage,
       budget,
       deadline,
       serviceIds,
@@ -157,7 +138,6 @@ export async function createProject(
   const {
     title,
     description,
-    writtenLanguage,
     budget,
     deadline,
     serviceIds,
@@ -178,7 +158,6 @@ export async function createProject(
       companyName: mockCompanyAccount.companyName,
       title,
       description,
-      writtenLanguage,
       budgetUsd: budget,
       deliveryDeadline: deadline,
       status: "open",
@@ -204,7 +183,6 @@ export async function createProject(
         company_id: user.id,
         title,
         description,
-        written_language: writtenLanguage,
         budget_usd_cents: usdToCents(budget),
         delivery_deadline: deadline,
         payment_methods: paymentMethods,
@@ -267,7 +245,6 @@ export async function updateProject(
     Object.assign(project, {
       title: v.title,
       description: v.description,
-      writtenLanguage: v.writtenLanguage,
       budgetUsd: v.budget,
       deliveryDeadline: v.deadline,
       services: v.serviceIds,
@@ -293,7 +270,6 @@ export async function updateProject(
       p_project_id: projectId,
       p_title: v.title,
       p_description: v.description,
-      p_written_language: v.writtenLanguage,
       p_budget_usd_cents: usdToCents(v.budget),
       p_delivery_deadline: v.deadline,
       p_payment_methods: v.paymentMethods,

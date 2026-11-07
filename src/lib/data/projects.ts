@@ -13,7 +13,6 @@ import type {
 } from "@/types/projects";
 import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/config";
 import { centsToUsd } from "@/lib/format";
 import { parsePaymentMethods } from "@/lib/payments";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
@@ -81,15 +80,11 @@ export async function getProjectFormOptions(): Promise<ProjectFormOptions> {
   return { services, niches, languages };
 }
 
-const toLocale = (value: string | null | undefined): Locale =>
-  isLocale(value) ? value : DEFAULT_LOCALE;
-
 const fromMock = (project: MockProject): Project => ({
   id: project.id,
   companyId: project.companyId,
   title: project.title,
   description: project.description,
-  writtenLanguage: project.writtenLanguage,
   budgetUsd: project.budgetUsd,
   deliveryDeadline: project.deliveryDeadline,
   status: project.status,
@@ -179,35 +174,32 @@ export async function getCompanyProjects(): Promise<CompanyProject[]> {
   }
 
   return projects
-    .map(
-      (p): CompanyProject => ({
-        id: p.id,
-        companyId: user.id,
-        title: p.title,
-        description: p.description,
-        writtenLanguage: toLocale(p.written_language),
-        budgetUsd: centsToUsd(p.budget_usd_cents),
-        deliveryDeadline: p.delivery_deadline,
-        status: p.status,
-        createdAt: p.created_at,
-        editedAt: p.edited_at,
-        companyName: company.data?.name ?? "",
-        services: namesOf(
-          services.data!.filter((r) => r.project_id === p.id).map((r) => r.service_id),
-          names.services,
-        ),
-        niches: namesOf(
-          niches.data!.filter((r) => r.project_id === p.id).map((r) => r.niche_id),
-          names.niches,
-        ),
-        languages: namesOf(
-          languages.data!.filter((r) => r.project_id === p.id).map((r) => r.language_id),
-          names.languages,
-        ),
-        paymentMethods: parsePaymentMethods(p.payment_methods),
-        applicantCount: applications.data!.filter((a) => a.project_id === p.id).length,
-      }),
-    )
+    .map((p): CompanyProject => ({
+      id: p.id,
+      companyId: user.id,
+      title: p.title,
+      description: p.description,
+      budgetUsd: centsToUsd(p.budget_usd_cents),
+      deliveryDeadline: p.delivery_deadline,
+      status: p.status,
+      createdAt: p.created_at,
+      editedAt: p.edited_at,
+      companyName: company.data?.name ?? "",
+      services: namesOf(
+        services.data!.filter((r) => r.project_id === p.id).map((r) => r.service_id),
+        names.services,
+      ),
+      niches: namesOf(
+        niches.data!.filter((r) => r.project_id === p.id).map((r) => r.niche_id),
+        names.niches,
+      ),
+      languages: namesOf(
+        languages.data!.filter((r) => r.project_id === p.id).map((r) => r.language_id),
+        names.languages,
+      ),
+      paymentMethods: parsePaymentMethods(p.payment_methods),
+      applicantCount: applications.data!.filter((a) => a.project_id === p.id).length,
+    }))
     .sort(newestFirst);
 }
 
@@ -331,7 +323,6 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
           companyId: row.company_id ?? "",
           title: row.title ?? "",
           description: row.description ?? "",
-          writtenLanguage: toLocale(row.written_language),
           budgetUsd: centsToUsd(row.budget_usd_cents ?? 0),
           deliveryDeadline: row.delivery_deadline ?? "",
           status: row.status,
@@ -394,7 +385,6 @@ export async function getProjectForEdit(id: string): Promise<ProjectFormInitial 
       id: project.id,
       title: project.title,
       description: project.description,
-      writtenLanguage: project.writtenLanguage,
       budgetUsd: project.budgetUsd,
       deliveryDeadline: project.deliveryDeadline,
       serviceIds: project.services,
@@ -421,7 +411,11 @@ export async function getProjectForEdit(id: string): Promise<ProjectFormInitial 
     supabase.from("project_services").select("service_id").eq("project_id", id),
     supabase.from("project_niches").select("niche_id").eq("project_id", id),
     supabase.from("project_languages").select("language_id").eq("project_id", id),
-    supabase.from("project_references").select("kind, url").eq("project_id", id).order("created_at"),
+    supabase
+      .from("project_references")
+      .select("kind, url")
+      .eq("project_id", id)
+      .order("created_at"),
   ]);
   for (const result of [services, niches, languages, references]) {
     if (result.error) throw result.error;
@@ -433,7 +427,6 @@ export async function getProjectForEdit(id: string): Promise<ProjectFormInitial 
     id: project.id,
     title: project.title,
     description: project.description,
-    writtenLanguage: toLocale(project.written_language),
     budgetUsd: centsToUsd(project.budget_usd_cents),
     deliveryDeadline: project.delivery_deadline,
     serviceIds: services.data!.map((r) => r.service_id),

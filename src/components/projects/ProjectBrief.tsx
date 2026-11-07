@@ -3,17 +3,14 @@
 import { useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { LOCALE_LABELS, isLocale, type Locale } from "@/i18n/config";
+import { LOCALE_LABELS, isLocale } from "@/i18n/config";
 import { translateProject } from "@/lib/actions/projects";
 import type { ProjectTranslation } from "@/lib/data/projects";
-
-const JAPANESE = /[ぁ-んァ-ヶ一-龥]/;
 
 interface Props {
   projectId: string;
   title: string;
   description: string;
-  writtenLanguage: Locale;
   translation: ProjectTranslation | null;
   /** Rendered between the title and the description (company, budget, deadline). */
   children: ReactNode;
@@ -24,14 +21,7 @@ interface Props {
  * language than the reader's. Translations are stored, so after the first request they are
  * simply shown (with a link back to the original).
  */
-export function ProjectBrief({
-  projectId,
-  title,
-  description,
-  writtenLanguage,
-  translation,
-  children,
-}: Props) {
+export function ProjectBrief({ projectId, title, description, translation, children }: Props) {
   const t = useTranslations("app.projects.translate");
   const locale = useLocale();
   const router = useRouter();
@@ -39,19 +29,14 @@ export function ProjectBrief({
   const [error, setError] = useState<string | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
 
-  // The "written in" label is picked by the company and can be wrong (a Japanese-language form
-  // with an English brief). When the text clearly shows Japanese or not, trust the text.
-  const hasJapanese = JAPANESE.test(`${title} ${description}`);
-  const actualLanguage: Locale =
-    writtenLanguage === "ja" && !hasJapanese
-      ? "en"
-      : writtenLanguage === "en" && hasJapanese
-        ? "ja"
-        : writtenLanguage;
-  const canTranslate = !translation && actualLanguage !== locale && isLocale(locale);
+  // A brief already in the reader's language needs no translation. The provider tells us the
+  // original language, so a stored "translation" of the same language is hidden.
+  const sameLanguage = translation?.sourceLanguage === locale;
+  const active = sameLanguage ? null : translation;
+  const canTranslate = !translation && isLocale(locale);
 
-  const showing = translation && !showOriginal ? translation : { title, description };
-  const sourceCode = translation?.sourceLanguage ?? actualLanguage;
+  const showing = active && !showOriginal ? active : { title, description };
+  const sourceCode = active?.sourceLanguage ?? "";
   const sourceName = isLocale(sourceCode) ? LOCALE_LABELS[sourceCode] : sourceCode;
 
   const translate = () => {
@@ -86,7 +71,7 @@ export function ProjectBrief({
           )}
         </div>
       )}
-      {translation && (
+      {active && (
         <p className="mt-6 flex flex-wrap items-center gap-x-2 text-xs text-muted">
           {!showOriginal && <span>{t("translatedFrom", { language: sourceName })}</span>}
           <button
