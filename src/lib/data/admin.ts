@@ -125,6 +125,7 @@ export async function getAccounts(): Promise<{
         kind: "creator",
         name: c.displayName,
         detail: formatLocation(c),
+        email: null,
         status: mockStore.creatorStatuses[c.id] ?? "active",
         createdAt: "2026-09-15T00:00:00Z",
       })),
@@ -133,6 +134,7 @@ export async function getAccounts(): Promise<{
         kind: "company",
         name: c.name,
         detail: c.email,
+        email: c.email,
         status: c.status,
         createdAt: c.createdAt,
         planName: c.planName,
@@ -143,7 +145,7 @@ export async function getAccounts(): Promise<{
 
   const { supabase } = await getSupabaseSession();
   const now = new Date().toISOString();
-  const [creators, companies] = await Promise.all([
+  const [creators, companies, emailRows] = await Promise.all([
     supabase
       .from("creator_profiles")
       .select("id, first_name, last_name, city, prefecture, country, status, created_at")
@@ -154,9 +156,11 @@ export async function getAccounts(): Promise<{
         "id, name, contact_email, status, created_at, subscriptions ( status, current_period_start, current_period_end, created_at, subscription_tiers ( name ) )",
       )
       .order("created_at", { ascending: false }),
+    supabase.rpc("admin_account_emails"),
   ]);
   if (creators.error) throw creators.error;
   if (companies.error) throw companies.error;
+  const emails = new Map((emailRows.data ?? []).map((r) => [r.id, r.email]));
 
   return {
     creators: creators.data.map((c) => ({
@@ -164,6 +168,7 @@ export async function getAccounts(): Promise<{
       kind: "creator",
       name: nameOf(c),
       detail: formatLocation(c),
+      email: emails.get(c.id) ?? null,
       status: c.status,
       createdAt: c.created_at,
     })),
@@ -180,6 +185,7 @@ export async function getAccounts(): Promise<{
         kind: "company",
         name: c.name,
         detail: c.contact_email,
+        email: emails.get(c.id) ?? c.contact_email,
         status: c.status,
         createdAt: c.created_at,
         planName: current?.subscription_tiers?.name ?? null,

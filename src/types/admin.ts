@@ -22,6 +22,8 @@ export interface AdminAccount {
   name: string;
   /** Location for creators, contact email for companies. */
   detail: string;
+  /** Login email (what identifies test accounts at a glance). */
+  email: string | null;
   status: AccountStatus;
   createdAt: string;
   /** Companies only: current plan name. */

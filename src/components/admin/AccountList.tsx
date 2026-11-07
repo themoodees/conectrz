@@ -53,7 +53,10 @@ export function AccountList({ accounts, plans }: { accounts: AdminAccount[]; pla
     }
     startTransition(async () => {
       const result = await bulkAccountAction(accounts[0].kind, selected, action);
-      setMessage({ text: result.error ?? result.success ?? "Done.", isError: Boolean(result.error) });
+      setMessage({
+        text: result.error ?? result.success ?? "Done.",
+        isError: Boolean(result.error),
+      });
       setSelected([]);
     });
   }
@@ -128,8 +131,10 @@ export function AccountList({ accounts, plans }: { accounts: AdminAccount[]; pla
                 <span className="truncate font-medium text-ink">{account.name}</span>
                 <StatusBadge status={account.status} />
               </div>
+              {account.email && <p className="truncate text-sm text-graphite">{account.email}</p>}
               <p className="truncate text-sm text-muted">
-                {account.detail} · joined {formatShortDate(account.createdAt)}
+                {account.kind === "creator" ? `${account.detail} · ` : ""}joined{" "}
+                {formatShortDate(account.createdAt)}
               </p>
             </div>
             {account.kind === "company" && (
@@ -137,7 +142,10 @@ export function AccountList({ accounts, plans }: { accounts: AdminAccount[]; pla
                 <span className="text-muted">Plan: </span>
                 <span className="font-medium text-ink">{account.planName ?? "None"}</span>
                 {account.planPeriodEnd && (
-                  <span className="text-muted"> · until {formatShortDate(account.planPeriodEnd)}</span>
+                  <span className="text-muted">
+                    {" "}
+                    · until {formatShortDate(account.planPeriodEnd)}
+                  </span>
                 )}
               </div>
             )}
