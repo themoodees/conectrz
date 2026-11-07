@@ -514,6 +514,11 @@
       "updateFailed": "Couldn't update the conversation. Please try again.",
       "writeFirst": "Write a message first.",
       "tooLong": "Messages can be up to {max} characters."
+    },
+    "settings": {
+      "navLabel": "Language",
+      "title": "Language",
+      "description": "The language you read Conectrz in. It's saved to your account, so it looks the same on every device."
     }
   }
 }

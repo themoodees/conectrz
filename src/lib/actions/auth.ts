@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 import { isMockMode } from "@/lib/config";
 import { ensureCompanyProfile } from "@/lib/data/account";
+import { syncLocaleOnSignIn } from "@/lib/data/language";
 import { HOME_PATHS } from "@/lib/roles";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -45,6 +46,7 @@ export async function logIn(_previous: AuthFormState, formData: FormData): Promi
 
   // No-op for creators/admins; finishes company setup if confirmation happened elsewhere.
   await ensureCompanyProfile(supabase, data.user);
+  await syncLocaleOnSignIn(supabase, data.user.id);
   redirect(next);
 }
 
@@ -97,6 +99,7 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
   }
 
   if (role === "company") await ensureCompanyProfile(supabase, data.user);
+  await syncLocaleOnSignIn(supabase, data.user.id);
   redirect(HOME_PATHS[role]);
 }
 

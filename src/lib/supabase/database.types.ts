@@ -124,9 +124,9 @@ export type Database = {
         ]
       }
       profiles: {
-        Row: { created_at: string; id: string; role: Database["public"]["Enums"]["user_role"] }
-        Insert: { created_at?: string; id: string; role: Database["public"]["Enums"]["user_role"] }
-        Update: { created_at?: string; id?: string; role?: Database["public"]["Enums"]["user_role"] }
+        Row: { created_at: string; id: string; preferred_language: string | null; role: Database["public"]["Enums"]["user_role"] }
+        Insert: { created_at?: string; id: string; preferred_language?: string | null; role: Database["public"]["Enums"]["user_role"] }
+        Update: { created_at?: string; id?: string; preferred_language?: string | null; role?: Database["public"]["Enums"]["user_role"] }
         Relationships: []
       }
       billing_customers: {
@@ -282,6 +282,7 @@ export type Database = {
       has_paid_plan: { Args: never; Returns: boolean }
       admin_account_emails: { Args: never; Returns: { id: string; email: string }[] }
       is_admin: { Args: never; Returns: boolean }
+      set_my_language: { Args: { lang: string }; Returns: undefined }
       my_conversation_usage: {
         Args: never
         Returns: { period_end: string; quota: number | null; tier_name: string; used: number }[]

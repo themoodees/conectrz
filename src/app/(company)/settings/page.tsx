@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
 import {
@@ -21,6 +23,7 @@ import { formatShortDate } from "@/lib/format";
 export const metadata: Metadata = { title: "Account settings" };
 
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
+  const t = await getTranslations("app.settings");
   const [account, usage, billing, reviews, { billing: billingResult }] = await Promise.all([
     getCurrentCompanyAccount(),
     getConversationUsage(),
@@ -114,6 +117,10 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
             </p>
           )}
           <ReviewList reviews={reviews.map((r) => ({ ...r, name: r.creatorName }))} />
+        </SettingsSection>
+
+        <SettingsSection title={t("title")} description={t("description")}>
+          <LanguageSwitcher />
         </SettingsSection>
 
         <SettingsSection title="Password">

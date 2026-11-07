@@ -1,19 +1,20 @@
 "use client";
 
 import { useTransition } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ENABLED_LOCALES, LOCALE_LABELS } from "@/i18n/config";
 import { setLocale } from "@/lib/actions/locale";
 
 /** Language picker. Shows each language in its own name; hidden while only one is enabled. */
 export function LanguageSwitcher({ className = "" }: { className?: string }) {
   const locale = useLocale();
+  const t = useTranslations("app.settings");
   const [pending, startTransition] = useTransition();
   if (ENABLED_LOCALES.length < 2) return null;
 
   return (
     <select
-      aria-label="Language"
+      aria-label={t("navLabel")}
       value={locale}
       disabled={pending}
       onChange={(event) => startTransition(() => setLocale(event.target.value))}

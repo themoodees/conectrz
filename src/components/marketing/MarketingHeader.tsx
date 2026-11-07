@@ -28,8 +28,8 @@ export async function MarketingHeader({ isSignedIn }: { isSignedIn: boolean }) {
             {t("faq")}
           </Link>
         </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <LanguageSwitcher className="hidden sm:block" />
+        <div className="ml-auto flex items-center gap-1.5 whitespace-nowrap sm:gap-2">
+          <LanguageSwitcher className="hidden min-[480px]:block" />
           {isSignedIn ? (
             <Link href="/home" className={buttonClass({ size: "sm" })}>
               {t("openApp")}
