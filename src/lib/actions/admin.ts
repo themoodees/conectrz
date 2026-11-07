@@ -168,7 +168,11 @@ export async function bulkAccountAction(
 
   const failed = ids.length - done;
   return failed > 0
-    ? { done, failed, error: `${failed} of ${ids.length} couldn't be updated. ${firstError ?? ""}`.trim() }
+    ? {
+        done,
+        failed,
+        error: `${failed} of ${ids.length} couldn't be updated. ${firstError ?? ""}`.trim(),
+      }
     : { done, failed, success: `${done} ${done === 1 ? "account" : "accounts"} updated.` };
 }
 
@@ -214,8 +218,13 @@ export async function resolveReport(
 
 const CATEGORY_TABLES: CategoryTable[] = ["niches", "languages", "services"];
 
-export async function createCategory(table: CategoryTable, name: string): Promise<AdminResult> {
+export async function createCategory(
+  table: CategoryTable,
+  name: string,
+  nameJa = "",
+): Promise<AdminResult> {
   const clean = name.trim().slice(0, 60);
+  const cleanJa = nameJa.trim().slice(0, 60);
   if (!CATEGORY_TABLES.includes(table)) return { error: "Invalid category." };
   if (!clean) return { error: "Enter a name." };
 
@@ -225,12 +234,12 @@ export async function createCategory(table: CategoryTable, name: string): Promis
       return { error: "That name already exists." };
     }
     id = clean;
-    mockStore.categories[table].push({ id, name: clean, isActive: true });
+    mockStore.categories[table].push({ id, name: clean, nameJa: cleanJa, isActive: true });
   } else {
     const { supabase } = await requireAdmin();
     const { data, error } = await supabase
       .from(table)
-      .insert({ name: clean })
+      .insert({ name: clean, name_i18n: cleanJa ? { ja: cleanJa } : {} })
       .select("id")
       .single();
     if (error)
@@ -238,7 +247,10 @@ export async function createCategory(table: CategoryTable, name: string): Promis
     id = data.id;
   }
 
-  await logAction("category_created", table, id, { name: clean });
+  await logAction("category_created", table, id, {
+    name: clean,
+    ...(cleanJa ? { name_ja: cleanJa } : {}),
+  });
   revalidatePath("/admin/categories");
   return { success: `Added “${clean}”.` };
 }
@@ -246,23 +258,46 @@ export async function createCategory(table: CategoryTable, name: string): Promis
 export async function updateCategory(
   table: CategoryTable,
   id: string,
-  changes: { name?: string; isActive?: boolean },
+  changes: { name?: string; nameJa?: string; isActive?: boolean },
 ): Promise<AdminResult> {
   if (!CATEGORY_TABLES.includes(table)) return { error: "Invalid category." };
   const name = changes.name?.trim().slice(0, 60);
   if (changes.name !== undefined && !name) return { error: "Enter a name." };
+  const nameJa = changes.nameJa?.trim().slice(0, 60);
 
   if (isMockMode) {
     const category = mockStore.categories[table].find((c) => c.id === id);
     if (!category) return { error: "Not found." };
     if (name) category.name = name;
+    if (nameJa !== undefined) category.nameJa = nameJa;
     if (changes.isActive !== undefined) category.isActive = changes.isActive;
   } else {
     const { supabase } = await requireAdmin();
+    let nameI18n: Record<string, string> | undefined;
+    if (nameJa !== undefined) {
+      // Keep any other languages; an empty Japanese name removes the entry (English is shown).
+      const { data: current, error: readError } = await supabase
+        .from(table)
+        .select("name_i18n")
+        .eq("id", id)
+        .single();
+      if (readError) return { error: "Couldn't save." };
+      const others =
+        current.name_i18n &&
+        typeof current.name_i18n === "object" &&
+        !Array.isArray(current.name_i18n)
+          ? Object.entries(current.name_i18n).filter(
+              (entry): entry is [string, string] =>
+                entry[0] !== "ja" && typeof entry[1] === "string",
+            )
+          : [];
+      nameI18n = Object.fromEntries(nameJa ? [...others, ["ja", nameJa]] : others);
+    }
     const { error } = await supabase
       .from(table)
       .update({
         ...(name ? { name } : {}),
+        ...(nameI18n ? { name_i18n: nameI18n } : {}),
         ...(changes.isActive !== undefined ? { is_active: changes.isActive } : {}),
       })
       .eq("id", id);
@@ -272,9 +307,12 @@ export async function updateCategory(
 
   await logAction(changes.isActive === false ? "category_removed" : "category_updated", table, id, {
     ...(name ? { name } : {}),
+    ...(nameJa !== undefined ? { name_ja: nameJa } : {}),
     ...(changes.isActive !== undefined ? { is_active: changes.isActive } : {}),
   });
   revalidatePath("/admin/categories");
+  // Lookup names are shown across the creator and company areas.
+  revalidatePath("/", "layout");
   return { success: "Saved." };
 }
 
