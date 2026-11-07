@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Project } from "@/types/projects";
 import { formatDeadline, formatUsd } from "@/lib/format";
-import { ProjectStatusBadge } from "./ProjectBadges";
+import { ProjectStatusBadge, WrittenLanguageBadge } from "./ProjectBadges";
 
 /** One project in a list. The whole title links to the project. */
 export function ProjectCard({
@@ -27,6 +27,7 @@ export function ProjectCard({
     <article className="relative rounded-card border border-border bg-white p-5 shadow-card transition-shadow hover:shadow-card-hover md:p-6">
       <div className="flex flex-wrap items-center gap-2">
         <ProjectStatusBadge status={project.status} />
+        <WrittenLanguageBadge language={project.writtenLanguage} />
         {badges}
       </div>
       <h2 className="mt-3 text-lg leading-snug font-semibold text-ink">

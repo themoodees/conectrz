@@ -536,7 +536,8 @@
       },
       "card": {
         "budget": "予算",
-        "deliverBy": "納期"
+        "deliverBy": "納期",
+        "writtenIn": "{language}で記載"
       },
       "tags": {
         "services": "サービス",
@@ -573,13 +574,15 @@
           "languages": "言語",
           "payments": "支払い方法",
           "budget": "予算",
-          "deadline": "納期"
+          "deadline": "納期",
+          "written": "記載言語"
         },
         "paysBy": "{method}で支払い",
         "noOpenTitle": "現在募集中のプロジェクトはありません",
         "noOpenText": "企業から新しいプロジェクトが届くと、ここに表示されます。",
         "noMatchTitle": "条件に合うプロジェクトがありません",
-        "noMatchText": "フィルターを外すか、別のキーワードで検索してみてください。"
+        "noMatchText": "フィルターを外すか、別のキーワードで検索してみてください。",
+        "writtenIn": "{language}で記載"
       },
       "page": {
         "title": "プロジェクト",
@@ -628,7 +631,9 @@
         "payLegend": "クリエイターへの支払い方法",
         "payHint": "利用できる方法をすべて選んでください。クリエイターは応募前にこの情報を確認できます。",
         "posting": "投稿しています…",
-        "post": "プロジェクトを投稿"
+        "post": "プロジェクトを投稿",
+        "writtenLanguage": "この依頼の言語",
+        "writtenLanguageHint": "タイトルと説明文を書いた言語です。クリエイターに表示されます。"
       },
       "refs": {
         "legend": "参考資料（任意）",

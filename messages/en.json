@@ -536,7 +536,8 @@
       },
       "card": {
         "budget": "Budget",
-        "deliverBy": "Deliver by"
+        "deliverBy": "Deliver by",
+        "writtenIn": "Written in {language}"
       },
       "tags": {
         "services": "Services",
@@ -573,13 +574,15 @@
           "languages": "Language",
           "payments": "Payment",
           "budget": "Budget",
-          "deadline": "Deadline"
+          "deadline": "Deadline",
+          "written": "Written in"
         },
         "paysBy": "Pays by {method}",
         "noOpenTitle": "No open projects right now",
         "noOpenText": "New projects from companies will show up here.",
         "noMatchTitle": "No projects match your filters",
-        "noMatchText": "Try removing a filter or searching for something else."
+        "noMatchText": "Try removing a filter or searching for something else.",
+        "writtenIn": "Written in {language}"
       },
       "page": {
         "title": "Projects",
@@ -628,7 +631,9 @@
         "payLegend": "How will you pay the creator?",
         "payHint": "Choose every method you can use. Creators see this before they apply.",
         "posting": "Posting…",
-        "post": "Post project"
+        "post": "Post project",
+        "writtenLanguage": "Language of this brief",
+        "writtenLanguageHint": "The language you wrote the title and description in. Creators will see it on your project."
       },
       "refs": {
         "legend": "References (optional)",
