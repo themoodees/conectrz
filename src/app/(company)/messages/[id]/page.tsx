@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ConversationView } from "@/components/messages/ConversationView";
 import { getConversation } from "@/lib/data/messages";
 
-export const metadata: Metadata = { title: "Messages" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("app.inbox");
+  return { title: t("title") };
+}
 
 export default async function CompanyConversationPage({ params }: PageProps<"/messages/[id]">) {
   const { id } = await params;
