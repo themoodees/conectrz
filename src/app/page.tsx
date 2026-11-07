@@ -1,14 +1,7 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { HeroCollage } from "@/components/marketing/HeroCollage";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
-import {
-  BRAND_STEPS,
-  CLOSING,
-  CREATOR_STEPS,
-  HERO,
-  PAIN,
-  WHY,
-} from "@/components/marketing/homeContent";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import {
@@ -31,6 +24,36 @@ import {
 import { isMockMode } from "@/lib/config";
 import { getSupabaseSession } from "@/lib/data/session";
 import { mockCreators } from "@/mocks/creators";
+
+interface HomeStep {
+  title: string;
+  text: string;
+}
+interface HomeHero {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  note: string;
+}
+interface HomePain {
+  eyebrow: string;
+  title: string;
+  description: string;
+  before: { label: string; items: string[] };
+  after: { label: string; items: string[] };
+}
+interface HomeWhy {
+  eyebrow: string;
+  title: string;
+  items: { title: string; text: string; icon: keyof typeof WHY_ICONS }[];
+}
+interface HomeClosing {
+  title: string;
+  description: string;
+  cta: { label: string; href: string };
+}
 
 const WHY_ICONS = {
   map: MapPinIcon,
@@ -56,6 +79,13 @@ const creatorPreviews = [
 
 /** Public homepage. Copy lives in components/marketing/homeContent.ts. */
 export default async function HomePage() {
+  const t = await getTranslations("home");
+  const HERO = t.raw("hero") as HomeHero;
+  const PAIN = t.raw("pain") as HomePain;
+  const BRAND_STEPS = t.raw("brandSteps") as HomeStep[];
+  const CREATOR_STEPS = t.raw("creatorSteps") as HomeStep[];
+  const WHY = t.raw("why") as HomeWhy;
+  const CLOSING = t.raw("closing") as HomeClosing;
   const isSignedIn = isMockMode ? false : Boolean((await getSupabaseSession()).user);
   // PLACEHOLDER imagery: mock creator photos.
   const photos = mockCreators.slice(0, 6).map((c) => ({ src: c.photoUrl, name: c.displayName }));
@@ -92,7 +122,7 @@ export default async function HomePage() {
               <p className="mt-4 max-w-md text-sm text-muted">
                 {HERO.note}{" "}
                 <Link href="/pricing" className="font-medium text-primary hover:underline">
-                  See pricing
+                  {t("seePricing")}
                 </Link>
               </p>
             </div>
@@ -141,7 +171,7 @@ export default async function HomePage() {
                   ))}
                 </ul>
                 <Link href="/signup/company" className={buttonClass({ className: "mt-6" })}>
-                  Find your creator
+                  {t("findYourCreator")}
                 </Link>
               </div>
             </div>
@@ -153,9 +183,9 @@ export default async function HomePage() {
           <span id="brands" className="absolute -top-16" />
           <span id="creators" className="absolute -top-16" />
           <div className="mx-auto max-w-page px-4 py-16 md:px-6 md:py-20 lg:px-8">
-            <p className="text-sm font-semibold text-primary">How it works</p>
+            <p className="text-sm font-semibold text-primary">{t("howItWorks.eyebrow")}</p>
             <h2 className="mt-2 max-w-2xl text-3xl font-semibold text-ink md:text-4xl">
-              From first search to finished content
+              {t("howItWorks.title")}
             </h2>
             <div className="mt-8">
               <HowItWorks
@@ -205,7 +235,7 @@ export default async function HomePage() {
                 href="/signup/creator"
                 className="inline-flex h-11 items-center rounded-control px-4 text-sm font-semibold text-white/80 hover:text-white"
               >
-                I&apos;m a creator
+                {t("imACreator")}
               </Link>
             </div>
           </div>

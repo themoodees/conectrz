@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 type Audience = "brands" | "creators";
 
@@ -16,6 +17,7 @@ export interface HowStep {
  * Opening /#brands or /#creators selects the matching tab.
  */
 export function HowItWorks({ steps }: { steps: Record<Audience, HowStep[]> }) {
+  const t = useTranslations();
   const [audience, setAudience] = useState<Audience>("brands");
   const [active, setActive] = useState(0);
 
@@ -37,7 +39,11 @@ export function HowItWorks({ steps }: { steps: Record<Audience, HowStep[]> }) {
 
   return (
     <div>
-      <div role="tablist" aria-label="How it works" className="inline-flex rounded-control bg-white p-1 ring-1 ring-border">
+      <div
+        role="tablist"
+        aria-label={t("home.howItWorks.tabsLabel")}
+        className="inline-flex rounded-control bg-white p-1 ring-1 ring-border"
+      >
         {(["brands", "creators"] as const).map((key) => (
           <button
             key={key}
@@ -52,7 +58,7 @@ export function HowItWorks({ steps }: { steps: Record<Audience, HowStep[]> }) {
               audience === key ? "bg-primary text-white" : "text-graphite hover:text-ink"
             }`}
           >
-            {key === "brands" ? "For brands" : "For creators"}
+            {key === "brands" ? t("nav.forBrands") : t("nav.forCreators")}
           </button>
         ))}
       </div>
@@ -81,7 +87,9 @@ export function HowItWorks({ steps }: { steps: Record<Audience, HowStep[]> }) {
                     </span>
                     <span className="text-lg font-semibold text-ink">{step.title}</span>
                   </span>
-                  <span className="mt-2 block pl-10 text-sm leading-relaxed text-graphite">{step.text}</span>
+                  <span className="mt-2 block pl-10 text-sm leading-relaxed text-graphite">
+                    {step.text}
+                  </span>
                 </button>
                 {/* On small screens the preview opens right under the chosen step */}
                 {isActive && <div className="mt-4 lg:hidden">{step.preview}</div>}

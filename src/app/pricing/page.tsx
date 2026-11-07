@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { buttonClass } from "@/components/ui/buttonStyles";
@@ -10,33 +11,36 @@ import { getSupabaseSession } from "@/lib/data/session";
 import { formatUsd } from "@/lib/format";
 import type { Plan } from "@/types/plans";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Simple monthly plans for brands working with creators in Japan.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pricing");
+  return { title: t("metaTitle"), description: t("metaDescription") };
+}
+
+type Translate = Awaited<ReturnType<typeof getTranslations<"pricing">>>;
 
 /** What each plan includes, based on the plan's own limits. */
-function planFeatures(plan: Plan): string[] {
+function planFeatures(plan: Plan, t: Translate): string[] {
   const paid = plan.monthlyPriceUsd > 0;
   const features: string[] = [];
 
-  if (plan.conversationQuota === null) features.push("Unlimited new conversations");
-  else if (plan.conversationQuota === 0) features.push("Browse creators (no new conversations)");
-  else features.push(`${plan.conversationQuota} new conversations per month`);
+  if (plan.conversationQuota === null) features.push(t("features.unlimitedConversations"));
+  else if (plan.conversationQuota === 0) features.push(t("features.browseOnly"));
+  else features.push(t("features.conversationsPerMonth", { count: plan.conversationQuota }));
 
   if (plan.dailyNewConversationLimit !== null && plan.conversationQuota !== 0) {
-    features.push(`Up to ${plan.dailyNewConversationLimit} new conversations per day`);
+    features.push(t("features.perDay", { count: plan.dailyNewConversationLimit }));
   }
   if (paid) {
-    features.push("Unlimited replies");
-    features.push("Creators' full names, city, social handles and links");
+    features.push(t("features.unlimitedReplies"));
+    features.push(t("features.fullDetails"));
   } else {
-    features.push("Creators' first names and audience sizes");
+    features.push(t("features.firstNames"));
   }
   return features;
 }
 
 export default async function PricingPage() {
+  const t = await getTranslations("pricing");
   const isSignedIn = isMockMode ? false : Boolean((await getSupabaseSession()).user);
   const plans = await getPlans();
 
@@ -45,13 +49,11 @@ export default async function PricingPage() {
       <MarketingHeader isSignedIn={isSignedIn} />
       <main>
         <section className="mx-auto max-w-page px-4 py-14 md:px-6 md:py-20 lg:px-8">
-          <p className="text-sm font-semibold text-primary">Pricing</p>
+          <p className="text-sm font-semibold text-primary">{t("eyebrow")}</p>
           <h1 className="mt-2 max-w-2xl text-4xl leading-[1.1] font-semibold text-ink md:text-5xl">
-            Simple monthly plans for brands
+            {t("title")}
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-graphite">
-            Pay for the conversations you start with creators. Prices are in US dollars per month.
-          </p>
+          <p className="mt-4 max-w-xl text-lg text-graphite">{t("subtitle")}</p>
 
           <ul className="mt-10 grid gap-4 md:grid-cols-3">
             {plans.map((plan) => {
@@ -66,10 +68,10 @@ export default async function PricingPage() {
                     <span className="font-display text-4xl font-semibold text-ink">
                       {formatUsd(plan.monthlyPriceUsd)}
                     </span>
-                    {paid && <span className="text-sm text-muted"> / month</span>}
+                    {paid && <span className="text-sm text-muted">{t("perMonth")}</span>}
                   </p>
                   <ul className="mt-6 flex-1 space-y-2.5 text-sm text-graphite">
-                    {planFeatures(plan).map((feature) => (
+                    {planFeatures(plan, t).map((feature) => (
                       <li key={feature} className="flex gap-2">
                         <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
                         {feature}
@@ -83,17 +85,18 @@ export default async function PricingPage() {
                       className: "mt-8",
                     })}
                   >
-                    {isSignedIn ? "See your plan" : paid ? `Get started with ${plan.name}` : "Start free"}
+                    {isSignedIn
+                      ? t("seeYourPlan")
+                      : paid
+                        ? t("getStartedWith", { plan: plan.name })
+                        : t("startFree")}
                   </Link>
                 </li>
               );
             })}
           </ul>
 
-          <p className="mt-8 max-w-2xl text-sm text-muted">
-            New conversation allowances renew on your billing date and don&apos;t roll over. Plan
-            changes are handled by our team for now.
-          </p>
+          <p className="mt-8 max-w-2xl text-sm text-muted">{t("footnote")}</p>
         </section>
       </main>
       <MarketingFooter />
