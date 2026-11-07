@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Message, Viewer } from "@/types/messages";
 import { formatDayLabel, formatTime, getDayKey } from "@/lib/format";
 import { markConversationRead } from "@/lib/actions/messages";
+
+/** "ja" → "日本語" / "Japanese", in the reader's language. */
+function languageName(code: string, locale: string) {
+  try {
+    return new Intl.DisplayNames([locale], { type: "language" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
 
 interface MessageThreadProps {
   conversationId: string;
@@ -17,6 +26,7 @@ interface MessageThreadProps {
 export function MessageThread({ conversationId, viewer, messages, hasUnread }: MessageThreadProps) {
   const t = useTranslations("app.thread");
   const locale = useLocale();
+  const [showOriginal, setShowOriginal] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastMine = messages.findLast((message) => message.isMine);
 
@@ -83,12 +93,38 @@ export function MessageThread({ conversationId, viewer, messages, hasUnread }: M
                     )}
                   </div>
                 )}
-                {message.content}
+                {message.translation && !showOriginal.has(message.id)
+                  ? message.translation.content
+                  : message.content}
               </div>
               <p
                 className={`mt-1 text-[11px] text-muted ${message.isMine ? "self-end" : "self-start"}`}
               >
                 {formatTime(message.createdAt)}
+                {message.translation && (
+                  <>
+                    {" · "}
+                    {showOriginal.has(message.id)
+                      ? t("original")
+                      : t("translatedFrom", {
+                          language: languageName(message.translation.sourceLanguage, locale),
+                        })}
+                    {" · "}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowOriginal((current) => {
+                          const next = new Set(current);
+                          if (!next.delete(message.id)) next.add(message.id);
+                          return next;
+                        })
+                      }
+                      className="underline underline-offset-2 hover:text-ink"
+                    >
+                      {showOriginal.has(message.id) ? t("hideOriginal") : t("seeOriginal")}
+                    </button>
+                  </>
+                )}
                 {message === lastMine && message.readAt && ` · ${t("seen")}`}
               </p>
             </li>

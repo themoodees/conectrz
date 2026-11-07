@@ -461,7 +461,11 @@
       "unavailable": "{name} (unavailable)",
       "seen": "Seen",
       "today": "Today",
-      "yesterday": "Yesterday"
+      "yesterday": "Yesterday",
+      "translatedFrom": "Translated from {language}",
+      "seeOriginal": "See original",
+      "hideOriginal": "Hide original",
+      "original": "Original"
     },
     "composer": {
       "maxFiles": "You can attach up to {max} files per message.",

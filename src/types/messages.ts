@@ -26,6 +26,8 @@ export interface Message {
   /** Sent by the signed-in user. */
   isMine: boolean;
   readAt: string | null;
+  /** The text in the reader's language, for the other person's messages (when it differs). */
+  translation?: { content: string; sourceLanguage: string } | null;
 }
 
 export interface ConversationSummary {
