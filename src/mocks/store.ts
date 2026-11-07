@@ -1,12 +1,7 @@
 import { mockConversations, type MockConversation } from "./conversations";
 import { mockFilterOptions } from "./filterOptions";
 import { mockPlans, type MockPlan } from "./plans";
-import {
-  mockApplications,
-  mockProjects,
-  type MockApplication,
-  type MockProject,
-} from "./projects";
+import { mockApplications, mockProjects, type MockApplication, type MockProject } from "./projects";
 
 /*
  * In-memory state for MOCK MODE only, so actions (saving, messaging, reporting,
@@ -63,7 +58,7 @@ interface MockStore {
   creatorStatuses: Record<string, "active" | "paused" | "deleted">;
   categories: Record<
     "niches" | "languages" | "services",
-    { id: string; name: string; isActive: boolean }[]
+    { id: string; name: string; nameJa?: string; isActive: boolean }[]
   >;
   activity: {
     id: string;

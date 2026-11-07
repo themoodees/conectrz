@@ -35,7 +35,10 @@ export type CategoryTable = "niches" | "languages" | "services";
 
 export interface AdminCategory {
   id: string;
+  /** English name (the source name). */
   name: string;
+  /** Japanese name shown to Japanese-language readers; "" falls back to English. */
+  nameJa?: string;
   isActive: boolean;
 }
 

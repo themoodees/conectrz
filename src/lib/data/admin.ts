@@ -197,14 +197,31 @@ export async function getAccounts(): Promise<{
 
 /* ── Categories ───────────────────────────────────────────────────────────── */
 
+/** The Japanese entry of a name_i18n object, or "". */
+function japaneseName(translations: unknown): string {
+  if (translations && typeof translations === "object" && !Array.isArray(translations)) {
+    const value = (translations as Record<string, unknown>).ja;
+    if (typeof value === "string") return value;
+  }
+  return "";
+}
+
 export async function getCategories(): Promise<Record<CategoryTable, AdminCategory[]>> {
   if (isMockMode) return mockStore.categories;
 
   const { supabase } = await getSupabaseSession();
   const load = async (table: CategoryTable) => {
-    const { data, error } = await supabase.from(table).select("id, name, is_active").order("name");
+    const { data, error } = await supabase
+      .from(table)
+      .select("id, name, name_i18n, is_active")
+      .order("name");
     if (error) throw error;
-    return data.map((row) => ({ id: row.id, name: row.name, isActive: row.is_active }));
+    return data.map((row) => ({
+      id: row.id,
+      name: row.name,
+      nameJa: japaneseName(row.name_i18n),
+      isActive: row.is_active,
+    }));
   };
   const [niches, languages, services] = await Promise.all([
     load("niches"),
