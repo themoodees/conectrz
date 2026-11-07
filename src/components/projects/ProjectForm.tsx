@@ -1,14 +1,12 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { ProjectFormInitial, ProjectFormOptions } from "@/types/projects";
 import { createProject, updateProject, type ProjectActionState } from "@/lib/actions/projects";
 import { OptionButton } from "@/components/discovery/OptionButton";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
-import { SelectField } from "@/components/ui/SelectField";
-import { ENABLED_LOCALES, LOCALE_LABELS } from "@/i18n/config";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
 import { ReferencesField } from "./ReferencesField";
@@ -66,7 +64,6 @@ export function ProjectForm({
     initial ? updateProject : createProject,
     {},
   );
-  const locale = useLocale();
   const today = new Date().toISOString().slice(0, 10);
 
   return (
@@ -90,15 +87,6 @@ export function ProjectForm({
         maxLength={3000}
         hint={t("descHint")}
       />
-      <div>
-        <SelectField
-          label={t("writtenLanguage")}
-          name="writtenLanguage"
-          defaultValue={initial?.writtenLanguage ?? locale}
-          options={ENABLED_LOCALES.map((code) => ({ value: code, label: LOCALE_LABELS[code] }))}
-        />
-        <p className="mt-1.5 text-xs text-muted">{t("writtenLanguageHint")}</p>
-      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           label={t("budgetLabel")}

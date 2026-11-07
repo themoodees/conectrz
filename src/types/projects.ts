@@ -1,4 +1,3 @@
-import type { Locale } from "@/i18n/config";
 import type { PaymentMethod } from "@/lib/payments";
 
 /*
@@ -22,8 +21,6 @@ export interface Project {
   companyId: string;
   title: string;
   description: string;
-  /** The language the company wrote the brief in. */
-  writtenLanguage: Locale;
   budgetUsd: number;
   /** ISO date, "2026-12-15" */
   deliveryDeadline: string;
@@ -87,7 +84,6 @@ export interface ProjectFormInitial {
   id: string;
   title: string;
   description: string;
-  writtenLanguage: Locale;
   budgetUsd: number;
   deliveryDeadline: string;
   serviceIds: string[];

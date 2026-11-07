@@ -298,7 +298,6 @@ export type Database = {
           p_project_id: string
           p_title: string
           p_description: string
-          p_written_language: string
           p_budget_usd_cents: number
           p_delivery_deadline: string
           p_payment_methods: string[]
