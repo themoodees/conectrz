@@ -69,6 +69,8 @@ export async function startCheckout(formData: FormData): Promise<void> {
       mode: "subscription",
       line_items: [{ price: tier.stripe_price_id, quantity: 1 }],
       client_reference_id: user.id,
+      // Shows the "Add promotion code" box on Stripe's checkout page.
+      allow_promotion_codes: true,
       // Lets the webhook know which company this subscription belongs to.
       subscription_data: { metadata: { company_id: user.id } },
       ...(customer
