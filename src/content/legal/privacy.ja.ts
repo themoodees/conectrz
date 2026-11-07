@@ -8,7 +8,7 @@ export const privacyPolicyJa: LegalDocument = {
   title: "プライバシーポリシー",
   translationNotice:
     "このページは英語版の日本語訳（参考訳）です。内容に相違がある場合は、英語版が優先されます。",
-  lastUpdated: "2026-11-03",
+  lastUpdated: "2026-11-07",
   intro:
     "本ポリシーは、Conectrz（以下「当社」といいます）が、Conectrz のウェブサイトおよびサービス（以下「本サービス」といいます）をご利用いただく際の個人情報の取り扱いについて説明するものです。企業とクリエイターの双方に適用されます。大文字で始まる用語は、利用規約で定める意味を持ちます。",
   sections: [
