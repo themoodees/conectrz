@@ -655,6 +655,13 @@
       "statusButton": {
         "close": "Close project",
         "reopen": "Reopen project"
+      },
+      "translate": {
+        "translate": "Translate to {language}",
+        "translating": "Translating…",
+        "showOriginal": "Show original",
+        "showTranslation": "Show translation",
+        "translatedFrom": "Translated from {language} · automatic translation"
       }
     },
     "filters": {
@@ -712,7 +719,9 @@
       "withdrawFailed": "Couldn't withdraw your application. Please try again.",
       "withdrawn": "Application withdrawn.",
       "projectClosed": "Project closed.",
-      "projectReopened": "Project reopened."
+      "projectReopened": "Project reopened.",
+      "translateUnavailable": "Translation is not available in demo mode.",
+      "translateFailed": "Could not translate this project. Please try again."
     },
     "prefectures": {
       "Hokkaido": "Hokkaido",
