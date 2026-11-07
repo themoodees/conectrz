@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Creator } from "@/types/creator";
 import type { DiscoveryFilterOptions, FilterKey, SortOption } from "@/types/discovery";
 import {
@@ -19,6 +20,7 @@ import { FilterPanel } from "./FilterPanel";
 import { FilterSection } from "./FilterSection";
 import { SortSelect } from "./SortSelect";
 import { useDiscoveryFilters } from "./useDiscoveryFilters";
+import { useDiscoveryLabels } from "./useDiscoveryLabels";
 import { useSavedCreators } from "@/components/creator/useSavedCreators";
 
 const ALL_FILTERS: FilterKey[] = [...PRIMARY_FILTERS, ...SECONDARY_FILTERS];
@@ -39,6 +41,9 @@ export function CreatorDiscovery({
   filterOptions,
   initialSavedIds,
 }: CreatorDiscoveryProps) {
+  const t = useTranslations("app.discovery");
+  const tf = useTranslations("app.filters");
+  const labels = useDiscoveryLabels();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortOption>("recommended");
   const { savedIds, toggleSave } = useSavedCreators(initialSavedIds);
@@ -57,7 +62,7 @@ export function CreatorDiscovery({
     [creators, query, filters, sort],
   );
 
-  const chips = getActiveFilterChips(filters);
+  const chips = getActiveFilterChips(filters, labels);
   const panelKeys = panel === "more" ? SECONDARY_FILTERS : ALL_FILTERS;
   const panelHasSelection = chips.some((chip) => panelKeys.includes(chip.key));
 
@@ -73,7 +78,7 @@ export function CreatorDiscovery({
         <div className="flex gap-2">
           <CreatorSearch value={query} onChange={setQuery} />
           <MoreFiltersButton
-            label="Filters"
+            label={tf("filters")}
             count={chips.length}
             onClick={() => setPanel("all")}
             className="h-12 md:hidden"
@@ -96,8 +101,10 @@ export function CreatorDiscovery({
       {/* Results */}
       <div className="flex items-center justify-between gap-4 pt-1">
         <p className="text-sm text-graphite" aria-live="polite">
-          <span className="font-semibold text-ink">{results.length}</span>{" "}
-          {results.length === 1 ? "creator" : "creators"}
+          {t.rich("count", {
+            count: results.length,
+            b: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
+          })}
         </p>
         <SortSelect value={sort} onChange={setSort} />
       </div>
@@ -109,7 +116,7 @@ export function CreatorDiscovery({
       )}
 
       <FilterPanel
-        title={panel === "more" ? "More filters" : "Filters"}
+        title={panel === "more" ? tf("moreFilters") : tf("filters")}
         isOpen={panel !== null}
         onClose={() => setPanel(null)}
         onClear={() => actions.clear(panelKeys)}

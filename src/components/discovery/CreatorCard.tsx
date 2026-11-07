@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { Creator } from "@/types/creator";
 import { formatFollowers, formatUsd, formatLocation, getLowestRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
@@ -23,6 +24,8 @@ interface CreatorCardProps {
  * The whole card links to the Creator Profile (via the name link); Save sits above it.
  */
 export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps) {
+  const t = useTranslations("app.discovery.card");
+  const tView = useTranslations("app.creatorView");
   const audience = creator.socialAccounts.filter((account) => account.followerCount !== null);
   const lowestRate = getLowestRate(creator.services);
   const showsFrom =
@@ -41,7 +44,9 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
           onClick={() => onToggleSave(creator.id)}
           aria-pressed={isSaved}
           aria-label={
-            isSaved ? `Remove ${creator.displayName} from saved` : `Save ${creator.displayName}`
+            isSaved
+              ? t("removeAria", { name: creator.displayName })
+              : t("saveAria", { name: creator.displayName })
           }
           className={`absolute top-3 right-3 z-10 grid size-9 place-items-center rounded-full transition-colors ${
             isSaved
@@ -70,14 +75,14 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
           </p>
           {creator.age != null || creator.reviewCount ? (
             <p className="mt-1 flex items-center gap-2 text-sm text-muted">
-              {creator.age != null && <span>{creator.age} years old</span>}
+              {creator.age != null && <span>{tView("years", { age: creator.age })}</span>}
               <RatingSummary average={creator.ratingAverage} count={creator.reviewCount} />
             </p>
           ) : null}
         </div>
 
         {creator.niches.length > 0 && (
-          <ul className="flex flex-wrap gap-1.5" aria-label="Niches">
+          <ul className="flex flex-wrap gap-1.5" aria-label={t("niches")}>
             {creator.niches.slice(0, MAX_NICHES).map((niche) => (
               <li
                 key={niche}
@@ -97,14 +102,14 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
         <div className="space-y-1.5 text-sm text-graphite">
           <p className="flex items-center gap-1.5">
             <LanguageIcon className="size-3.5 shrink-0 text-muted" />
-            <span className="sr-only">Languages:</span>
+            <span className="sr-only">{t("languages")}</span>
             <span className="truncate">
               {creator.languages.map((language) => language.name).join(" · ")}
             </span>
           </p>
 
           {audience.length > 0 && (
-            <ul className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label="Audience">
+            <ul className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label={t("audience")}>
               {audience.map((account) => (
                 <li key={account.platform} className="flex items-center gap-1">
                   <PlatformIcon platform={account.platform} className="size-3.5 text-muted" />
@@ -132,7 +137,7 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
             </p>
             {lowestRate !== null && (
               <p className="shrink-0 text-right text-sm leading-tight">
-                {showsFrom && <span className="block text-xs text-muted">From</span>}
+                {showsFrom && <span className="block text-xs text-muted">{t("from")}</span>}
                 <span className="font-semibold text-ink">{formatUsd(lowestRate)}</span>
               </p>
             )}
@@ -144,13 +149,14 @@ export function CreatorCard({ creator, isSaved, onToggleSave }: CreatorCardProps
 }
 
 function AvailabilityBadge({ isAvailable }: { isAvailable: boolean }) {
+  const t = useTranslations("app.discovery.card");
   return (
     <span className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-xs font-medium text-graphite">
       <span
         aria-hidden="true"
         className={`size-1.5 rounded-full ${isAvailable ? "bg-success" : "bg-muted"}`}
       />
-      {isAvailable ? "Available" : "Unavailable"}
+      {isAvailable ? t("available") : t("unavailable")}
     </span>
   );
 }

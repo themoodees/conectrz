@@ -1,10 +1,13 @@
-import type { Creator } from "@/types/creator";
-import type { DiscoveryFilters, FilterKey, SortOption } from "@/types/discovery";
+import type { Creator, Gender } from "@/types/creator";
+import type {
+  DiscoveryFilters,
+  FilterKey,
+  FollowerRangeId,
+  SortOption,
+} from "@/types/discovery";
 import type { NumberRange } from "@/types/discovery";
 import {
-  FILTER_LABELS,
   FOLLOWER_RANGES,
-  GENDER_LABELS,
   PLATFORM_LABELS,
 } from "./filterConfig";
 import { getLargestAudience, getLowestRate } from "@/lib/format";
@@ -111,8 +114,20 @@ export function sortCreators(creators: Creator[], sort: SortOption): Creator[] {
   return creators;
 }
 
-export function countActiveFilters(filters: DiscoveryFilters, keys?: FilterKey[]): number {
-  return getActiveFilterChips(filters).filter((chip) => !keys || keys.includes(chip.key)).length;
+export function countActiveFilters(
+  filters: DiscoveryFilters,
+  labels: DiscoveryLabels,
+  keys?: FilterKey[],
+): number {
+  return getActiveFilterChips(filters, labels).filter((chip) => !keys || keys.includes(chip.key)).length;
+}
+
+/** The words used on filter chips, already translated (see useDiscoveryLabels). */
+export interface DiscoveryLabels {
+  filter: Record<FilterKey, string>;
+  gender: Record<Gender, string>;
+  follower: Record<FollowerRangeId, string>;
+  availableNow: string;
 }
 
 export interface ActiveFilterChip {
@@ -125,7 +140,10 @@ export interface ActiveFilterChip {
 }
 
 /** Flattens the filter state into one removable chip per selection. */
-export function getActiveFilterChips(filters: DiscoveryFilters): ActiveFilterChip[] {
+export function getActiveFilterChips(
+  filters: DiscoveryFilters,
+  labels: DiscoveryLabels,
+): ActiveFilterChip[] {
   const chips: ActiveFilterChip[] = [];
   const multi = (key: "niches" | "locations" | "languages" | "services") =>
     filters[key].forEach((value) =>
@@ -147,25 +165,25 @@ export function getActiveFilterChips(filters: DiscoveryFilters): ActiveFilterChi
 
   if (filters.price) {
     const label = describeRange(filters.price, dollars);
-    chips.push({ id: "price", key: "price", label: `${FILTER_LABELS.price}: ${label}` });
+    chips.push({ id: "price", key: "price", label: `${labels.filter.price}: ${label}` });
   }
   if (filters.age) {
     const label = describeRange(filters.age, String);
-    chips.push({ id: "age", key: "age", label: `${FILTER_LABELS.age}: ${label}` });
+    chips.push({ id: "age", key: "age", label: `${labels.filter.age}: ${label}` });
   }
   filters.genders.forEach((value) =>
-    chips.push({ id: `gender:${value}`, key: "gender", value, label: GENDER_LABELS[value] }),
+    chips.push({ id: `gender:${value}`, key: "gender", value, label: labels.gender[value] }),
   );
   if (filters.followers) {
-    const label = FOLLOWER_RANGES.find((r) => r.id === filters.followers)?.label;
+    const label = labels.follower[filters.followers];
     chips.push({
       id: "followers",
       key: "followers",
-      label: `${FILTER_LABELS.followers}: ${label}`,
+      label: `${labels.filter.followers}: ${label}`,
     });
   }
   if (filters.availableOnly) {
-    chips.push({ id: "availability", key: "availability", label: "Available now" });
+    chips.push({ id: "availability", key: "availability", label: labels.availableNow });
   }
   return chips;
 }

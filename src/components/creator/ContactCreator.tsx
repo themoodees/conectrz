@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import { startConversation, type StartConversationState } from "@/lib/actions/messages";
 import type { ConversationUsage } from "@/lib/data/messages";
 import type { Plan } from "@/types/plans";
@@ -31,6 +32,7 @@ export function ContactCreator({
   usage,
   upgradePlans,
 }: ContactCreatorProps) {
+  const t = useTranslations("app.contact");
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, pending] = useActionState<StartConversationState, FormData>(
     startConversation,
@@ -55,7 +57,7 @@ export function ContactCreator({
         className={buttonClass()}
       >
         <MessageIcon className="size-4" />
-        Contact creator
+        {t("button")}
       </button>
 
       {usage && atLimit ? (
@@ -66,34 +68,35 @@ export function ContactCreator({
         <p id="contact-usage" className="mt-2 text-xs text-muted">
           {!usage ? (
             <>
-              No active plan.{" "}
+              {t("noPlan")}{" "}
               <Link href="/plans" className="font-medium text-primary hover:text-primary-hover">
-                See plans
+                {t("seePlans")}
               </Link>
             </>
           ) : unlimited ? (
-            "Unlimited new conversations on your plan."
+            t("unlimited")
           ) : (
-            `${remaining} of ${usage.quota} new conversations left this period.`
+            t("left", { remaining, quota: usage.quota ?? 0 })
           )}
         </p>
       )}
 
-      <Modal title={`Message ${creatorName}`} isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal title={t("modalTitle", { name: creatorName })} isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <form action={formAction} className="space-y-4">
           <input type="hidden" name="creatorId" value={creatorId} />
           {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
           <TextAreaField
-            label="Your message"
+            label={t("yourMessage")}
             name="content"
             required
             maxLength={5000}
             rows={6}
-            placeholder="Introduce your brand and what you'd like to work on together."
+            placeholder={t("placeholder")}
           />
           <p className="text-xs text-muted">
-            Starting this conversation uses 1 of your {remaining} remaining
-            {usage?.isFree ? " free" : ""} conversations. Replies are unlimited.
+            {unlimited
+              ? t("usesOneUnlimited")
+              : t("usesOne", { remaining, isFree: String(Boolean(usage?.isFree)) })}
           </p>
           <div className="flex justify-end gap-2">
             <button
@@ -101,10 +104,10 @@ export function ContactCreator({
               onClick={() => setIsOpen(false)}
               className={buttonClass({ variant: "ghost" })}
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button type="submit" disabled={pending} className={buttonClass()}>
-              {pending ? "Sending…" : "Send message"}
+              {pending ? t("sending") : t("send")}
             </button>
           </div>
         </form>

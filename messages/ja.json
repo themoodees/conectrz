@@ -1018,6 +1018,108 @@
       "since": "Conectrz 参加日 {date}",
       "openProjects": "募集中のプロジェクト",
       "noOpen": "現在募集中のプロジェクトはありません。"
+    },
+    "discovery": {
+      "metaTitle": "クリエイターを探す",
+      "title": "ブランドにぴったりのクリエイターを見つけましょう",
+      "description": "ジャンル、地域、言語、プラットフォーム、サービスなどでクリエイターを探せます。",
+      "searchPlaceholder": "クリエイターを検索",
+      "searchAria": "名前、ユーザー名、プロフィールでクリエイターを検索",
+      "clearSearch": "検索をクリア",
+      "activeFilters": "適用中のフィルター",
+      "clearAll": "すべてクリア",
+      "count": "<b>{count}</b>人のクリエイター",
+      "sortBy": "並び替え",
+      "sortAria": "クリエイターを並び替え",
+      "sorts": {
+        "recommended": "おすすめ",
+        "recently-active": "最近アクティブ",
+        "followers": "フォロワー数"
+      },
+      "filterLabels": {
+        "niches": "ジャンル",
+        "locations": "地域",
+        "languages": "言語",
+        "platforms": "プラットフォーム",
+        "services": "サービス",
+        "price": "料金",
+        "age": "年齢",
+        "gender": "性別",
+        "followers": "フォロワー数",
+        "availability": "対応状況"
+      },
+      "hints": {
+        "price": "クリエイターが掲載している最低料金で絞り込みます。",
+        "age": "年齢を公開していないクリエイターは、この条件の間は表示されません。",
+        "gender": "性別を公開していないクリエイターは、この条件の間は表示されません。",
+        "followers": "いずれかのプラットフォームで最大のフォロワー数です。フォロワー数のデータがないクリエイターは表示されません。"
+      },
+      "availableNow": "今すぐ対応可能",
+      "followerRanges": {
+        "under-10k": "1万未満",
+        "10k-50k": "1万〜5万",
+        "50k-100k": "5万〜10万",
+        "100k-plus": "10万以上"
+      },
+      "done": "完了",
+      "empty": {
+        "title": "条件に合うクリエイターがいません",
+        "text": "フィルターを外すか、より広い条件で検索してみてください。",
+        "reset": "検索とフィルターをリセット"
+      },
+      "card": {
+        "available": "対応可能",
+        "unavailable": "対応不可",
+        "from": "最低",
+        "saveAria": "{name}を保存",
+        "removeAria": "{name}を保存済みから削除",
+        "niches": "ジャンル",
+        "languages": "言語：",
+        "audience": "フォロワー"
+      },
+      "profile": {
+        "back": "クリエイター検索に戻る",
+        "openConversation": "会話を開く",
+        "save": "保存",
+        "saved": "保存済み",
+        "metaCreator": "クリエイター"
+      },
+      "notFound": {
+        "title": "クリエイターが見つかりません",
+        "text": "このプロフィールは削除または一時停止された可能性があります。",
+        "back": "クリエイター検索に戻る"
+      }
+    },
+    "contact": {
+      "button": "クリエイターに連絡",
+      "noPlan": "有効なプランがありません。",
+      "seePlans": "プランを見る",
+      "unlimited": "ご利用のプランでは、新しい会話を無制限に開始できます。",
+      "left": "今期の新規会話の残り：{quota}件中{remaining}件",
+      "modalTitle": "{name}さんにメッセージ",
+      "yourMessage": "メッセージ",
+      "placeholder": "ブランドの紹介と、一緒に取り組みたい内容をお書きください。",
+      "usesOne": "この会話を始めると、残り{remaining}件の{isFree, select, true {無料} other {}}会話枠を1件使用します。返信は無制限です。",
+      "usesOneUnlimited": "返信は無制限です。",
+      "cancel": "キャンセル",
+      "sending": "送信中…",
+      "send": "メッセージを送信"
+    },
+    "upgrade": {
+      "freeTitle": "Freeプランでは会話を開始できません",
+      "limitTitle": "今期の上限に達しました",
+      "freeText": "アップグレードすると、クリエイターに連絡して新しい会話を始められます。",
+      "limitText": "アップグレードして会話枠を増やすか、プランの更新をお待ちください。",
+      "unlimited": "会話無制限",
+      "perMonth": "月{count}件の会話",
+      "seePlans": "プランを見る"
+    },
+    "savedPage": {
+      "title": "保存したクリエイター",
+      "description": "検索で保存したクリエイターをまとめて確認できます。",
+      "emptyTitle": "保存したクリエイターはまだいません",
+      "emptyText": "閲覧中にクリエイターを保存して、キャンペーン用の候補リストを作りましょう。",
+      "discover": "クリエイターを探す"
     }
   }
 }

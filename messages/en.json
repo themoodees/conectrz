@@ -1018,6 +1018,108 @@
       "since": "On Conectrz since {date}",
       "openProjects": "Open projects",
       "noOpen": "No open projects right now."
+    },
+    "discovery": {
+      "metaTitle": "Discover creators",
+      "title": "Find the right creator for your brand",
+      "description": "Discover creators by niche, location, language, platform, services and more.",
+      "searchPlaceholder": "Search creators",
+      "searchAria": "Search creators by name, username or profile",
+      "clearSearch": "Clear search",
+      "activeFilters": "Active filters",
+      "clearAll": "Clear all",
+      "count": "<b>{count}</b> {count, plural, one {creator} other {creators}}",
+      "sortBy": "Sort by",
+      "sortAria": "Sort creators",
+      "sorts": {
+        "recommended": "Recommended",
+        "recently-active": "Recently active",
+        "followers": "Followers"
+      },
+      "filterLabels": {
+        "niches": "Niche",
+        "locations": "Location",
+        "languages": "Language",
+        "platforms": "Platform",
+        "services": "Services",
+        "price": "Price",
+        "age": "Age",
+        "gender": "Gender",
+        "followers": "Followers",
+        "availability": "Availability"
+      },
+      "hints": {
+        "price": "Based on the creator's lowest listed rate.",
+        "age": "Creators who have not shared their age are hidden while this is on.",
+        "gender": "Creators who have not shared their gender are hidden while this is on.",
+        "followers": "Largest audience on any platform. Creators without follower data are hidden."
+      },
+      "availableNow": "Available now",
+      "followerRanges": {
+        "under-10k": "Under 10K",
+        "10k-50k": "10K – 50K",
+        "50k-100k": "50K – 100K",
+        "100k-plus": "100K+"
+      },
+      "done": "Done",
+      "empty": {
+        "title": "No creators match your search",
+        "text": "Try removing a filter or searching for something broader.",
+        "reset": "Reset search and filters"
+      },
+      "card": {
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "from": "From",
+        "saveAria": "Save {name}",
+        "removeAria": "Remove {name} from saved",
+        "niches": "Niches",
+        "languages": "Languages:",
+        "audience": "Audience"
+      },
+      "profile": {
+        "back": "Back to Discover",
+        "openConversation": "Open conversation",
+        "save": "Save",
+        "saved": "Saved",
+        "metaCreator": "Creator"
+      },
+      "notFound": {
+        "title": "Creator not found",
+        "text": "This profile may have been removed or paused.",
+        "back": "Back to Discover"
+      }
+    },
+    "contact": {
+      "button": "Contact creator",
+      "noPlan": "No active plan.",
+      "seePlans": "See plans",
+      "unlimited": "Unlimited new conversations on your plan.",
+      "left": "{remaining} of {quota} new conversations left this period.",
+      "modalTitle": "Message {name}",
+      "yourMessage": "Your message",
+      "placeholder": "Introduce your brand and what you'd like to work on together.",
+      "usesOne": "Starting this conversation uses 1 of your {remaining} remaining{isFree, select, true { free} other {}} conversations. Replies are unlimited.",
+      "usesOneUnlimited": "Replies are unlimited.",
+      "cancel": "Cancel",
+      "sending": "Sending…",
+      "send": "Send message"
+    },
+    "upgrade": {
+      "freeTitle": "The Free plan can't start conversations",
+      "limitTitle": "You've reached this period's limit",
+      "freeText": "Upgrade to contact creators and start new conversations.",
+      "limitText": "Upgrade for more conversations, or wait for your plan to renew.",
+      "unlimited": "Unlimited conversations",
+      "perMonth": "{count} conversations / month",
+      "seePlans": "See plans"
+    },
+    "savedPage": {
+      "title": "Saved creators",
+      "description": "Creators you've saved from Discover, in one place.",
+      "emptyTitle": "No saved creators yet",
+      "emptyText": "Save creators while browsing to build a shortlist for your campaigns.",
+      "discover": "Discover creators"
     }
   }
 }
