@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/icons";
 
 export interface NavItem {
+  /** English fallback label (used as-is for admin items). */
   label: string;
+  /** Key under `app.nav` in the message files; overrides `label` when set. */
+  labelKey?:
+    "discover" | "projects" | "saved" | "messages" | "myProfile" | "accountSettings" | "plans";
   href: string;
   icon: (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
   /** URL prefixes that highlight this item. */
@@ -25,30 +29,46 @@ export interface NavItem {
 export const COMPANY_NAV: NavItem[] = [
   {
     label: "Discover",
+    labelKey: "discover",
     href: "/discover",
     icon: CompassIcon,
     activeFor: ["/discover", "/creators"],
   },
-  { label: "Projects", href: "/projects", icon: BriefcaseIcon, activeFor: ["/projects"] },
-  { label: "Saved", href: "/saved", icon: BookmarkIcon, activeFor: ["/saved"] },
-  { label: "Messages", href: "/messages", icon: MessageIcon, activeFor: ["/messages"] },
+  {
+    label: "Projects",
+    labelKey: "projects",
+    href: "/projects",
+    icon: BriefcaseIcon,
+    activeFor: ["/projects"],
+  },
+  { label: "Saved", labelKey: "saved", href: "/saved", icon: BookmarkIcon, activeFor: ["/saved"] },
+  {
+    label: "Messages",
+    labelKey: "messages",
+    href: "/messages",
+    icon: MessageIcon,
+    activeFor: ["/messages"],
+  },
 ];
 
 export const CREATOR_NAV: NavItem[] = [
   {
     label: "Projects",
+    labelKey: "projects",
     href: "/creator/projects",
     icon: BriefcaseIcon,
     activeFor: ["/creator/projects"],
   },
   {
     label: "Messages",
+    labelKey: "messages",
     href: "/creator/messages",
     icon: MessageIcon,
     activeFor: ["/creator/messages"],
   },
   {
     label: "My profile",
+    labelKey: "myProfile",
     href: "/creator/profile",
     icon: UploadIcon,
     activeFor: ["/creator/profile"],
@@ -84,10 +104,22 @@ export const NAV_BY_AREA: Record<AppArea, NavItem[]> = {
 /** Links in the account dropdown (Sign out is always added). */
 export const ACCOUNT_MENU_LINKS: Record<AppArea, Omit<NavItem, "activeFor">[]> = {
   company: [
-    { label: "Account settings", href: "/settings", icon: SettingsIcon },
-    { label: "Plans", href: "/plans", icon: BookmarkIcon },
+    {
+      label: "Account settings",
+      labelKey: "accountSettings",
+      href: "/settings",
+      icon: SettingsIcon,
+    },
+    { label: "Plans", labelKey: "plans", href: "/plans", icon: BookmarkIcon },
   ],
-  creator: [{ label: "Account settings", href: "/creator/settings", icon: SettingsIcon }],
+  creator: [
+    {
+      label: "Account settings",
+      labelKey: "accountSettings",
+      href: "/creator/settings",
+      icon: SettingsIcon,
+    },
+  ],
   admin: [],
 };
 

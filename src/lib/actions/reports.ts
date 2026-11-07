@@ -1,5 +1,6 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
 import type { Database } from "@/lib/supabase/database.types";
 import { isMockMode } from "@/lib/config";
 import { requireSupabaseUser } from "@/lib/data/session";
@@ -26,6 +27,7 @@ export async function submitReport(
   _previous: ReportState,
   formData: FormData,
 ): Promise<ReportState> {
+  const t = await getTranslations("app.serverErrors");
   const targetType = String(formData.get("targetType") ?? "") as ReportTargetType;
   const targetId = String(formData.get("targetId") ?? "");
   const reason = String(formData.get("reason") ?? "") as ReportReason;
@@ -35,9 +37,9 @@ export async function submitReport(
       .slice(0, 2000) || null;
 
   if (!["creator", "company", "conversation"].includes(targetType) || !targetId) {
-    return { error: "Something went wrong. Please try again." };
+    return { error: t("generic") };
   }
-  if (!REASONS.includes(reason)) return { error: "Choose a reason." };
+  if (!REASONS.includes(reason)) return { error: t("chooseReason") };
 
   if (isMockMode) return { done: true };
 
@@ -50,6 +52,6 @@ export async function submitReport(
     target_company_id: targetType === "company" ? targetId : null,
     target_conversation_id: targetType === "conversation" ? targetId : null,
   });
-  if (error) return { error: "Your report couldn't be sent. Please try again." };
+  if (error) return { error: t("reportFailed") };
   return { done: true };
 }

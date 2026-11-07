@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import type { Viewer } from "@/types/messages";
 import { setConversationArchived } from "@/lib/actions/messages";
 import { useDismiss } from "@/lib/useDismiss";
@@ -21,6 +22,7 @@ export function ConversationMenu({
   viewer,
   isArchived,
 }: ConversationMenuProps) {
+  const t = useTranslations("app.inbox");
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -45,7 +47,7 @@ export function ConversationMenu({
         onClick={() => setIsOpen((open) => !open)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        aria-label="Conversation options"
+        aria-label={t("options")}
         className="grid size-9 place-items-center rounded-full text-graphite hover:bg-surface"
       >
         <MoreIcon className="size-5" />
@@ -64,12 +66,12 @@ export function ConversationMenu({
             className={itemClass}
           >
             <ArchiveIcon className="size-4" />
-            {isArchived ? "Move to inbox" : "Archive conversation"}
+            {isArchived ? t("moveToInbox") : t("archive")}
           </button>
           <ReportDialog
             targetType="conversation"
             targetId={conversationId}
-            targetName={`conversation with ${counterpartName}`}
+            targetName={t("reportTarget", { name: counterpartName })}
             triggerClassName={itemClass}
           />
         </div>

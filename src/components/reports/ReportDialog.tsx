@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import { submitReport, type ReportState, type ReportTargetType } from "@/lib/actions/reports";
 import { FormMessage } from "@/components/ui/FormMessage";
 import { buttonClass } from "@/components/ui/buttonStyles";
@@ -9,6 +10,7 @@ import { Modal } from "@/components/ui/Modal";
 import { SelectField } from "@/components/ui/SelectField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 
+/** English labels (admin panel). The dialog itself uses `app.report.reasons`. */
 export const REPORT_REASON_LABELS: Record<string, string> = {
   fake_profile: "Fake profile",
   spam: "Spam",
@@ -34,6 +36,7 @@ export function ReportDialog({
   targetName,
   triggerClassName,
 }: ReportDialogProps) {
+  const t = useTranslations("app.report");
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, pending] = useActionState<ReportState, FormData>(submitReport, {});
 
@@ -48,19 +51,23 @@ export function ReportDialog({
         }
       >
         <FlagIcon className="size-4" />
-        Report
+        {t("report")}
       </button>
 
-      <Modal title={`Report ${targetName}`} isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal
+        title={t("title", { name: targetName })}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      >
         {state.done ? (
           <div className="space-y-5">
-            <FormMessage tone="success">Thanks — our team will review your report.</FormMessage>
+            <FormMessage tone="success">{t("thanks")}</FormMessage>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
               className={buttonClass({ variant: "secondary", className: "w-full" })}
             >
-              Close
+              {t("close")}
             </button>
           </div>
         ) : (
@@ -69,21 +76,21 @@ export function ReportDialog({
             <input type="hidden" name="targetId" value={targetId} />
             {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
             <SelectField
-              label="Reason"
+              label={t("reason")}
               name="reason"
               required
-              placeholder="Choose a reason"
+              placeholder={t("choose")}
               defaultValue=""
-              options={Object.entries(REPORT_REASON_LABELS).map(([value, label]) => ({
+              options={Object.keys(REPORT_REASON_LABELS).map((value) => ({
                 value,
-                label,
+                label: t(`reasons.${value}` as never),
               }))}
             />
             <TextAreaField
-              label="Details (optional)"
+              label={t("details")}
               name="details"
               maxLength={2000}
-              placeholder="Tell us what happened"
+              placeholder={t("detailsPlaceholder")}
             />
             <div className="flex justify-end gap-2 pt-1">
               <button
@@ -91,10 +98,10 @@ export function ReportDialog({
                 onClick={() => setIsOpen(false)}
                 className={buttonClass({ variant: "ghost" })}
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button type="submit" disabled={pending} className={buttonClass()}>
-                {pending ? "Sending…" : "Send report"}
+                {pending ? t("sending") : t("send")}
               </button>
             </div>
           </form>

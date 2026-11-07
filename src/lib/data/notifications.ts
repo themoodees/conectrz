@@ -3,7 +3,10 @@ import type { AppNotification, NotificationArea, NotificationFeed } from "@/type
 import { isMockMode } from "@/lib/config";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
 import { mockStore } from "@/mocks/store";
+import { getTranslations } from "next-intl/server";
 import { getSupabaseSession } from "./session";
+
+type T = Awaited<ReturnType<typeof getTranslations<"app.notifications">>>;
 
 /*
  * The bell in the header. Rows come from the `notifications` table, which database triggers fill:
@@ -42,11 +45,12 @@ function describe(
   row: Row,
   area: NotificationArea,
   titles: Map<string, string>,
+  t: T,
 ): AppNotification | null {
   const base = { id: row.id, createdAt: row.created_at, isRead: Boolean(row.read_at) };
   const payload = row.payload ?? {};
   const projectId = typeof payload.project_id === "string" ? payload.project_id : null;
-  const project = projectId ? (titles.get(projectId) ?? "a project") : null;
+  const project = projectId ? (titles.get(projectId) ?? t("aProject")) : null;
 
   switch (row.type) {
     case "new_message": {
@@ -54,20 +58,20 @@ function describe(
         typeof payload.conversation_id === "string" ? `/${payload.conversation_id}` : "";
       return {
         ...base,
-        title: "New message",
+        title: t("newMessage"),
         body: null,
         href: `${inboxHref(area)}${conversationId}`,
       };
     }
     case "new_application":
       return projectId
-        ? { ...base, title: "New application", body: project, href: projectHref(area, projectId) }
+        ? { ...base, title: t("newApplication"), body: project, href: projectHref(area, projectId) }
         : null;
     case "application_declined":
       return projectId
         ? {
             ...base,
-            title: "Application not selected",
+            title: t("applicationDeclined"),
             body: project,
             href: projectHref(area, projectId),
           }
@@ -76,7 +80,7 @@ function describe(
       return projectId
         ? {
             ...base,
-            title: "New project for you",
+            title: t("newMatching"),
             body: project,
             href: projectHref(area, projectId),
           }
@@ -84,14 +88,14 @@ function describe(
     case "new_creator_review":
       return {
         ...base,
-        title: "You received a new review",
+        title: t("newReview"),
         body: stars(payload.rating),
         href: "/creator/profile/preview",
       };
     case "new_company_review":
       return {
         ...base,
-        title: "You received a new review",
+        title: t("newReview"),
         body: stars(payload.rating),
         href: "/settings",
       };
@@ -100,7 +104,7 @@ function describe(
   }
 }
 
-function mockFeed(area: NotificationArea): NotificationFeed {
+function mockFeed(area: NotificationArea, t: T): NotificationFeed {
   const read = new Set(mockStore.readNotificationIds);
   const rows: Row[] = [];
 
@@ -181,13 +185,14 @@ function mockFeed(area: NotificationArea): NotificationFeed {
   const titles = new Map(mockStore.projects.map((p) => [p.id, p.title]));
   const items = rows
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .flatMap((row) => describe(row, area, titles) ?? [])
+    .flatMap((row) => describe(row, area, titles, t) ?? [])
     .slice(0, LIMIT);
   return { items, unreadCount: items.filter((i) => !i.isRead).length };
 }
 
 export async function getNotificationFeed(area: NotificationArea): Promise<NotificationFeed> {
-  if (isMockMode) return mockFeed(area);
+  const t = await getTranslations("app.notifications");
+  if (isMockMode) return mockFeed(area, t);
 
   const { supabase, user } = await getSupabaseSession();
   if (!user) return { items: [], unreadCount: 0 };
@@ -225,7 +230,7 @@ export async function getNotificationFeed(area: NotificationArea): Promise<Notif
   }
 
   return {
-    items: list.data.flatMap((row) => describe(row, area, titles) ?? []),
+    items: list.data.flatMap((row) => describe(row, area, titles, t) ?? []),
     unreadCount: unread.count ?? 0,
   };
 }

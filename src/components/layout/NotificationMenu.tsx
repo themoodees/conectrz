@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { AppNotification } from "@/types/notifications";
 import { formatConversationTime } from "@/lib/format";
 import { useDismiss } from "@/lib/useDismiss";
@@ -20,6 +21,8 @@ export function NotificationMenu({
   unreadCount: number;
 }) {
   const router = useRouter();
+  const t = useTranslations("app.notifications");
+  const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   useDismiss(containerRef, isOpen, () => setIsOpen(false));
@@ -39,7 +42,7 @@ export function NotificationMenu({
         onClick={() => setIsOpen((open) => !open)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+        aria-label={unreadCount > 0 ? t("labelUnread", { count: unreadCount }) : t("label")}
         className="relative grid size-10 place-items-center rounded-full text-graphite transition-colors hover:bg-surface hover:text-ink"
       >
         <BellIcon className="size-[22px]" />
@@ -56,22 +59,20 @@ export function NotificationMenu({
           className="fixed top-16 right-2 left-2 z-40 mt-2 rounded-card border border-border bg-white shadow-popover sm:absolute sm:top-full sm:right-0 sm:left-auto sm:w-96"
         >
           <div className="flex items-center justify-between px-4 py-3">
-            <p className="text-sm font-semibold text-ink">Notifications</p>
+            <p className="text-sm font-semibold text-ink">{t("label")}</p>
             {unreadCount > 0 && (
               <button
                 type="button"
                 onClick={() => void markAllNotificationsRead(items.map((i) => i.id))}
                 className="text-xs font-medium text-primary hover:underline"
               >
-                Mark all as read
+                {t("markAll")}
               </button>
             )}
           </div>
           <div className="h-px bg-border" />
           {items.length === 0 ? (
-            <p className="px-4 py-10 text-center text-sm text-muted">
-              You&apos;re all caught up. New activity will show up here.
-            </p>
+            <p className="px-4 py-10 text-center text-sm text-muted">{t("empty")}</p>
           ) : (
             <ul className="max-h-[28rem] overflow-y-auto p-1.5">
               {items.map((item) => (
@@ -100,7 +101,7 @@ export function NotificationMenu({
                       )}
                     </span>
                     <span className="shrink-0 text-xs text-muted">
-                      {formatConversationTime(item.createdAt)}
+                      {formatConversationTime(item.createdAt, locale)}
                     </span>
                   </Link>
                 </li>

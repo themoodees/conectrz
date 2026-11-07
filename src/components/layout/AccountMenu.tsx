@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getInitials } from "@/lib/format";
 import { useDismiss } from "@/lib/useDismiss";
 import { signOut } from "@/lib/actions/auth";
@@ -17,6 +18,7 @@ interface AccountMenuProps {
 
 /** Account dropdown in the header: links + sign out. */
 export function AccountMenu({ area, name, subtitle }: AccountMenuProps) {
+  const t = useTranslations("app.nav");
   const links = ACCOUNT_MENU_LINKS[area];
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +56,7 @@ export function AccountMenu({ area, name, subtitle }: AccountMenuProps) {
             {subtitle && <p className="truncate text-xs text-muted">{subtitle}</p>}
           </div>
           <div className="my-1 h-px bg-border" />
-          {links.map(({ label, href, icon: Icon }) => (
+          {links.map(({ label, labelKey, href, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -63,13 +65,13 @@ export function AccountMenu({ area, name, subtitle }: AccountMenuProps) {
               className={itemClass}
             >
               <Icon className="size-4" />
-              {label}
+              {labelKey ? t(labelKey) : label}
             </Link>
           ))}
           <form action={signOut}>
             <button type="submit" role="menuitem" className={itemClass}>
               <LogOutIcon className="size-4" />
-              Sign out
+              {t("signOut")}
             </button>
           </form>
         </div>

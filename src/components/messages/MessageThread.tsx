@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { Message, Viewer } from "@/types/messages";
 import { formatDayLabel, formatTime, getDayKey } from "@/lib/format";
 import { markConversationRead } from "@/lib/actions/messages";
@@ -14,6 +15,8 @@ interface MessageThreadProps {
 
 /** Scrollable list of messages, grouped by day. Your own messages sit on the right. */
 export function MessageThread({ conversationId, viewer, messages, hasUnread }: MessageThreadProps) {
+  const t = useTranslations("app.thread");
+  const locale = useLocale();
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastMine = messages.findLast((message) => message.isMine);
 
@@ -39,7 +42,7 @@ export function MessageThread({ conversationId, viewer, messages, hasUnread }: M
             <li key={message.id} className="flex flex-col">
               {startsNewDay && (
                 <p className="my-4 text-center text-xs font-medium text-muted">
-                  {formatDayLabel(message.createdAt)}
+                  {formatDayLabel(message.createdAt, locale)}
                 </p>
               )}
               <div
@@ -50,10 +53,14 @@ export function MessageThread({ conversationId, viewer, messages, hasUnread }: M
                 }`}
               >
                 {message.attachments.length > 0 && (
-                  <div className={`grid gap-1.5 ${message.attachments.length > 1 ? "grid-cols-2" : ""} ${message.content ? "mb-2" : ""}`}>
+                  <div
+                    className={`grid gap-1.5 ${message.attachments.length > 1 ? "grid-cols-2" : ""} ${message.content ? "mb-2" : ""}`}
+                  >
                     {message.attachments.map((file) =>
                       !file.url ? (
-                        <p key={file.id} className="text-xs opacity-80">{file.name} (unavailable)</p>
+                        <p key={file.id} className="text-xs opacity-80">
+                          {t("unavailable", { name: file.name })}
+                        </p>
                       ) : file.kind === "video" ? (
                         <video
                           key={file.id}
@@ -82,7 +89,7 @@ export function MessageThread({ conversationId, viewer, messages, hasUnread }: M
                 className={`mt-1 text-[11px] text-muted ${message.isMine ? "self-end" : "self-start"}`}
               >
                 {formatTime(message.createdAt)}
-                {message === lastMine && message.readAt && " · Seen"}
+                {message === lastMine && message.readAt && ` · ${t("seen")}`}
               </p>
             </li>
           );

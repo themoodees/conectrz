@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/ui/Logo";
 import { AccountMenu } from "./AccountMenu";
 import { MainNav } from "./MainNav";
@@ -14,7 +15,8 @@ interface AppHeaderProps {
 }
 
 /** App header shared by the company, creator and admin areas. */
-export function AppHeader({ area, account, areaLabel }: AppHeaderProps) {
+export async function AppHeader({ area, account, areaLabel }: AppHeaderProps) {
+  const t = await getTranslations("app.area");
   const homeHref = NAV_BY_AREA[area][0].href;
   return (
     <>
@@ -24,7 +26,7 @@ export function AppHeader({ area, account, areaLabel }: AppHeaderProps) {
             <Logo href={homeHref} />
             {areaLabel && (
               <span className="rounded-md bg-surface px-2 py-0.5 text-xs font-semibold text-graphite">
-                {areaLabel}
+                {areaLabel === "Creator" ? t("creator") : areaLabel}
               </span>
             )}
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import type { ConversationThread, Viewer } from "@/types/messages";
 import { Avatar } from "@/components/ui/Avatar";
 import { ArrowLeftIcon } from "@/components/ui/icons";
@@ -14,19 +15,20 @@ interface ConversationViewProps {
 }
 
 /** Right pane of the inbox: header, messages and reply box. */
-export function ConversationView({ conversation, viewer, backHref }: ConversationViewProps) {
+export async function ConversationView({ conversation, viewer, backHref }: ConversationViewProps) {
+  const t = await getTranslations("app.inbox");
   const { counterpart, messages, isArchived } = conversation;
   const hasUnread = messages.some((message) => !message.isMine && !message.readAt);
 
   return (
     <section
       className="flex min-w-0 flex-1 flex-col"
-      aria-label={`Conversation with ${counterpart.name}`}
+      aria-label={t("conversationWith", { name: counterpart.name })}
     >
       <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-6">
         <Link
           href={backHref}
-          aria-label="Back to conversations"
+          aria-label={t("back")}
           className="-ml-2 grid size-9 place-items-center rounded-full text-graphite hover:bg-surface md:hidden"
         >
           <ArrowLeftIcon className="size-5" />
@@ -39,15 +41,15 @@ export function ConversationView({ conversation, viewer, backHref }: Conversatio
               href={counterpart.profileHref}
               className="text-xs font-medium text-muted hover:text-primary"
             >
-              View profile
+              {t("viewProfile")}
             </Link>
           ) : (
-            <p className="text-xs text-muted">Company</p>
+            <p className="text-xs text-muted">{t("company")}</p>
           )}
         </div>
         {isArchived && (
           <span className="rounded-md bg-surface px-2 py-0.5 text-xs font-medium text-graphite">
-            Archived
+            {t("archived")}
           </span>
         )}
         <ConversationMenu

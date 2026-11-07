@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import type { ConversationSummary } from "@/types/messages";
 import { formatConversationTime } from "@/lib/format";
 import { Avatar } from "@/components/ui/Avatar";
@@ -20,6 +21,7 @@ interface ConversationListProps {
  */
 export function ConversationList({ conversations, basePath, emptyText }: ConversationListProps) {
   const activeSegment = useSelectedLayoutSegment();
+  const t = useTranslations("app.inbox");
 
   return (
     <aside
@@ -27,7 +29,7 @@ export function ConversationList({ conversations, basePath, emptyText }: Convers
         activeSegment ? "hidden" : "flex"
       }`}
     >
-      <h1 className="px-4 pt-6 pb-4 text-2xl font-semibold text-ink md:px-5">Messages</h1>
+      <h1 className="px-4 pt-6 pb-4 text-2xl font-semibold text-ink md:px-5">{t("title")}</h1>
 
       {conversations.length === 0 ? (
         <p className="flex-1 px-4 text-sm text-muted md:px-5">{emptyText}</p>
@@ -52,7 +54,7 @@ export function ConversationList({ conversations, basePath, emptyText }: Convers
         }`}
       >
         <ArchiveIcon className="size-4" />
-        Archived conversations
+        {t("archivedConversations")}
       </Link>
     </aside>
   );
@@ -67,6 +69,8 @@ export function ConversationRow({
   href: string;
   isActive?: boolean;
 }) {
+  const t = useTranslations("app.inbox");
+  const locale = useLocale();
   const { counterpart, lastMessage, hasUnread } = conversation;
 
   return (
@@ -87,19 +91,19 @@ export function ConversationRow({
           </span>
           {lastMessage && (
             <span className="shrink-0 text-xs text-muted">
-              {formatConversationTime(lastMessage.createdAt)}
+              {formatConversationTime(lastMessage.createdAt, locale)}
             </span>
           )}
         </span>
         <span className="mt-0.5 flex items-center gap-2">
           <span className={`truncate text-sm ${hasUnread ? "font-medium text-ink" : "text-muted"}`}>
             {lastMessage
-              ? `${lastMessage.isMine ? "You: " : ""}${lastMessage.content || (lastMessage.attachments.length > 1 ? "Sent attachments" : "Sent an attachment")}`
-              : "No messages yet"}
+              ? `${lastMessage.isMine ? t("you") : ""}${lastMessage.content || (lastMessage.attachments.length > 1 ? t("sentAttachments") : t("sentAttachment"))}`
+              : t("noMessages")}
           </span>
           {hasUnread && (
             <span className="size-2 shrink-0 rounded-full bg-primary">
-              <span className="sr-only">Unread</span>
+              <span className="sr-only">{t("unread")}</span>
             </span>
           )}
         </span>
