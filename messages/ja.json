@@ -461,7 +461,11 @@
       "unavailable": "{name}（表示できません）",
       "seen": "既読",
       "today": "今日",
-      "yesterday": "昨日"
+      "yesterday": "昨日",
+      "translatedFrom": "{language}から翻訳",
+      "seeOriginal": "原文を見る",
+      "hideOriginal": "原文を隠す",
+      "original": "原文"
     },
     "composer": {
       "maxFiles": "1通のメッセージに添付できるファイルは最大{max}個です。",

@@ -1,4 +1,5 @@
 import "server-only";
+import { getLocale } from "next-intl/server";
 import type {
   ConversationSummary,
   ConversationThread,
@@ -91,7 +92,12 @@ function toCounterpart(
   if (viewer === "company") return creators.get(row.creator_id) ?? null;
   const company = row.company_profiles;
   return company
-    ? { id: company.id, name: company.name, photoUrl: null, profileHref: `/creator/companies/${company.id}` }
+    ? {
+        id: company.id,
+        name: company.name,
+        photoUrl: null,
+        profileHref: `/creator/companies/${company.id}`,
+      }
     : null;
 }
 
@@ -218,6 +224,46 @@ function toMessage(row: ConversationRow["messages"][number], userId: string): Me
   };
 }
 
+/**
+ * Adds the reader's-language translation to the other person's messages. Missing translations
+ * are requested from the translate-messages edge function (which stores them, so each message
+ * is translated once). Any failure just leaves the original text.
+ */
+async function attachTranslations(
+  supabase: SupabaseClient<Database>,
+  conversationId: string,
+  messages: Message[],
+) {
+  const language = await getLocale();
+  const incoming = messages.filter((m) => !m.isMine && m.content.trim() !== "");
+  if (incoming.length === 0) return;
+  const ids = incoming.map((m) => m.id);
+
+  const load = async () => {
+    const { data } = await supabase
+      .from("message_translations")
+      .select("message_id, content, source_language")
+      .eq("language", language)
+      .in("message_id", ids);
+    return new Map((data ?? []).map((t) => [t.message_id, t]));
+  };
+
+  let found = await load();
+  if (found.size < ids.length) {
+    const { error } = await supabase.functions.invoke("translate-messages", {
+      body: { conversation_id: conversationId, language },
+    });
+    if (!error) found = await load();
+  }
+
+  for (const message of incoming) {
+    const t = found.get(message.id);
+    if (t && t.source_language !== language) {
+      message.translation = { content: t.content, sourceLanguage: t.source_language };
+    }
+  }
+}
+
 export async function getConversation(
   viewer: Viewer,
   id: string,
@@ -255,6 +301,7 @@ export async function getConversation(
   if (!counterpart) return null;
 
   const messages = data.messages.map((m) => toMessage(m, user.id));
+  await attachTranslations(supabase, id, messages);
   const paths = data.messages.flatMap((m) => (m.message_attachments ?? []).map((a) => a.path));
   const urls = await signMedia(supabase, "message-attachments", paths);
   const urlByPath = new Map(paths.map((path, i) => [path, urls[i]]));

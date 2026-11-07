@@ -6,7 +6,7 @@ import type { LegalDocument } from "./types";
  */
 export const privacyPolicy: LegalDocument = {
   title: "Privacy Policy",
-  lastUpdated: "2026-11-03",
+  lastUpdated: "2026-11-07",
   intro:
     "This policy explains how Conectrz (“we”, “us”) handles personal information when you use the Conectrz website and services (the “Service”). It applies to Companies and Creators alike. Words with capital letters have the meaning given in our Terms of Service.",
   sections: [
@@ -45,7 +45,7 @@ export const privacyPolicy: LegalDocument = {
       heading: "5. Sharing with third parties and service providers",
       body: [
         "We do not provide personal data to third parties without your consent, except where the law allows or requires it (for example, a request from a court or public authority, or when needed to protect life, body or property).",
-        "We use the following service providers to run the Service. They handle personal data only on our behalf and for the purposes above: Supabase (database, authentication and file storage); Vercel (website hosting and anonymous usage statistics); Stripe (payments and subscriptions); and Resend (sending service emails).",
+        "We use the following service providers to run the Service. They handle personal data only on our behalf and for the purposes above: Supabase (database, authentication and file storage); Vercel (website hosting and anonymous usage statistics); Stripe (payments and subscriptions); Resend (sending service emails); and Anthropic (automatic translation of chat messages: when you read a conversation, the text of the messages you receive is sent to Anthropic to be translated into the language you chose, and the translation is stored with the message so it is only translated once. Messages are sent only for this purpose, and you can always see the original text).",
       ],
     },
     {
