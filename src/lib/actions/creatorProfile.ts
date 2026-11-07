@@ -10,6 +10,7 @@ import { usdToCents } from "@/lib/format";
 import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { requireSupabaseUser } from "@/lib/data/session";
+import { findMunicipality, prefectureCode } from "@/lib/municipalities";
 import { PREFECTURES } from "@/lib/prefectures";
 import { MOCK_CREATOR_ID } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
@@ -57,6 +58,7 @@ function readBasics(formData: FormData) {
       .trim()
       .slice(0, 1500),
     prefecture: String(formData.get("prefecture") ?? ""),
+    cityCode: String(formData.get("cityCode") ?? ""),
     city: String(formData.get("city") ?? "")
       .trim()
       .slice(0, 80),
@@ -64,6 +66,19 @@ function readBasics(formData: FormData) {
     birthDate: String(formData.get("birthDate") ?? "").trim(),
     gender: String(formData.get("gender") ?? ""),
   };
+}
+
+/**
+ * The city to store: a city picked from the official list (checked against the chosen
+ * prefecture), or the creator's own text when they chose "Other". Null = invalid pick.
+ */
+async function resolveCity(basics: ReturnType<typeof readBasics>) {
+  if (/^\d{5}$/.test(basics.cityCode)) {
+    if (basics.cityCode.slice(0, 2) !== prefectureCode(basics.prefecture)) return null;
+    const municipality = await findMunicipality(basics.cityCode);
+    return municipality ? { city: municipality.en, cityCode: municipality.c } : null;
+  }
+  return { city: basics.city || null, cityCode: null };
 }
 
 /** Whole years between a yyyy-mm-dd birth date and today. */
@@ -104,6 +119,8 @@ export async function createCreatorProfile(
   const basics = readBasics(formData);
   const invalid = validateBasics(basics, t);
   if (invalid) return { error: invalid };
+  const place = await resolveCity(basics);
+  if (!place) return { error: t("city") };
   if (isMockMode) redirect("/creator/profile");
 
   const { supabase, user } = await requireSupabaseUser();
@@ -114,7 +131,8 @@ export async function createCreatorProfile(
     bio: basics.bio || null,
     country: "Japan",
     prefecture: basics.prefecture,
-    city: basics.city || null,
+    city: place.city,
+    city_code: place.cityCode,
     is_available: true,
     birth_date: basics.birthDate || null,
     gender: basics.gender || null,
@@ -133,6 +151,8 @@ export async function updateCreatorBasics(
   const basics = readBasics(formData);
   const invalid = validateBasics(basics, t);
   if (invalid) return { error: invalid };
+  const place = await resolveCity(basics);
+  if (!place) return { error: t("city") };
 
   if (isMockMode) {
     const creator = mockCreator();
@@ -140,7 +160,7 @@ export async function updateCreatorBasics(
       displayName: `${basics.firstName} ${basics.lastName}`,
       bio: basics.bio || null,
       prefecture: basics.prefecture,
-      city: basics.city || null,
+      city: place.city,
       isAvailable: basics.isAvailable,
       gender: (basics.gender || null) as Gender | null,
       age: basics.birthDate ? ageOn(basics.birthDate) : null,
@@ -159,7 +179,8 @@ export async function updateCreatorBasics(
       last_name: basics.lastName,
       bio: basics.bio || null,
       prefecture: basics.prefecture,
-      city: basics.city || null,
+      city: place.city,
+      city_code: place.cityCode,
       is_available: basics.isAvailable,
       birth_date: basics.birthDate || null,
       gender: basics.gender || null,

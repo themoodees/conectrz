@@ -19,6 +19,7 @@ import { PREFECTURES } from "@/lib/prefectures";
 import { mockPortfolio } from "@/mocks/portfolio";
 import { mockStore } from "@/mocks/store";
 import { localizedName } from "@/lib/i18n/names";
+import { findMunicipality, municipalityLabel } from "@/lib/municipalities";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
 import { getCreatorReviews } from "./reviews";
@@ -45,6 +46,7 @@ interface BaseRow {
   country: string | null;
   prefecture: string | null;
   city: string | null;
+  city_code?: string | null;
   is_available: boolean | null;
   gender?: string | null;
   age?: number | null;
@@ -82,7 +84,7 @@ function ageFromBirthDate(birthDate: string | null | undefined): number | null {
 async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Creator[]> {
   const { supabase } = await getSupabaseSession();
   const locale = await getLocale();
-  const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, is_available";
+  const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, city_code, is_available";
   // Companies get a calculated age and rating; the creator's own view reads the birth date.
   const ownColumns = `${columns}, gender, birth_date, payment_methods`;
   const directoryColumns = `${columns}, gender, age, rating_avg, review_count, payment_methods`;
@@ -138,6 +140,16 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     if (result.error) throw result.error;
   }
 
+  // Cities picked from the official list are shown in the reader's language.
+  const cityCodes = [...new Set(rows.flatMap((row) => (row.city_code ? [row.city_code] : [])))];
+  const municipalities = new Map(
+    await Promise.all(cityCodes.map(async (code) => [code, await findMunicipality(code)] as const)),
+  );
+  const cityOf = (row: BaseRow) => {
+    const municipality = row.city_code ? municipalities.get(row.city_code) : null;
+    return municipality ? municipalityLabel(municipality, locale) : row.city;
+  };
+
   const byCreator = <T extends { creator_id: string | null }>(items: T[], id: string) =>
     items.filter((item) => item.creator_id === id);
 
@@ -148,7 +160,7 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     bio: row.bio,
     country: row.country ?? "Japan",
     prefecture: row.prefecture,
-    city: row.city,
+    city: cityOf(row),
     isAvailable: row.is_available ?? false,
     gender: (row.gender as Gender | null) ?? null,
     age: row.age ?? ageFromBirthDate(row.birth_date),

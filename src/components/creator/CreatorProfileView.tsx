@@ -47,7 +47,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
           </h1>
           <p className="mt-2 flex items-center gap-1.5 text-muted">
             <MapPinIcon className="size-4 shrink-0" />
-            {formatLocation(creator, prefectureName)}
+            {formatLocation(creator, prefectureName, locale)}
           </p>
           {(creator.age != null || creator.gender || creator.reviewCount) && (
             <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">

@@ -20,6 +20,9 @@ export interface CreatorEditorData {
   birthDate: string;
   gender: Gender | "";
   prefecture: string;
+  /** Official 5-digit municipality code, or "" when the city is free text. */
+  cityCode: string;
+  /** English name of the picked city, or the creator's own text. */
   city: string;
   isAvailable: boolean;
   paymentMethods: PaymentMethod[];

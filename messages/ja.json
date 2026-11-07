@@ -789,7 +789,10 @@
         "aboutHint": "どんなコンテンツを作っているか、誰に向けて作っているか、ブランドが期待できることを書きましょう。",
         "aboutOptional": "自己紹介（任意）",
         "aboutPlaceholder": "どんなコンテンツを、誰に向けて作っているか。",
-        "available": "新しい仕事を受けられます"
+        "available": "新しい仕事を受けられます",
+        "cityOther": "その他（リストにない場合）",
+        "cityOtherLabel": "市区町村",
+        "cityPrefectureFirst": "先に都道府県を選んでください"
       },
       "personal": {
         "birth": "生年月日（任意）",
@@ -931,7 +934,8 @@
       "followers": "フォロワー数は整数で入力してください（空欄も可）。",
       "invalidAccount": "アカウントが正しくありません。",
       "addFailed": "この項目を追加できませんでした。もう一度お試しください。",
-      "minAge": "Conectrz に参加するには{min}歳以上である必要があります。"
+      "minAge": "Conectrz に参加するには{min}歳以上である必要があります。",
+      "city": "リストから市区町村を選ぶか、「その他」を選んでください。"
     },
     "creatorView": {
       "years": "{age}歳",

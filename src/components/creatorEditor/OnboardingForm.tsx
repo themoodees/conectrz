@@ -3,18 +3,16 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { createCreatorProfile, type SaveResult } from "@/lib/actions/creatorProfile";
-import { PREFECTURES } from "@/lib/prefectures";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
-import { SelectField } from "@/components/ui/SelectField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
+import { LocationFields } from "./LocationFields";
 import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
   const t = useTranslations("app.editor.basics");
   const to = useTranslations("app.editor.onboarding");
-  const tp = useTranslations("app.prefectures");
   const [suggestedFirstName, ...rest] = suggestedName.trim().split(/\s+/);
   const suggestedLastName = rest.join(" ");
   const [result, formAction, pending] = useActionState<SaveResult, FormData>(
@@ -43,22 +41,7 @@ export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
           hint={t("lastHint")}
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField
-          label={t("prefecture")}
-          name="prefecture"
-          required
-          defaultValue=""
-          placeholder={t("choose")}
-          options={PREFECTURES.map((p) => ({ value: p, label: tp(p) }))}
-        />
-        <TextField
-          label={t("city")}
-          name="city"
-          maxLength={80}
-          placeholder={t("cityPlaceholder")}
-        />
-      </div>
+      <LocationFields />
       <PersonalDetailsFields birthDate="" gender="" />
       <TextAreaField
         label={t("aboutOptional")}

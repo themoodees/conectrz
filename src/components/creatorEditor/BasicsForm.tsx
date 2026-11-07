@@ -4,17 +4,15 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { updateCreatorBasics, type SaveResult } from "@/lib/actions/creatorProfile";
-import { PREFECTURES } from "@/lib/prefectures";
-import { SelectField } from "@/components/ui/SelectField";
 import { TextAreaField } from "@/components/ui/TextAreaField";
 import { TextField } from "@/components/ui/TextField";
+import { LocationFields } from "./LocationFields";
 import { SaveRow } from "./EditorSection";
 import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 /** Name, location, bio and availability. */
 export function BasicsForm({ data }: { data: CreatorEditorData }) {
   const t = useTranslations("app.editor.basics");
-  const tp = useTranslations("app.prefectures");
   const [result, formAction, pending] = useActionState<SaveResult, FormData>(
     updateCreatorBasics,
     {},
@@ -40,23 +38,11 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
           hint={t("lastHint")}
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField
-          label={t("prefecture")}
-          name="prefecture"
-          defaultValue={data.prefecture}
-          required
-          placeholder={t("choose")}
-          options={PREFECTURES.map((p) => ({ value: p, label: tp(p) }))}
-        />
-        <TextField
-          label={t("city")}
-          name="city"
-          defaultValue={data.city}
-          maxLength={80}
-          placeholder={t("cityPlaceholder")}
-        />
-      </div>
+      <LocationFields
+        defaultPrefecture={data.prefecture}
+        defaultCityCode={data.cityCode}
+        defaultCity={data.city}
+      />
       <PersonalDetailsFields birthDate={data.birthDate} gender={data.gender} />
       <TextAreaField
         label={t("about")}

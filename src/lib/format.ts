@@ -31,8 +31,13 @@ export const usdToCents = (dollars: number) => Math.round(dollars * 100);
 export function formatLocation(
   creator: Pick<Creator, "city" | "prefecture" | "country">,
   translatePrefecture: (name: string) => string = (name) => name,
+  locale = "en",
 ) {
   const prefecture = creator.prefecture ? translatePrefecture(creator.prefecture) : creator.prefecture;
+  if (locale === "ja" && prefecture && creator.city) {
+    // Japanese writes the place big to small without a separator: 東京都渋谷区.
+    return creator.city.startsWith(prefecture) ? creator.city : `${prefecture}${creator.city}`;
+  }
   const parts = [creator.city, prefecture].filter(
     (part, index, all): part is string => Boolean(part) && all.indexOf(part) === index,
   );
