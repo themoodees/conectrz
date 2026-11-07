@@ -131,3 +131,13 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+/* Japanese: break lines between phrases, not in the middle of words, and give headings room. */
+:lang(ja) {
+  word-break: auto-phrase;
+  line-break: strict;
+}
+:lang(ja) h1,
+:lang(ja) h2 {
+  line-height: 1.3;
+}

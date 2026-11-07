@@ -21,7 +21,15 @@ const TONES = [
   "bg-[#eef6ff] text-[#2f6fb8]",
 ];
 
-function Avatar({ name, tone = 0, size = "size-10" }: { name: string; tone?: number; size?: string }) {
+function Avatar({
+  name,
+  tone = 0,
+  size = "size-10",
+}: {
+  name: string;
+  tone?: number;
+  size?: string;
+}) {
   return (
     <span
       className={`grid shrink-0 place-items-center rounded-full text-sm font-semibold ${size} ${TONES[tone % TONES.length]}`}
@@ -31,8 +39,10 @@ function Avatar({ name, tone = 0, size = "size-10" }: { name: string; tone?: num
   );
 }
 
-const chip = "rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-medium text-graphite";
-const chipOn = "rounded-lg border border-primary bg-primary-light px-2.5 py-1 text-xs font-medium text-primary";
+const chip =
+  "rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-medium text-graphite";
+const chipOn =
+  "rounded-lg border border-primary bg-primary-light px-2.5 py-1 text-xs font-medium text-primary";
 
 /** A browser window around a preview. */
 export function BrowserFrame({ url, children }: { url: string; children: ReactNode }) {
@@ -43,7 +53,9 @@ export function BrowserFrame({ url, children }: { url: string; children: ReactNo
           <span className="size-2.5 rounded-full bg-border" />
           <span className="size-2.5 rounded-full bg-border" />
           <span className="size-2.5 rounded-full bg-border" />
-          <span className="ml-3 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-muted">{url}</span>
+          <span className="ml-3 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-muted">
+            {url}
+          </span>
         </div>
         <div className="p-4 sm:p-5">{children}</div>
       </div>
@@ -180,7 +192,9 @@ export function ChatPreview() {
 export function ProjectPreview() {
   return (
     <BrowserFrame url="conectrz.com/projects">
-      <span className="rounded-md bg-primary-light px-2 py-0.5 text-[11px] font-medium text-primary">Open</span>
+      <span className="rounded-md bg-primary-light px-2 py-0.5 text-[11px] font-medium text-primary">
+        Open
+      </span>
       <p className="mt-2 text-base font-semibold text-ink">Autumn skincare UGC videos</p>
       <p className="text-xs text-muted">Hanami Cosmetics (sample)</p>
       <p className="mt-2 text-xs leading-relaxed text-graphite">
@@ -195,10 +209,15 @@ export function ProjectPreview() {
         </p>
       </div>
       <div className="mt-3 rounded-card bg-surface p-3">
-        <p className="text-[11px] font-semibold tracking-wide text-muted uppercase">How you&apos;ll be paid</p>
+        <p className="text-[11px] font-semibold tracking-wide text-muted uppercase">
+          How you&apos;ll be paid
+        </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {["Bank transfer", "Wise"].map((m) => (
-            <span key={m} className="flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-graphite">
+            <span
+              key={m}
+              className="flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-graphite"
+            >
               <CheckIcon className="size-3 text-primary" />
               {m}
             </span>
@@ -251,7 +270,8 @@ export function ApplyPreview() {
     <BrowserFrame url="conectrz.com/creator/projects/autumn-skincare">
       <p className="text-sm font-semibold text-ink">Apply to this project</p>
       <div className="mt-3 rounded-control border border-border px-3 py-2 text-xs leading-relaxed text-graphite">
-        Hi! I&apos;ve made skincare routines for two years and can deliver all three videos within two weeks.
+        Hi! I&apos;ve made skincare routines for two years and can deliver all three videos within
+        two weeks.
       </div>
       <div className="mt-3 flex items-center justify-between rounded-control border border-border px-3 py-2 text-sm">
         <span className="text-muted">Your price</span>

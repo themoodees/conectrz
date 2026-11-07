@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { Inter, Urbanist } from "next/font/google";
 import "./globals.css";
 
@@ -39,11 +41,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
   return (
-    <html lang="en" className={`${urbanist.variable} ${inter.variable}`}>
+    <html lang={locale} className={`${urbanist.variable} ${inter.variable}`}>
       <body className="min-h-dvh">
-        {children}
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Analytics />
       </body>
     </html>
