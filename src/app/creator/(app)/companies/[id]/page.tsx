@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RatingSummary } from "@/components/creator/RatingSummary";
@@ -11,9 +12,15 @@ import { deleteCompanyReview, saveCompanyReview } from "@/lib/actions/reviews";
 import { getCompanyPage } from "@/lib/data/companies";
 import { formatShortDate, getInitials } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Brand" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("app.brandPage");
+  return { title: t("title") };
+}
 
 export default async function CompanyPage({ params }: PageProps<"/creator/companies/[id]">) {
+  const t = await getTranslations("app.brandPage");
+  const tr = await getTranslations("app.reviews");
+  const locale = await getLocale();
   const { id } = await params;
   const page = await getCompanyPage(id);
   if (!page) notFound();
@@ -27,7 +34,7 @@ export default async function CompanyPage({ params }: PageProps<"/creator/compan
         className="mt-6 mb-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-graphite hover:text-ink md:mt-8"
       >
         <ArrowLeftIcon className="size-4" />
-        Projects
+        {t("back")}
       </Link>
 
       <header className="flex items-center gap-4">
@@ -39,7 +46,7 @@ export default async function CompanyPage({ params }: PageProps<"/creator/compan
             {company.name}
           </h1>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-muted">
-            <span>On Conectrz since {formatShortDate(company.joinedAt)}</span>
+            <span>{t("since", { date: formatShortDate(company.joinedAt, locale) })}</span>
             <RatingSummary average={company.ratingAverage} count={company.reviewCount} />
           </p>
         </div>
@@ -47,10 +54,10 @@ export default async function CompanyPage({ params }: PageProps<"/creator/compan
 
       <section className="mt-10" aria-labelledby="brand-projects-heading">
         <h2 id="brand-projects-heading" className="mb-4 text-2xl font-semibold text-ink">
-          Open projects
+          {t("openProjects")}
         </h2>
         {openProjects.length === 0 ? (
-          <p className="text-sm text-muted">No open projects right now.</p>
+          <p className="text-sm text-muted">{t("noOpen")}</p>
         ) : (
           <ul className="grid gap-4 md:grid-cols-2">
             {openProjects.map((project) => (
@@ -70,7 +77,7 @@ export default async function CompanyPage({ params }: PageProps<"/creator/compan
               existing={mine}
               save={saveCompanyReview.bind(null, company.id)}
               remove={deleteCompanyReview.bind(null, company.id)}
-              placeholder="How was it to work with this brand?"
+              placeholder={tr("brandPlaceholder")}
             />
           ) : undefined
         }

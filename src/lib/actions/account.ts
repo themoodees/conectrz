@@ -1,5 +1,6 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,11 +20,12 @@ export async function updateCompanyDetails(
   _previous: SettingsFormState,
   formData: FormData,
 ): Promise<SettingsFormState> {
+  const t = await getTranslations("app.accountErrors");
   const name = String(formData.get("name") ?? "").trim();
   const contactEmail = String(formData.get("contactEmail") ?? "").trim();
 
-  if (!name) return { error: "Enter your company name." };
-  if (!EMAIL_PATTERN.test(contactEmail)) return { error: "Enter a valid contact email." };
+  if (!name) return { error: t("companyName") };
+  if (!EMAIL_PATTERN.test(contactEmail)) return { error: t("contactEmail") };
 
   if (isMockMode) {
     mockCompanyAccount.companyName = name;
@@ -34,11 +36,11 @@ export async function updateCompanyDetails(
       .from("company_profiles")
       .update({ name, contact_email: contactEmail, updated_at: new Date().toISOString() })
       .eq("id", user.id);
-    if (error) return { error: "Couldn't save your changes. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
 
   revalidatePath("/", "layout");
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 /** Changes the signed-in user's password (any account type). */
@@ -46,17 +48,18 @@ export async function changePassword(
   _previous: SettingsFormState,
   formData: FormData,
 ): Promise<SettingsFormState> {
+  const t = await getTranslations("app.accountErrors");
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
-  if (password.length < 8) return { error: "Use at least 8 characters." };
-  if (password !== confirm) return { error: "The passwords don't match." };
-  if (isMockMode) return { success: "Password updated." };
+  if (password.length < 8) return { error: t("passwordShort") };
+  if (password !== confirm) return { error: t("passwordMismatch") };
+  if (isMockMode) return { success: t("passwordUpdated") };
 
   const { supabase } = await requireSupabaseUser();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: error.message };
-  return { success: "Password updated." };
+  return { success: t("passwordUpdated") };
 }
 
 /**
@@ -68,8 +71,9 @@ export async function deleteCreatorAccount(
   _previous: SettingsFormState,
   formData: FormData,
 ): Promise<SettingsFormState> {
+  const t = await getTranslations("app.accountErrors");
   if (String(formData.get("confirm") ?? "").trim() !== "DELETE") {
-    return { error: "Type DELETE to confirm." };
+    return { error: t("typeDelete") };
   }
   if (isMockMode) redirect("/login");
 
@@ -84,7 +88,7 @@ export async function deleteCreatorAccount(
   }
 
   const { error } = await supabase.rpc("delete_my_creator_account");
-  if (error) return { error: "We couldn't delete your account. Please try again or contact support." };
+  if (error) return { error: t("deleteFailed") };
 
   const server = await createSupabaseServerClient();
   await server.auth.signOut();

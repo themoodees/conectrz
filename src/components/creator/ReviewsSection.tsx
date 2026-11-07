@@ -1,3 +1,4 @@
+import { useLocale, useTranslations } from "next-intl";
 import { formatDeadline } from "@/lib/format";
 import { StarIcon } from "@/components/ui/icons";
 import { RatingSummary } from "./RatingSummary";
@@ -19,6 +20,7 @@ export function ReviewsSection({
   reviews: ReviewItem[];
   form?: React.ReactNode;
 }) {
+  const t = useTranslations("app.reviews");
   const count = reviews.length;
   const average = count ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : null;
 
@@ -26,7 +28,7 @@ export function ReviewsSection({
     <section className="mt-14" aria-labelledby="reviews-heading">
       <div className="mb-5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <h2 id="reviews-heading" className="text-2xl font-semibold text-ink">
-          Reviews
+          {t("title")}
         </h2>
         <RatingSummary average={average} count={count} />
       </div>
@@ -40,19 +42,23 @@ export function ReviewsSection({
 
 /** The reviews themselves, newest first (empty state included). */
 export function ReviewList({ reviews }: { reviews: ReviewItem[] }) {
-  if (reviews.length === 0) return <p className="text-sm text-muted">No reviews yet.</p>;
+  const t = useTranslations("app.reviews");
+  const locale = useLocale();
+  if (reviews.length === 0) return <p className="text-sm text-muted">{t("none")}</p>;
   return (
     <ul className="max-w-2xl divide-y divide-border rounded-card border border-border">
       {reviews.map((review) => (
         <li key={review.id} className="p-4 md:p-5">
           <div className="flex items-center justify-between gap-3">
             <p className="font-medium text-ink">{review.name}</p>
-            <p className="text-xs text-muted">{formatDeadline(review.createdAt.slice(0, 10))}</p>
+            <p className="text-xs text-muted">
+              {formatDeadline(review.createdAt.slice(0, 10), locale)}
+            </p>
           </div>
           <p
             className="mt-1 flex gap-0.5"
             role="img"
-            aria-label={`${review.rating} out of 5 stars`}
+            aria-label={t("stars", { count: review.rating })}
           >
             {[1, 2, 3, 4, 5].map((n) => (
               <StarIcon

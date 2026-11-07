@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { RateType } from "@/types/creator";
 import type { CategoryOption, CreatorEditorData } from "@/types/creatorEditor";
 import { saveServices } from "@/lib/actions/creatorProfile";
@@ -19,6 +20,7 @@ export function ServicesEditor({
   options: CategoryOption[];
   initialRows: Row[];
 }) {
+  const t = useTranslations("app.editor.services");
   const [rows, setRows] = useState<Row[]>(initialRows);
   const { save, pending, result } = useSave();
 
@@ -34,12 +36,12 @@ export function ServicesEditor({
             className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_11rem_9rem_auto]"
           >
             <select
-              aria-label="Service"
+              aria-label={t("service")}
               value={row.serviceId}
               onChange={(e) => update(index, { serviceId: e.target.value })}
               className={`${rowInputClass} col-span-1`}
             >
-              <option value="">Service…</option>
+              <option value="">{t("choose")}</option>
               {options.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.name}
@@ -48,23 +50,23 @@ export function ServicesEditor({
             </select>
             <button
               type="button"
-              aria-label="Remove service"
+              aria-label={t("remove")}
               onClick={() => setRows((current) => current.filter((_, i) => i !== index))}
               className={`${rowRemoveClass} sm:order-last`}
             >
               <TrashIcon className="size-4" />
             </button>
             <select
-              aria-label="Rate type"
+              aria-label={t("rateType")}
               value={row.rateType}
               onChange={(e) => update(index, { rateType: e.target.value as RateType })}
               className={rowInputClass}
             >
-              <option value="starting_from">Starting from</option>
-              <option value="flat">Flat rate</option>
+              <option value="starting_from">{t("startingFrom")}</option>
+              <option value="flat">{t("flat")}</option>
             </select>
             <label className="relative">
-              <span className="sr-only">Rate in US dollars</span>
+              <span className="sr-only">{t("rateAria")}</span>
               <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted">
                 $
               </span>
@@ -93,7 +95,7 @@ export function ServicesEditor({
         className={buttonClass({ variant: "ghost", size: "sm", className: "mt-3 -ml-3" })}
       >
         <PlusIcon className="size-4" />
-        Add service
+        {t("add")}
       </button>
       <SaveRow pending={pending} result={result} onSave={() => save(() => saveServices(rows))} />
     </div>

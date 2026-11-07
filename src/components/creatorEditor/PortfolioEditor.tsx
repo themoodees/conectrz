@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
 import { addPortfolioItem, deletePortfolioItem } from "@/lib/actions/creatorProfile";
@@ -26,6 +27,7 @@ export function PortfolioEditor({
   creatorId: string;
   items: CreatorEditorData["portfolio"];
 }) {
+  const t = useTranslations("app.editor.portfolio");
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
@@ -34,10 +36,9 @@ export function PortfolioEditor({
   const isFull = items.length >= MAX_ITEMS;
 
   function upload() {
-    if (!file) return setResult({ error: "Choose a file first." });
-    if (!ACCEPTED.includes(file.type))
-      return setResult({ error: "Use JPG, PNG, WebP, MP4 or MOV." });
-    if (file.size > MAX_BYTES) return setResult({ error: "Files can be up to 100 MB." });
+    if (!file) return setResult({ error: t("chooseFile") });
+    if (!ACCEPTED.includes(file.type)) return setResult({ error: t("fileTypes") });
+    if (file.size > MAX_BYTES) return setResult({ error: t("fileSize") });
 
     save(async () => {
       const supabase = createSupabaseBrowserClient();
@@ -46,7 +47,7 @@ export function PortfolioEditor({
       const { error } = await supabase.storage
         .from("portfolio")
         .upload(path, file, { contentType: file.type });
-      if (error) return { error: "Upload failed. Please try again." };
+      if (error) return { error: t("uploadFailed") };
 
       const result = await addPortfolioItem({
         mediaPath: path,
@@ -68,7 +69,7 @@ export function PortfolioEditor({
       {items.length > 0 && (
         <div>
           <PortfolioGrid items={items} />
-          <ul className="mt-3 flex flex-wrap gap-2" aria-label="Remove portfolio items">
+          <ul className="mt-3 flex flex-wrap gap-2" aria-label={t("removeItems")}>
             {items.map((item) => (
               <li key={item.id}>
                 <button
@@ -78,7 +79,7 @@ export function PortfolioEditor({
                   className={buttonClass({ variant: "ghost", size: "sm" })}
                 >
                   <TrashIcon className="size-4" />
-                  Remove “{item.title ?? "Untitled"}”
+                  {t("remove", { title: item.title ?? t("untitled") })}
                 </button>
               </li>
             ))}
@@ -88,22 +89,22 @@ export function PortfolioEditor({
 
       <div className="rounded-control bg-surface p-4">
         <p className="text-sm font-medium text-ink">
-          Add work ({items.length}/{MAX_ITEMS})
+          {t("addWork", { count: items.length, max: MAX_ITEMS })}
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           <input
-            aria-label="Title"
+            aria-label={t("titleAria")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Title (e.g. Skincare Reel)"
+            placeholder={t("titlePlaceholder")}
             maxLength={120}
             className={rowInputClass}
           />
           <input
-            aria-label="Description"
+            aria-label={t("descAria")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Short description (optional)"
+            placeholder={t("descPlaceholder")}
             maxLength={500}
             className={rowInputClass}
           />
@@ -122,7 +123,7 @@ export function PortfolioEditor({
             onClick={() => fileRef.current?.click()}
             className={buttonClass({ variant: "secondary", size: "sm" })}
           >
-            {file ? "Change file" : "Choose file"}
+            {file ? t("change") : t("choose")}
           </button>
           {file && <span className="max-w-60 truncate text-sm text-graphite">{file.name}</span>}
           <button
@@ -132,15 +133,11 @@ export function PortfolioEditor({
             className={buttonClass({ size: "sm" })}
           >
             <UploadIcon className="size-4" />
-            {pending ? "Uploading…" : "Upload"}
+            {pending ? t("uploading") : t("upload")}
           </button>
         </div>
         <p className="mt-2 text-xs text-muted">
-          {isMockMode
-            ? "Uploads are available in Supabase mode."
-            : isFull
-              ? "You've reached 20 items. Remove one to add another."
-              : "Images (JPG, PNG, WebP) or videos (MP4, MOV), up to 50 MB."}
+          {isMockMode ? t("mockNote") : isFull ? t("full", { max: MAX_ITEMS }) : t("help")}
         </p>
         {result.error && (
           <p role="alert" className="mt-2 text-sm text-danger">

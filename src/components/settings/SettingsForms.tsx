@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState, type ReactNode } from "react";
 import {
   changePassword,
@@ -37,33 +38,35 @@ function FormStatus({ state }: { state: SettingsFormState }) {
 }
 
 export function CompanyDetailsForm({ name, contactEmail }: { name: string; contactEmail: string }) {
+  const t = useTranslations("app.settingsForms");
   const [state, formAction, pending] = useActionState(updateCompanyDetails, {});
   return (
     <form action={formAction} className="max-w-md space-y-4">
       <FormStatus state={state} />
-      <TextField label="Company name" name="name" defaultValue={name} required />
+      <TextField label={t("companyName")} name="name" defaultValue={name} required />
       <TextField
-        label="Contact email"
+        label={t("contactEmail")}
         name="contactEmail"
         type="email"
         defaultValue={contactEmail}
         required
-        hint="Where Conectrz contacts you about your account."
+        hint={t("contactHint")}
       />
       <button type="submit" disabled={pending} className={buttonClass()}>
-        {pending ? "Saving…" : "Save changes"}
+        {pending ? t("saving") : t("saveChanges")}
       </button>
     </form>
   );
 }
 
 export function PasswordForm() {
+  const t = useTranslations("app.settingsForms");
   const [state, formAction, pending] = useActionState(changePassword, {});
   return (
     <form action={formAction} className="max-w-md space-y-4">
       <FormStatus state={state} />
       <TextField
-        label="New password"
+        label={t("newPassword")}
         name="password"
         type="password"
         autoComplete="new-password"
@@ -71,7 +74,7 @@ export function PasswordForm() {
         required
       />
       <TextField
-        label="Confirm new password"
+        label={t("confirmPassword")}
         name="confirm"
         type="password"
         autoComplete="new-password"
@@ -79,33 +82,31 @@ export function PasswordForm() {
         required
       />
       <button type="submit" disabled={pending} className={buttonClass({ variant: "secondary" })}>
-        {pending ? "Updating…" : "Update password"}
+        {pending ? t("updating") : t("updatePassword")}
       </button>
     </form>
   );
 }
 
 export function DeleteAccountForm() {
+  const t = useTranslations("app.settingsForms");
   const [state, formAction, pending] = useActionState(deleteCreatorAccount, {});
   return (
     <form action={formAction} className="max-w-md space-y-4">
       <FormStatus state={state} />
       <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
-        <li>Your profile, photos, portfolio and social links are permanently removed.</li>
-        <li>You can no longer sign in, and your pending applications are withdrawn.</li>
-        <li>
-          Past conversations stay visible to the companies you wrote to, shown as
-          &ldquo;Deleted creator&rdquo;.
-        </li>
-        <li>This cannot be undone.</li>
+        <li>{t("delete1")}</li>
+        <li>{t("delete2")}</li>
+        <li>{t("delete3")}</li>
+        <li>{t("delete4")}</li>
       </ul>
-      <TextField label="Type DELETE to confirm" name="confirm" autoComplete="off" required />
+      <TextField label={t("typeDelete")} name="confirm" autoComplete="off" required />
       <button
         type="submit"
         disabled={pending}
         className={buttonClass({ variant: "secondary", className: "text-danger" })}
       >
-        {pending ? "Deleting…" : "Delete my account"}
+        {pending ? t("deleting") : t("deleteButton")}
       </button>
     </form>
   );

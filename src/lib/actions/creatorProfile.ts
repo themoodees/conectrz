@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import type { Gender, LanguageProficiency, RateType, SocialPlatform } from "@/types/creator";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { isMockMode } from "@/lib/config";
@@ -76,18 +77,21 @@ function ageOn(birthDate: string): number {
   return hadBirthday ? age : age - 1;
 }
 
-function validateBasics(basics: ReturnType<typeof readBasics>): string | null {
-  if (!basics.firstName) return "Enter your first name.";
-  if (!basics.lastName) return "Enter your last name.";
-  if (!PREFECTURES.includes(basics.prefecture)) return "Choose your prefecture.";
+function validateBasics(
+  basics: ReturnType<typeof readBasics>,
+  t: Awaited<ReturnType<typeof getTranslations<"app.creatorErrors">>>,
+): string | null {
+  if (!basics.firstName) return t("firstName");
+  if (!basics.lastName) return t("lastName");
+  if (!PREFECTURES.includes(basics.prefecture)) return t("prefecture");
   if (basics.birthDate) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(basics.birthDate) || Number.isNaN(Date.parse(basics.birthDate)))
-      return "Enter a valid birth date.";
+      return t("birth");
     const age = ageOn(basics.birthDate);
-    if (age < MIN_AGE) return `You must be at least ${MIN_AGE} to join Conectrz.`;
-    if (age > 110) return "Enter a valid birth date.";
+    if (age < MIN_AGE) return t("minAge", { min: MIN_AGE });
+    if (age > 110) return t("birth");
   }
-  if (basics.gender && !GENDERS.includes(basics.gender as Gender)) return "Choose a valid gender.";
+  if (basics.gender && !GENDERS.includes(basics.gender as Gender)) return t("gender");
   return null;
 }
 
@@ -96,8 +100,9 @@ export async function createCreatorProfile(
   _previous: SaveResult,
   formData: FormData,
 ): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const basics = readBasics(formData);
-  const invalid = validateBasics(basics);
+  const invalid = validateBasics(basics, t);
   if (invalid) return { error: invalid };
   if (isMockMode) redirect("/creator/profile");
 
@@ -114,7 +119,7 @@ export async function createCreatorProfile(
     birth_date: basics.birthDate || null,
     gender: basics.gender || null,
   });
-  if (error) return { error: "Couldn't create your profile. Please try again." };
+  if (error) return { error: t("createFailed") };
 
   revalidateCreator(user.id);
   redirect("/creator/profile?welcome=1");
@@ -124,8 +129,9 @@ export async function updateCreatorBasics(
   _previous: SaveResult,
   formData: FormData,
 ): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const basics = readBasics(formData);
-  const invalid = validateBasics(basics);
+  const invalid = validateBasics(basics, t);
   if (invalid) return { error: invalid };
 
   if (isMockMode) {
@@ -142,7 +148,7 @@ export async function updateCreatorBasics(
     if (basics.birthDate) mockStore.creatorBirthDates[creator.id] = basics.birthDate;
     else delete mockStore.creatorBirthDates[creator.id];
     revalidateCreator(creator.id);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
   const { supabase, user } = await requireSupabaseUser();
@@ -160,10 +166,10 @@ export async function updateCreatorBasics(
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
-  if (error) return { error: "Couldn't save your changes. Please try again." };
+  if (error) return { error: t("saveChanges") };
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 /** Saves the payment methods the creator accepts. */
@@ -171,12 +177,13 @@ export async function updatePaymentMethods(
   _previous: SaveResult,
   formData: FormData,
 ): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const methods = parsePaymentMethods(formData.getAll("paymentMethods").map(String));
 
   if (isMockMode) {
     mockCreator().paymentMethods = methods;
     revalidateCreator(MOCK_CREATOR_ID);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
   const { supabase, user } = await requireSupabaseUser();
@@ -184,10 +191,10 @@ export async function updatePaymentMethods(
     .from("creator_profiles")
     .update({ payment_methods: methods, updated_at: new Date().toISOString() })
     .eq("id", user.id);
-  if (error) return { error: "Couldn't save your changes. Please try again." };
+  if (error) return { error: t("saveChanges") };
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 /* ── Uploaded media ───────────────────────────────────────────────────────── */
@@ -201,10 +208,11 @@ function isOwnStoragePath(path: string, userId: string) {
 }
 
 export async function setProfilePhoto(photoPath: string): Promise<SaveResult> {
-  if (isMockMode) return { error: "Uploads are available in Supabase mode." };
+  const t = await getTranslations("app.creatorErrors");
+  if (isMockMode) return { error: t("mockUploads") };
 
   const { supabase, user } = await requireSupabaseUser();
-  if (!isOwnStoragePath(photoPath, user.id)) return { error: "Invalid photo." };
+  if (!isOwnStoragePath(photoPath, user.id)) return { error: t("invalidPhoto") };
 
   const { data: current } = await supabase
     .from("creator_profiles")
@@ -216,15 +224,19 @@ export async function setProfilePhoto(photoPath: string): Promise<SaveResult> {
     .from("creator_profiles")
     .update({ photo_url: photoPath, updated_at: new Date().toISOString() })
     .eq("id", user.id);
-  if (error) return { error: "Couldn't save your photo. Please try again." };
+  if (error) return { error: t("photoSaveFailed") };
 
   // Clean up the previous photo file.
-  if (current?.photo_url && current.photo_url !== photoPath && isOwnStoragePath(current.photo_url, user.id)) {
+  if (
+    current?.photo_url &&
+    current.photo_url !== photoPath &&
+    isOwnStoragePath(current.photo_url, user.id)
+  ) {
     await supabase.storage.from("creator-photos").remove([current.photo_url]);
   }
 
   revalidateCreator(user.id);
-  return { success: "Photo updated." };
+  return { success: t("photoUpdated") };
 }
 
 export async function addPortfolioItem(item: {
@@ -233,10 +245,11 @@ export async function addPortfolioItem(item: {
   title: string;
   description: string;
 }): Promise<SaveResult> {
-  if (isMockMode) return { error: "Uploads are available in Supabase mode." };
+  const t = await getTranslations("app.creatorErrors");
+  if (isMockMode) return { error: t("mockUploads") };
 
   const { supabase, user } = await requireSupabaseUser();
-  if (!isOwnStoragePath(item.mediaPath, user.id)) return { error: "Invalid file." };
+  if (!isOwnStoragePath(item.mediaPath, user.id)) return { error: t("invalidFile") };
 
   const { error } = await supabase.from("portfolio_items").insert({
     creator_id: user.id,
@@ -248,17 +261,16 @@ export async function addPortfolioItem(item: {
   if (error) {
     await supabase.storage.from("portfolio").remove([item.mediaPath]);
     return {
-      error: error.message.includes("limit")
-        ? "You can have up to 20 portfolio items. Remove one to add another."
-        : "Couldn't add this item. Please try again.",
+      error: error.message.includes("limit") ? t("portfolioLimit") : t("addFailed"),
     };
   }
 
   revalidateCreator(user.id);
-  return { success: "Added to your portfolio." };
+  return { success: t("added") };
 }
 
 export async function deletePortfolioItem(itemId: string): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   if (isMockMode) {
     const items = mockPortfolio[MOCK_CREATOR_ID] ?? [];
     mockPortfolio[MOCK_CREATOR_ID] = items.filter((item) => item.id !== itemId);
@@ -273,14 +285,14 @@ export async function deletePortfolioItem(itemId: string): Promise<SaveResult> {
     .eq("id", itemId)
     .eq("creator_id", user.id)
     .maybeSingle();
-  if (!item) return { error: "Item not found." };
+  if (!item) return { error: t("itemNotFound") };
 
   const { error } = await supabase
     .from("portfolio_items")
     .delete()
     .eq("id", itemId)
     .eq("creator_id", user.id);
-  if (error) return { error: "Couldn't remove this item. Please try again." };
+  if (error) return { error: t("removeFailed") };
 
   if (isOwnStoragePath(item.media_url, user.id)) {
     await supabase.storage.from("portfolio").remove([item.media_url]);
@@ -293,22 +305,23 @@ export async function deletePortfolioItem(itemId: string): Promise<SaveResult> {
 /* ── Niches, languages, services, social accounts ─────────────────────────── */
 
 export async function saveNiches(nicheIds: string[]): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const selected = [...new Set(nicheIds)].slice(0, 10);
 
   if (isMockMode) {
     mockCreator().niches = selected;
     revalidateCreator(MOCK_CREATOR_ID);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
-  if (!allUuids(selected)) return { error: "Invalid niche." };
+  if (!allUuids(selected)) return { error: t("invalidNiche") };
 
   const { supabase, user } = await requireSupabaseUser();
   const { data: current, error: readError } = await supabase
     .from("creator_niches")
     .select("niche_id")
     .eq("creator_id", user.id);
-  if (readError) return { error: "Couldn't save. Please try again." };
+  if (readError) return { error: t("saveFailed") };
 
   const currentIds = current.map((row) => row.niche_id);
   const toRemove = currentIds.filter((id) => !selected.includes(id));
@@ -320,26 +333,27 @@ export async function saveNiches(nicheIds: string[]): Promise<SaveResult> {
       .delete()
       .eq("creator_id", user.id)
       .in("niche_id", toRemove);
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
   if (toAdd.length) {
     const { error } = await supabase
       .from("creator_niches")
       .insert(toAdd.map((niche_id) => ({ creator_id: user.id, niche_id })));
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 export async function saveLanguages(rows: CreatorEditorData["languages"]): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const languages = rows.filter((row) => row.languageId);
   if (new Set(languages.map((l) => l.languageId)).size !== languages.length) {
-    return { error: "Each language can only be added once." };
+    return { error: t("langOnce") };
   }
   if (languages.some((l) => !PROFICIENCIES.includes(l.proficiency))) {
-    return { error: "Choose a level for each language." };
+    return { error: t("langLevel") };
   }
 
   if (isMockMode) {
@@ -348,17 +362,17 @@ export async function saveLanguages(rows: CreatorEditorData["languages"]): Promi
       proficiency: l.proficiency,
     }));
     revalidateCreator(MOCK_CREATOR_ID);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
-  if (!allUuids(languages.map((l) => l.languageId))) return { error: "Invalid language." };
+  if (!allUuids(languages.map((l) => l.languageId))) return { error: t("invalidLanguage") };
 
   const { supabase, user } = await requireSupabaseUser();
   const { data: current, error: readError } = await supabase
     .from("creator_languages")
     .select("language_id, proficiency")
     .eq("creator_id", user.id);
-  if (readError) return { error: "Couldn't save. Please try again." };
+  if (readError) return { error: t("saveFailed") };
 
   // No UPDATE policy on creator_languages: changed rows are removed and re-added.
   const unchanged = (l: { languageId: string; proficiency: string }) =>
@@ -377,7 +391,7 @@ export async function saveLanguages(rows: CreatorEditorData["languages"]): Promi
       .delete()
       .eq("creator_id", user.id)
       .in("language_id", toRemove);
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
   if (toAdd.length) {
     const { error } = await supabase.from("creator_languages").insert(
@@ -387,26 +401,27 @@ export async function saveLanguages(rows: CreatorEditorData["languages"]): Promi
         proficiency: l.proficiency,
       })),
     );
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 export async function saveServices(rows: CreatorEditorData["services"]): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const services = rows.filter((row) => row.serviceId);
   if (new Set(services.map((s) => s.serviceId)).size !== services.length) {
-    return { error: "Each service can only be added once." };
+    return { error: t("serviceOnce") };
   }
   for (const service of services) {
-    if (!RATE_TYPES.includes(service.rateType)) return { error: "Choose a rate type." };
+    if (!RATE_TYPES.includes(service.rateType)) return { error: t("rateType") };
     if (
       !Number.isInteger(service.rateAmountUsd) ||
       service.rateAmountUsd <= 0 ||
       service.rateAmountUsd > MAX_RATE_USD
     ) {
-      return { error: "Enter a rate in US dollars for each service." };
+      return { error: t("rate") };
     }
   }
 
@@ -417,10 +432,10 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
       rateAmountUsd: s.rateAmountUsd,
     }));
     revalidateCreator(MOCK_CREATOR_ID);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
-  if (!allUuids(services.map((s) => s.serviceId))) return { error: "Invalid service." };
+  if (!allUuids(services.map((s) => s.serviceId))) return { error: t("invalidService") };
 
   const { supabase, user } = await requireSupabaseUser();
   if (services.length) {
@@ -434,7 +449,7 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
       })),
       { onConflict: "creator_id,service_id" },
     );
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
 
   let removeQuery = supabase.from("creator_services").delete().eq("creator_id", user.id);
@@ -446,15 +461,16 @@ export async function saveServices(rows: CreatorEditorData["services"]): Promise
     );
   }
   const { error } = await removeQuery;
-  if (error) return { error: "Couldn't save. Please try again." };
+  if (error) return { error: t("saveFailed") };
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }
 
 export async function saveSocialAccounts(
   rows: CreatorEditorData["socialAccounts"],
 ): Promise<SaveResult> {
+  const t = await getTranslations("app.creatorErrors");
   const accounts = rows
     .map((row) => ({
       ...row,
@@ -464,16 +480,15 @@ export async function saveSocialAccounts(
     .filter((row) => row.handle);
 
   for (const account of accounts) {
-    if (!(PLATFORM_OPTIONS as string[]).includes(account.platform))
-      return { error: "Choose a platform." };
+    if (!(PLATFORM_OPTIONS as string[]).includes(account.platform)) return { error: t("platform") };
     if (account.profileUrl && !/^https:\/\/\S+$/.test(account.profileUrl)) {
-      return { error: "Profile links must start with https://" };
+      return { error: t("profileLink") };
     }
     if (
       account.followerCount !== null &&
       (!Number.isInteger(account.followerCount) || account.followerCount < 0)
     ) {
-      return { error: "Followers must be a whole number (or leave it empty)." };
+      return { error: t("followers") };
     }
   }
 
@@ -485,18 +500,18 @@ export async function saveSocialAccounts(
       followerCount: a.followerCount,
     }));
     revalidateCreator(MOCK_CREATOR_ID);
-    return { success: "Saved." };
+    return { success: t("saved") };
   }
 
   const keptIds = accounts.flatMap((a) => (a.id ? [a.id] : []));
-  if (!allUuids(keptIds)) return { error: "Invalid account." };
+  if (!allUuids(keptIds)) return { error: t("invalidAccount") };
 
   const { supabase, user } = await requireSupabaseUser();
 
   let removeQuery = supabase.from("social_accounts").delete().eq("creator_id", user.id);
   if (keptIds.length) removeQuery = removeQuery.not("id", "in", `(${keptIds.join(",")})`);
   const { error: removeError } = await removeQuery;
-  if (removeError) return { error: "Couldn't save. Please try again." };
+  if (removeError) return { error: t("saveFailed") };
 
   for (const account of accounts) {
     const values = {
@@ -512,9 +527,9 @@ export async function saveSocialAccounts(
           .eq("id", account.id)
           .eq("creator_id", user.id)
       : await supabase.from("social_accounts").insert({ ...values, creator_id: user.id });
-    if (error) return { error: "Couldn't save. Please try again." };
+    if (error) return { error: t("saveFailed") };
   }
 
   revalidateCreator(user.id);
-  return { success: "Saved." };
+  return { success: t("saved") };
 }

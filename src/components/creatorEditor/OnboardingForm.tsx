@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { createCreatorProfile, type SaveResult } from "@/lib/actions/creatorProfile";
 import { PREFECTURES } from "@/lib/prefectures";
 import { buttonClass } from "@/components/ui/buttonStyles";
@@ -11,6 +12,9 @@ import { TextField } from "@/components/ui/TextField";
 import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
+  const t = useTranslations("app.editor.basics");
+  const to = useTranslations("app.editor.onboarding");
+  const tp = useTranslations("app.prefectures");
   const [suggestedFirstName, ...rest] = suggestedName.trim().split(/\s+/);
   const suggestedLastName = rest.join(" ");
   const [result, formAction, pending] = useActionState<SaveResult, FormData>(
@@ -23,42 +27,47 @@ export function OnboardingForm({ suggestedName }: { suggestedName: string }) {
       {result.error && <FormMessage tone="error">{result.error}</FormMessage>}
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
-          label="First name"
+          label={t("firstName")}
           name="firstName"
           defaultValue={suggestedFirstName}
           required
           maxLength={60}
-          hint="Shown to every brand."
+          hint={t("firstHint")}
         />
         <TextField
-          label="Last name"
+          label={t("lastName")}
           name="lastName"
           defaultValue={suggestedLastName}
           required
           maxLength={60}
-          hint="Shown to brands on paid plans."
+          hint={t("lastHint")}
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
-          label="Prefecture"
+          label={t("prefecture")}
           name="prefecture"
           required
           defaultValue=""
-          placeholder="Choose…"
-          options={PREFECTURES.map((p) => ({ value: p, label: p }))}
+          placeholder={t("choose")}
+          options={PREFECTURES.map((p) => ({ value: p, label: tp(p) }))}
         />
-        <TextField label="City or area" name="city" maxLength={80} placeholder="e.g. Shibuya" />
+        <TextField
+          label={t("city")}
+          name="city"
+          maxLength={80}
+          placeholder={t("cityPlaceholder")}
+        />
       </div>
       <PersonalDetailsFields birthDate="" gender="" />
       <TextAreaField
-        label="About you (optional)"
+        label={t("aboutOptional")}
         name="bio"
         maxLength={1500}
-        placeholder="What you create and who you create for."
+        placeholder={t("aboutPlaceholder")}
       />
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
-        {pending ? "Creating profile…" : "Continue"}
+        {pending ? to("creating") : to("continue")}
       </button>
     </form>
   );

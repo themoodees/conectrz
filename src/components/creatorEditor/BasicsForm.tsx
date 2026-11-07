@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import type { CreatorEditorData } from "@/types/creatorEditor";
 import { updateCreatorBasics, type SaveResult } from "@/lib/actions/creatorProfile";
 import { PREFECTURES } from "@/lib/prefectures";
@@ -12,6 +13,8 @@ import { PersonalDetailsFields } from "./PersonalDetailsFields";
 
 /** Name, location, bio and availability. */
 export function BasicsForm({ data }: { data: CreatorEditorData }) {
+  const t = useTranslations("app.editor.basics");
+  const tp = useTranslations("app.prefectures");
   const [result, formAction, pending] = useActionState<SaveResult, FormData>(
     updateCreatorBasics,
     {},
@@ -21,47 +24,47 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
     <form action={formAction} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
-          label="First name"
+          label={t("firstName")}
           name="firstName"
           defaultValue={data.firstName}
           required
           maxLength={60}
-          hint="Shown to every brand."
+          hint={t("firstHint")}
         />
         <TextField
-          label="Last name"
+          label={t("lastName")}
           name="lastName"
           defaultValue={data.lastName}
           required
           maxLength={60}
-          hint="Shown to brands on paid plans."
+          hint={t("lastHint")}
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
-          label="Prefecture"
+          label={t("prefecture")}
           name="prefecture"
           defaultValue={data.prefecture}
           required
-          placeholder="Choose…"
-          options={PREFECTURES.map((p) => ({ value: p, label: p }))}
+          placeholder={t("choose")}
+          options={PREFECTURES.map((p) => ({ value: p, label: tp(p) }))}
         />
         <TextField
-          label="City or area"
+          label={t("city")}
           name="city"
           defaultValue={data.city}
           maxLength={80}
-          placeholder="e.g. Shibuya"
+          placeholder={t("cityPlaceholder")}
         />
       </div>
       <PersonalDetailsFields birthDate={data.birthDate} gender={data.gender} />
       <TextAreaField
-        label="About you"
+        label={t("about")}
         name="bio"
         defaultValue={data.bio}
         maxLength={1500}
         rows={5}
-        hint="What you create, who you create for, and what brands can expect."
+        hint={t("aboutHint")}
       />
       <label className="flex items-center gap-3 text-sm text-ink">
         <input
@@ -70,7 +73,7 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
           defaultChecked={data.isAvailable}
           className="size-4 rounded border-border accent-primary"
         />
-        Available for new work
+        {t("available")}
       </label>
       <SaveRow pending={pending} result={result} />
     </form>

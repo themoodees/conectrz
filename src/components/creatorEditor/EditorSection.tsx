@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import type { SaveResult } from "@/lib/actions/creatorProfile";
 
 /** A titled card in the profile editor. */
@@ -27,13 +28,14 @@ export function SaveRow({
   onSave,
   pending,
   result,
-  label = "Save",
+  label,
 }: {
   onSave?: () => void;
   pending: boolean;
   result: SaveResult;
   label?: string;
 }) {
+  const t = useTranslations("app.editor");
   return (
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <button
@@ -42,7 +44,7 @@ export function SaveRow({
         disabled={pending}
         className="inline-flex h-10 items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-primary/40"
       >
-        {pending ? "Saving…" : label}
+        {pending ? t("saving") : (label ?? t("save"))}
       </button>
       {result.error && (
         <p role="alert" className="text-sm text-danger">
