@@ -23,10 +23,16 @@ interface UploadedImage {
  * Images go straight from the browser to the private "project-references" bucket, in the
  * company's own folder; the form then submits their paths and the links as hidden/regular inputs.
  */
-export function ReferencesField() {
+export function ReferencesField({
+  initialLinks = [],
+  initialImages = [],
+}: {
+  initialLinks?: string[];
+  initialImages?: UploadedImage[];
+}) {
   const t = useTranslations("app.projects.refs");
-  const [links, setLinks] = useState<string[]>([""]);
-  const [images, setImages] = useState<UploadedImage[]>([]);
+  const [links, setLinks] = useState<string[]>(initialLinks.length > 0 ? initialLinks : [""]);
+  const [images, setImages] = useState<UploadedImage[]>(initialImages);
   const [status, setStatus] = useState<{ error?: string; pending?: boolean }>({});
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -67,6 +73,8 @@ export function ReferencesField() {
 
   async function remove(image: UploadedImage) {
     setImages((current) => current.filter((i) => i.path !== image.path));
+    // Images that were already saved with the project are only deleted when the edit is saved.
+    if (initialImages.some((i) => i.path === image.path)) return;
     URL.revokeObjectURL(image.previewUrl);
     await createSupabaseBrowserClient().storage.from("project-references").remove([image.path]);
   }

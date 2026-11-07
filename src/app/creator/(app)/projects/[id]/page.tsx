@@ -55,6 +55,11 @@ export default async function CreatorProjectPage({ params }: PageProps<"/creator
             <span className="text-xs text-muted">
               {t("page.posted", { date: formatShortDate(project.createdAt, locale) })}
             </span>
+            {project.editedAt && (
+              <span className="text-xs text-muted">
+                {t("page.edited", { date: formatShortDate(project.editedAt, locale) })}
+              </span>
+            )}
           </div>
           <ProjectBrief
             projectId={project.id}

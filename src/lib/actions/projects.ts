@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { isMockMode } from "@/lib/config";
-import { isEnabledLocale } from "@/i18n/config";
+import { isEnabledLocale, type Locale } from "@/i18n/config";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { usdToCents } from "@/lib/format";
-import { parsePaymentMethods } from "@/lib/payments";
+import { parsePaymentMethods, type PaymentMethod } from "@/lib/payments";
 import { MOCK_CREATOR_ID, mockCompanyAccount } from "@/mocks/account";
 import { mockStore } from "@/mocks/store";
 
@@ -54,10 +54,34 @@ function isWebLink(value: string) {
   }
 }
 
-export async function createProject(
-  _previous: ProjectActionState,
+const JAPANESE = /[ぁ-んァ-ヶ一-龥]/;
+
+/** The "written in" choice, corrected when the text clearly says otherwise (Japanese or not). */
+function resolveWrittenLanguage(chosen: Locale, text: string): Locale {
+  const hasJapanese = JAPANESE.test(text);
+  if (chosen === "ja" && !hasJapanese) return "en";
+  if (chosen !== "ja" && hasJapanese) return "ja";
+  return chosen;
+}
+
+interface ProjectValues {
+  title: string;
+  description: string;
+  writtenLanguage: Locale;
+  budget: number;
+  deadline: string;
+  serviceIds: string[];
+  nicheIds: string[];
+  languageIds: string[];
+  paymentMethods: PaymentMethod[];
+  referenceLinks: string[];
+  referenceImages: string[];
+}
+
+/** Reads and validates the post / edit project form. */
+async function parseProjectForm(
   formData: FormData,
-): Promise<ProjectActionState> {
+): Promise<{ error: string } | { values: ProjectValues }> {
   const t = await getTranslations("app.projectErrors");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -104,7 +128,45 @@ export async function createProject(
   if (!isEnabledLocale(writtenLanguageRaw)) {
     return { error: t("invalidSelection") };
   }
-  const writtenLanguage = writtenLanguageRaw;
+  const writtenLanguage = resolveWrittenLanguage(writtenLanguageRaw, `${title} ${description}`);
+
+  return {
+    values: {
+      title,
+      description,
+      writtenLanguage,
+      budget,
+      deadline,
+      serviceIds,
+      nicheIds,
+      languageIds,
+      paymentMethods,
+      referenceLinks,
+      referenceImages,
+    },
+  };
+}
+
+export async function createProject(
+  _previous: ProjectActionState,
+  formData: FormData,
+): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
+  const parsed = await parseProjectForm(formData);
+  if ("error" in parsed) return parsed;
+  const {
+    title,
+    description,
+    writtenLanguage,
+    budget,
+    deadline,
+    serviceIds,
+    nicheIds,
+    languageIds,
+    paymentMethods,
+    referenceLinks,
+    referenceImages,
+  } = parsed.values;
 
   let projectId: string;
 
@@ -185,6 +247,74 @@ export async function createProject(
   }
 
   revalidateProjects();
+  redirect(`/projects/${projectId}`);
+}
+
+export async function updateProject(
+  _previous: ProjectActionState,
+  formData: FormData,
+): Promise<ProjectActionState> {
+  const t = await getTranslations("app.projectErrors");
+  const projectId = String(formData.get("projectId") ?? "");
+  const parsed = await parseProjectForm(formData);
+  if ("error" in parsed) return parsed;
+  const v = parsed.values;
+
+  if (isMockMode) {
+    const project = mockStore.projects.find((p) => p.id === projectId);
+    if (!project) return { error: t("notFound") };
+    if (project.status !== "open") return { error: t("closedEdit") };
+    Object.assign(project, {
+      title: v.title,
+      description: v.description,
+      writtenLanguage: v.writtenLanguage,
+      budgetUsd: v.budget,
+      deliveryDeadline: v.deadline,
+      services: v.serviceIds,
+      niches: v.nicheIds,
+      languages: v.languageIds,
+      paymentMethods: v.paymentMethods,
+      referenceLinks: v.referenceLinks,
+      editedAt: new Date().toISOString(),
+    });
+  } else {
+    if (!UUID_PATTERN.test(projectId)) return { error: t("notFound") };
+    if (![...v.serviceIds, ...v.nicheIds, ...v.languageIds].every((id) => UUID_PATTERN.test(id))) {
+      return { error: t("invalidSelection") };
+    }
+    const { supabase, user } = await requireSupabaseUser();
+    if (
+      !v.referenceImages.every((path) => path.startsWith(`${user.id}/`) && !path.includes(".."))
+    ) {
+      return { error: t("invalidImage") };
+    }
+    // One transaction in the database: the brief and its tags/references change together.
+    const { data: removedImages, error } = await supabase.rpc("update_project", {
+      p_project_id: projectId,
+      p_title: v.title,
+      p_description: v.description,
+      p_written_language: v.writtenLanguage,
+      p_budget_usd_cents: usdToCents(v.budget),
+      p_delivery_deadline: v.deadline,
+      p_payment_methods: v.paymentMethods,
+      p_service_ids: v.serviceIds,
+      p_niche_ids: v.nicheIds,
+      p_language_ids: v.languageIds,
+      p_reference_links: v.referenceLinks,
+      p_reference_images: v.referenceImages,
+    });
+    if (error) {
+      if (error.message.includes("project_closed")) return { error: t("closedEdit") };
+      if (error.message.includes("project_not_found")) return { error: t("notFound") };
+      return { error: t("updateFailed") };
+    }
+    // Images the company removed from the brief: delete the files too (best effort).
+    if (removedImages?.length) {
+      await supabase.storage.from("project-references").remove(removedImages);
+    }
+  }
+
+  revalidateProjects(projectId);
   redirect(`/projects/${projectId}`);
 }
 

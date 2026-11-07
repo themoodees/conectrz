@@ -20,6 +20,7 @@ export interface MockProject {
   languages: string[];
   paymentMethods: PaymentMethod[];
   referenceLinks?: string[];
+  editedAt?: string | null;
 }
 
 export interface MockApplication {

@@ -8,6 +8,7 @@ import { ProjectStatusBadge, TagList, WrittenLanguageBadge } from "@/components/
 import { ProjectReferences } from "@/components/projects/ProjectReferences";
 import { PaymentMethodTags, PaymentNotice } from "@/components/payments/PaymentInfo";
 import { ProjectStatusButton } from "@/components/projects/ProjectStatusButton";
+import { buttonClass } from "@/components/ui/buttonStyles";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { getCompanyProject } from "@/lib/data/projects";
 import { formatDeadline, formatShortDate, formatUsd } from "@/lib/format";
@@ -49,6 +50,11 @@ export default async function ProjectDetailPage({ params }: PageProps<"/projects
             <ProjectStatusBadge status={project.status} />
             <WrittenLanguageBadge language={project.writtenLanguage} />
             <span className="text-xs text-muted">{t("posted", { date: formatShortDate(project.createdAt, locale) })}</span>
+            {project.editedAt && (
+              <span className="text-xs text-muted">
+                {t("edited", { date: formatShortDate(project.editedAt, locale) })}
+              </span>
+            )}
           </div>
           <h1 className="mt-3 text-[1.75rem] leading-tight font-semibold text-ink md:text-3xl">
             {project.title}
@@ -78,7 +84,17 @@ export default async function ProjectDetailPage({ params }: PageProps<"/projects
             <PaymentNotice className="mt-2" />
           </div>
           <div className="mt-8">
-            <ProjectStatusButton projectId={project.id} status={project.status} />
+            <div className="flex flex-wrap items-center gap-3">
+              {project.status === "open" && (
+                <Link
+                  href={`/projects/${project.id}/edit`}
+                  className={buttonClass({ variant: "secondary", size: "sm" })}
+                >
+                  {t("edit")}
+                </Link>
+              )}
+              <ProjectStatusButton projectId={project.id} status={project.status} />
+            </div>
             <p className="mt-2 text-xs text-muted">
               {project.status === "open" ? t("closeHint") : t("reopenHint")}
             </p>

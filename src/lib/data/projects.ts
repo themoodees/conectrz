@@ -7,6 +7,7 @@ import type {
   CreatorProject,
   MyApplication,
   Project,
+  ProjectFormInitial,
   ProjectFormOptions,
   ProjectReference,
 } from "@/types/projects";
@@ -93,6 +94,7 @@ const fromMock = (project: MockProject): Project => ({
   deliveryDeadline: project.deliveryDeadline,
   status: project.status,
   createdAt: project.createdAt,
+  editedAt: project.editedAt ?? null,
   companyName: project.companyName,
   services: project.services,
   niches: project.niches,
@@ -188,6 +190,7 @@ export async function getCompanyProjects(): Promise<CompanyProject[]> {
         deliveryDeadline: p.delivery_deadline,
         status: p.status,
         createdAt: p.created_at,
+        editedAt: p.edited_at,
         companyName: company.data?.name ?? "",
         services: namesOf(
           services.data!.filter((r) => r.project_id === p.id).map((r) => r.service_id),
@@ -333,6 +336,7 @@ export async function getCreatorProjects(): Promise<CreatorProject[]> {
           deliveryDeadline: row.delivery_deadline ?? "",
           status: row.status,
           createdAt: row.created_at,
+          editedAt: row.edited_at,
           companyName: row.company_name ?? "",
           services: namesOf(row.service_ids, names.services),
           niches: namesOf(row.niche_ids, names.niches),
@@ -379,4 +383,66 @@ export async function getProjectTranslation(projectId: string): Promise<ProjectT
   return data
     ? { title: data.title, description: data.description, sourceLanguage: data.source_language }
     : null;
+}
+
+/** An open project of the signed-in company with the ids the edit form needs, or null. */
+export async function getProjectForEdit(id: string): Promise<ProjectFormInitial | null> {
+  if (isMockMode) {
+    const project = mockStore.projects.find((p) => p.id === id && p.companyId === MOCK_COMPANY_ID);
+    if (!project || project.status !== "open") return null;
+    return {
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      writtenLanguage: project.writtenLanguage,
+      budgetUsd: project.budgetUsd,
+      deliveryDeadline: project.deliveryDeadline,
+      serviceIds: project.services,
+      nicheIds: project.niches,
+      languageIds: project.languages,
+      paymentMethods: project.paymentMethods,
+      referenceLinks: project.referenceLinks ?? [],
+      referenceImages: [],
+    };
+  }
+
+  const { supabase, user } = await getSupabaseSession();
+  if (!user) return null;
+  const { data: project, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .eq("company_id", user.id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!project || project.status !== "open") return null;
+
+  const [services, niches, languages, references] = await Promise.all([
+    supabase.from("project_services").select("service_id").eq("project_id", id),
+    supabase.from("project_niches").select("niche_id").eq("project_id", id),
+    supabase.from("project_languages").select("language_id").eq("project_id", id),
+    supabase.from("project_references").select("kind, url").eq("project_id", id).order("created_at"),
+  ]);
+  for (const result of [services, niches, languages, references]) {
+    if (result.error) throw result.error;
+  }
+  const imagePaths = references.data!.filter((r) => r.kind === "image").map((r) => r.url);
+  const previews = await signMedia(supabase, "project-references", imagePaths);
+
+  return {
+    id: project.id,
+    title: project.title,
+    description: project.description,
+    writtenLanguage: toLocale(project.written_language),
+    budgetUsd: centsToUsd(project.budget_usd_cents),
+    deliveryDeadline: project.delivery_deadline,
+    serviceIds: services.data!.map((r) => r.service_id),
+    nicheIds: niches.data!.map((r) => r.niche_id),
+    languageIds: languages.data!.map((r) => r.language_id),
+    paymentMethods: parsePaymentMethods(project.payment_methods),
+    referenceLinks: references.data!.filter((r) => r.kind === "link").map((r) => r.url),
+    referenceImages: imagePaths.flatMap((path, index) =>
+      previews[index] ? [{ path, previewUrl: previews[index] }] : [],
+    ),
+  };
 }

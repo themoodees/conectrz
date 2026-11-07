@@ -590,7 +590,8 @@
         "yourApplications": "あなたの応募",
         "posted": "投稿日 {date}",
         "howPay": "企業の支払い方法",
-        "single": "プロジェクト"
+        "single": "プロジェクト",
+        "edited": "{date} に編集"
       },
       "apply": {
         "yourApplication": "あなたの応募",
@@ -633,7 +634,9 @@
         "posting": "投稿しています…",
         "post": "プロジェクトを投稿",
         "writtenLanguage": "この依頼の言語",
-        "writtenLanguageHint": "タイトルと説明文を書いた言語です。クリエイターに表示されます。"
+        "writtenLanguageHint": "タイトルと説明文を書いた言語です。クリエイターに表示されます。",
+        "save": "変更を保存",
+        "saving": "保存中…"
       },
       "refs": {
         "legend": "参考資料（任意）",
@@ -721,7 +724,8 @@
       "projectClosed": "プロジェクトを終了しました。",
       "projectReopened": "プロジェクトを再開しました。",
       "translateUnavailable": "デモモードでは翻訳を利用できません。",
-      "translateFailed": "このプロジェクトを翻訳できませんでした。もう一度お試しください。"
+      "translateFailed": "このプロジェクトを翻訳できませんでした。もう一度お試しください。",
+      "closedEdit": "編集できるのは公開中のプロジェクトだけです。先に再公開してください。"
     },
     "prefectures": {
       "Hokkaido": "北海道",
@@ -1148,7 +1152,10 @@
       "closeHint": "プロジェクトを終了すると、クリエイターに表示されなくなり、新しい応募も受け付けません。",
       "reopenHint": "再開すると、クリエイターに再び表示されます。",
       "applications": "応募（{count}件）",
-      "noApplicationsDetail": "まだ応募はありません。プロジェクトの募集中は、条件に合うクリエイターが応募できます。"
+      "noApplicationsDetail": "まだ応募はありません。プロジェクトの募集中は、条件に合うクリエイターが応募できます。",
+      "edit": "プロジェクトを編集",
+      "editIntro": "変更はすぐにクリエイターに表示されます。すでに応募したクリエイターの応募はそのまま残り、プロジェクトが編集されたことが表示されます。",
+      "edited": "{date} に編集"
     },
     "companyError": {
       "title": "問題が発生しました",
