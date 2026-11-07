@@ -98,7 +98,7 @@ export function ConversationRow({
         <span className="mt-0.5 flex items-center gap-2">
           <span className={`truncate text-sm ${hasUnread ? "font-medium text-ink" : "text-muted"}`}>
             {lastMessage
-              ? `${lastMessage.isMine ? t("you") : ""}${lastMessage.content || (lastMessage.attachments.length > 1 ? t("sentAttachments") : t("sentAttachment"))}`
+              ? `${lastMessage.isMine ? t("you") : ""}${(lastMessage.translation?.content ?? lastMessage.content) || (lastMessage.attachments.length > 1 ? t("sentAttachments") : t("sentAttachment"))}`
               : t("noMessages")}
           </span>
           {hasUnread && (

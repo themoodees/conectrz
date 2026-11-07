@@ -198,7 +198,7 @@ export async function getConversations(
         )
       : new Map<string, Counterpart>();
 
-  return data
+  const summaries = data
     .flatMap((row) => {
       const counterpart = toCounterpart(row, viewer, creators);
       if (!counterpart) return [];
@@ -206,6 +206,42 @@ export async function getConversations(
       return [summarize(row.id, counterpart, messages)];
     })
     .sort(newestFirst);
+
+  await attachPreviewTranslations(supabase, summaries);
+  return summaries;
+}
+
+/**
+ * Shows the last message of each conversation in the reader's language when a translation is
+ * already stored (made when that conversation was opened). Previews never trigger a new
+ * translation, so loading the inbox costs nothing extra; otherwise the original text is shown.
+ */
+async function attachPreviewTranslations(
+  supabase: SupabaseClient<Database>,
+  summaries: ConversationSummary[],
+) {
+  const incoming = summaries.flatMap((s) =>
+    s.lastMessage && !s.lastMessage.isMine && s.lastMessage.content.trim() !== ""
+      ? [s.lastMessage]
+      : [],
+  );
+  if (incoming.length === 0) return;
+  const language = await getLocale();
+  const { data } = await supabase
+    .from("message_translations")
+    .select("message_id, content, source_language")
+    .eq("language", language)
+    .in(
+      "message_id",
+      incoming.map((m) => m.id),
+    );
+  const found = new Map((data ?? []).map((t) => [t.message_id, t]));
+  for (const message of incoming) {
+    const t = found.get(message.id);
+    if (t && t.source_language !== language) {
+      message.translation = { content: t.content, sourceLanguage: t.source_language };
+    }
+  }
 }
 
 function toMessage(row: ConversationRow["messages"][number], userId: string): Message {
