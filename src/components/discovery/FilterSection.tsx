@@ -42,7 +42,7 @@ export function FilterSection({
       return getFilterOptions(filterKey, options).map((option) => (
         <OptionButton
           key={option.value}
-          label={option.label}
+          label={filterKey === "locations" ? labels.prefecture(option.value) : option.label}
           isSelected={selected.includes(option.value)}
           onClick={() => actions.toggleValue(filterKey, option.value)}
         />

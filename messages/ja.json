@@ -666,7 +666,8 @@
       "rangeMin": "{label}（下限）",
       "rangeMax": "{label}（上限）",
       "showCreators": "{count}人のクリエイターを表示",
-      "showProjects": "{count}件のプロジェクトを表示"
+      "showProjects": "{count}件のプロジェクトを表示",
+      "done": "完了"
     },
     "payments": {
       "methods": {
@@ -1061,7 +1062,6 @@
         "50k-100k": "5万〜10万",
         "100k-plus": "10万以上"
       },
-      "done": "完了",
       "empty": {
         "title": "条件に合うクリエイターがいません",
         "text": "フィルターを外すか、より広い条件で検索してみてください。",

@@ -666,7 +666,8 @@
       "rangeMin": "{label}, minimum",
       "rangeMax": "{label}, maximum",
       "showCreators": "Show {count, plural, one {# creator} other {# creators}}",
-      "showProjects": "Show {count, plural, one {# project} other {# projects}}"
+      "showProjects": "Show {count, plural, one {# project} other {# projects}}",
+      "done": "Done"
     },
     "payments": {
       "methods": {
@@ -1061,7 +1062,6 @@
         "50k-100k": "50K – 100K",
         "100k-plus": "100K+"
       },
-      "done": "Done",
       "empty": {
         "title": "No creators match your search",
         "text": "Try removing a filter or searching for something broader.",

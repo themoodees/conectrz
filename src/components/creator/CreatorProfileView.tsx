@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { usePrefectureName } from "@/components/i18n/usePrefectureName";
 import type { CreatorProfile } from "@/types/creator";
 import { formatFollowers, formatLocation, formatRate } from "@/lib/format";
 import { PLATFORM_LABELS } from "@/lib/discovery/filterConfig";
@@ -28,6 +29,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
   const t = useTranslations("app.creatorView");
   const tg = useTranslations("app.gender");
   const tl = useTranslations("app.proficiency");
+  const prefectureName = usePrefectureName();
   const locale = useLocale();
   return (
     <>
@@ -45,7 +47,7 @@ export function CreatorProfileView({ creator, actions, reviewForm }: CreatorProf
           </h1>
           <p className="mt-2 flex items-center gap-1.5 text-muted">
             <MapPinIcon className="size-4 shrink-0" />
-            {formatLocation(creator)}
+            {formatLocation(creator, prefectureName)}
           </p>
           {(creator.age != null || creator.gender || creator.reviewCount) && (
             <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">

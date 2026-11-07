@@ -79,9 +79,9 @@ export type Database = {
         ]
       }
       languages: {
-        Row: { id: string; is_active: boolean; name: string }
-        Insert: { id?: string; is_active?: boolean; name: string }
-        Update: { id?: string; is_active?: boolean; name?: string }
+        Row: { name_i18n: Json; id: string; is_active: boolean; name: string }
+        Insert: { name_i18n?: Json; id?: string; is_active?: boolean; name: string }
+        Update: { name_i18n?: Json; id?: string; is_active?: boolean; name?: string }
         Relationships: []
       }
       messages: {
@@ -110,9 +110,9 @@ export type Database = {
         ]
       }
       niches: {
-        Row: { id: string; is_active: boolean; name: string }
-        Insert: { id?: string; is_active?: boolean; name: string }
-        Update: { id?: string; is_active?: boolean; name?: string }
+        Row: { name_i18n: Json; id: string; is_active: boolean; name: string }
+        Insert: { name_i18n?: Json; id?: string; is_active?: boolean; name: string }
+        Update: { name_i18n?: Json; id?: string; is_active?: boolean; name?: string }
         Relationships: []
       }
       notifications: {
@@ -221,9 +221,9 @@ export type Database = {
         ]
       }
       services: {
-        Row: { id: string; is_active: boolean; name: string }
-        Insert: { id?: string; is_active?: boolean; name: string }
-        Update: { id?: string; is_active?: boolean; name?: string }
+        Row: { name_i18n: Json; id: string; is_active: boolean; name: string }
+        Insert: { name_i18n?: Json; id?: string; is_active?: boolean; name: string }
+        Update: { name_i18n?: Json; id?: string; is_active?: boolean; name?: string }
         Relationships: []
       }
       social_accounts: {

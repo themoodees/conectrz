@@ -28,8 +28,12 @@ export const centsToUsd = (cents: number) => cents / 100;
 export const usdToCents = (dollars: number) => Math.round(dollars * 100);
 
 /** "Shibuya, Tokyo" — falls back gracefully when parts are missing. */
-export function formatLocation(creator: Pick<Creator, "city" | "prefecture" | "country">) {
-  const parts = [creator.city, creator.prefecture].filter(
+export function formatLocation(
+  creator: Pick<Creator, "city" | "prefecture" | "country">,
+  translatePrefecture: (name: string) => string = (name) => name,
+) {
+  const prefecture = creator.prefecture ? translatePrefecture(creator.prefecture) : creator.prefecture;
+  const parts = [creator.city, prefecture].filter(
     (part, index, all): part is string => Boolean(part) && all.indexOf(part) === index,
   );
   return parts.length > 0 ? parts.join(", ") : creator.country;

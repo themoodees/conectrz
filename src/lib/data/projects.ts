@@ -1,4 +1,5 @@
 import "server-only";
+import { getLocale } from "next-intl/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   Applicant,
@@ -19,6 +20,7 @@ import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
 import type { MockApplication, MockProject } from "@/mocks/projects";
 import { mockStore } from "@/mocks/store";
+import { localizedName } from "@/lib/i18n/names";
 import { getSupabaseSession } from "./session";
 import { signMedia } from "./storage";
 
@@ -33,10 +35,11 @@ type Db = SupabaseClient<Database>;
 /* ── Shared helpers ───────────────────────────────────────────────────────── */
 
 async function loadNames(supabase: Db) {
+  const locale = await getLocale();
   const load = async (table: "services" | "niches" | "languages") => {
-    const { data, error } = await supabase.from(table).select("id, name");
+    const { data, error } = await supabase.from(table).select("id, name, name_i18n");
     if (error) throw error;
-    return new Map(data.map((row) => [row.id, row.name]));
+    return new Map(data.map((row) => [row.id, localizedName(row, locale)]));
   };
   const [services, niches, languages] = await Promise.all([
     load("services"),
@@ -59,14 +62,15 @@ export async function getProjectFormOptions(): Promise<ProjectFormOptions> {
     };
   }
   const { supabase } = await getSupabaseSession();
+  const locale = await getLocale();
   const load = async (table: "services" | "niches" | "languages") => {
     const { data, error } = await supabase
       .from(table)
-      .select("id, name")
+      .select("id, name, name_i18n")
       .eq("is_active", true)
       .order("name");
     if (error) throw error;
-    return data;
+    return data.map((row) => ({ id: row.id, name: localizedName(row, locale) }));
   };
   const [services, niches, languages] = await Promise.all([
     load("services"),
