@@ -285,5 +285,104 @@
       "fullDetails": "クリエイターのフルネーム、市区町村、SNSアカウントとリンク",
       "firstNames": "クリエイターの名（名のみ）とオーディエンス規模"
     }
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "ログイン",
+      "title": "おかえりなさい",
+      "subtitle": "Conectrz アカウントにログインします。",
+      "deleted": "アカウントを削除しました。Conectrz をご利用いただきありがとうございました。",
+      "workEmail": "仕事用メールアドレス",
+      "password": "パスワード",
+      "forgot": "パスワードをお忘れですか？",
+      "submit": "ログイン",
+      "submitting": "ログインしています…",
+      "newHere": "Conectrz は初めてですか？",
+      "createCompany": "企業アカウントを作成",
+      "areCreator": "クリエイターの方ですか？",
+      "joinCreator": "クリエイターとして参加",
+      "confirmationError": "この確認リンクはすでに使用されたか、有効期限が切れています。すでにクリックした場合はメールアドレスの確認は完了していますので、下からログインしてください。",
+      "resetError": "このリセットリンクは無効か、有効期限が切れています。下から新しいリンクをリクエストしてください。"
+    },
+    "choice": {
+      "metaTitle": "アカウント作成",
+      "title": "あなたはどちらですか？",
+      "subtitle": "あなたに合った場所でセットアップします。",
+      "brandTitle": "ブランド・代理店の方",
+      "brandText": "日本在住のクリエイターを探して依頼できます。",
+      "creatorTitle": "クリエイターの方",
+      "creatorText": "ブランドに見つけてもらい、プロジェクトに応募できます。",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "ログイン"
+    },
+    "signup": {
+      "companyMetaTitle": "企業アカウントの作成",
+      "companyTitle": "企業アカウントを作成",
+      "companySubtitle": "日本在住のクリエイターを探してつながりましょう。",
+      "creatorMetaTitle": "クリエイターとして参加",
+      "creatorTitle": "クリエイターとして参加",
+      "creatorSubtitle": "日本のクリエイターを探しているブランドに見つけてもらいましょう。",
+      "companyName": "会社名",
+      "creatorName": "お名前（プロフィールに表示されます）",
+      "workEmail": "仕事用メールアドレス",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "passwordHint": "8文字以上で入力してください。",
+      "submit": "アカウントを作成",
+      "submitting": "アカウントを作成しています…",
+      "backToSignIn": "ログインに戻る",
+      "agreePrefix": "アカウントを作成すると、",
+      "terms": "利用規約",
+      "and": "、",
+      "privacy": "プライバシーポリシー",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "ログイン",
+      "switchToCreator": "クリエイターの方ですか？",
+      "switchToCreatorLink": "クリエイターとして参加",
+      "switchToCompany": "クリエイターを探していますか？",
+      "switchToCompanyLink": "企業アカウントを作成",
+      "agreeSuffix": "に同意したものとみなされます。"
+    },
+    "forgot": {
+      "metaTitle": "パスワードの再設定",
+      "title": "パスワードを再設定",
+      "subtitle": "登録したメールアドレスを入力してください。再設定用のリンクをお送りします。",
+      "email": "メールアドレス",
+      "submit": "再設定リンクを送信",
+      "submitting": "送信しています…",
+      "remembered": "パスワードを思い出しましたか？",
+      "signIn": "ログイン",
+      "backToSignIn": "ログインに戻る"
+    },
+    "reset": {
+      "metaTitle": "新しいパスワードの設定",
+      "title": "新しいパスワードを設定",
+      "subtitle": "次回のログインから、このパスワードを使います。",
+      "newPassword": "新しいパスワード",
+      "confirm": "新しいパスワード（確認）",
+      "hint": "8文字以上で入力してください。",
+      "submit": "新しいパスワードを保存",
+      "submitting": "保存しています…"
+    },
+    "panel": {
+      "title": "日本在住のクリエイターとつながろう。",
+      "text": "UGCやインフルエンサーのクリエイターを、探して、保存して、メッセージ。すべてひとつの場所で。"
+    },
+    "errors": {
+      "enterCredentials": "メールアドレスとパスワードを入力してください。",
+      "badCredentials": "メールアドレスまたはパスワードが一致しません。",
+      "fillAll": "すべての項目を入力してください。",
+      "passwordLength": "パスワードは{min}文字以上で入力してください。",
+      "weakPassword": "このパスワードは推測されやすいか、情報漏えいで確認されたものです。別のパスワードを選んでください。",
+      "alreadyRegistered": "このメールアドレスのアカウントはすでに存在します。ログインをお試しください。",
+      "signupFailed": "登録に失敗しました。もう一度お試しください。",
+      "enterEmail": "メールアドレスを入力してください。",
+      "mismatch": "パスワードが一致しません。",
+      "resetExpired": "再設定リンクの有効期限が切れています。ログインページから新しいリンクをリクエストしてください。"
+    },
+    "notices": {
+      "confirmationSent": "{email} に確認リンクを送信しました。リンクを開いて登録を完了してください。",
+      "resetSent": "{email} のアカウントが存在する場合、パスワード再設定用のリンクを送信しました。"
+    }
   }
 }

@@ -1,32 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { BriefcaseIcon, UploadIcon } from "@/components/ui/icons";
 
-export const metadata: Metadata = { title: "Create an account" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.choice");
+  return { title: t("metaTitle") };
+}
 
 const CHOICES = [
-  {
-    href: "/signup/company",
-    icon: BriefcaseIcon,
-    title: "I'm a Brand or Agency",
-    text: "Find and hire creators living in Japan.",
-  },
-  {
-    href: "/signup/creator",
-    icon: UploadIcon,
-    title: "I'm a Creator",
-    text: "Get discovered by brands and apply to projects.",
-  },
-];
+  { href: "/signup/company", icon: BriefcaseIcon, key: "brand" },
+  { href: "/signup/creator", icon: UploadIcon, key: "creator" },
+] as const;
 
-export default function SignupChoicePage() {
+export default async function SignupChoicePage() {
+  const t = await getTranslations("auth.choice");
   return (
     <>
-      <h1 className="text-3xl font-semibold text-ink">What describes you best?</h1>
-      <p className="mt-2 mb-8 text-muted">We&apos;ll set you up in the right place.</p>
+      <h1 className="text-3xl font-semibold text-ink">{t("title")}</h1>
+      <p className="mt-2 mb-8 text-muted">{t("subtitle")}</p>
 
       <div className="space-y-3">
-        {CHOICES.map(({ href, icon: Icon, title, text }) => (
+        {CHOICES.map(({ href, icon: Icon, key }) => (
           <Link
             key={href}
             href={href}
@@ -36,17 +31,17 @@ export default function SignupChoicePage() {
               <Icon className="size-5" aria-hidden="true" />
             </span>
             <span>
-              <span className="block font-semibold text-ink">{title}</span>
-              <span className="block text-sm text-muted">{text}</span>
+              <span className="block font-semibold text-ink">{t(`${key}Title`)}</span>
+              <span className="block text-sm text-muted">{t(`${key}Text`)}</span>
             </span>
           </Link>
         ))}
       </div>
 
       <p className="mt-8 text-center text-sm text-muted">
-        Already have an account?{" "}
+        {t("haveAccount")}{" "}
         <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">
-          Sign in
+          {t("signIn")}
         </Link>
       </p>
     </>
