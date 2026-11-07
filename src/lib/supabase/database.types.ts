@@ -152,9 +152,9 @@ export type Database = {
         Relationships: []
       }
       projects: {
-        Row: { written_language: string | null; payment_methods: string[]; budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
-        Insert: { written_language?: string | null; payment_methods?: string[]; budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
-        Update: { written_language?: string | null; payment_methods?: string[]; budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
+        Row: { edited_at: string | null; written_language: string | null; payment_methods: string[]; budget_usd_cents: number; closed_at: string | null; company_id: string; created_at: string; delivery_deadline: string; description: string; id: string; status: Database["public"]["Enums"]["project_status"]; title: string; updated_at: string }
+        Insert: { edited_at?: string | null; written_language?: string | null; payment_methods?: string[]; budget_usd_cents: number; closed_at?: string | null; company_id: string; created_at?: string; delivery_deadline: string; description: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title: string; updated_at?: string }
+        Update: { edited_at?: string | null; written_language?: string | null; payment_methods?: string[]; budget_usd_cents?: number; closed_at?: string | null; company_id?: string; created_at?: string; delivery_deadline?: string; description?: string; id?: string; status?: Database["public"]["Enums"]["project_status"]; title?: string; updated_at?: string }
         Relationships: []
       }
       project_applications: {
@@ -264,7 +264,7 @@ export type Database = {
         Relationships: []
       }
       project_listings: {
-        Row: { written_language: string | null; company_id: string | null; payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
+        Row: { edited_at: string | null; written_language: string | null; company_id: string | null; payment_methods: string[] | null; budget_usd_cents: number | null; company_name: string | null; created_at: string | null; delivery_deadline: string | null; description: string | null; id: string | null; language_ids: string[] | null; niche_ids: string[] | null; service_ids: string[] | null; status: Database["public"]["Enums"]["project_status"] | null; title: string | null; updated_at: string | null }
         Relationships: []
       }
       conversation_creators: {
@@ -293,6 +293,23 @@ export type Database = {
       }
     }
     Functions: {
+      update_project: {
+        Args: {
+          p_project_id: string
+          p_title: string
+          p_description: string
+          p_written_language: string
+          p_budget_usd_cents: number
+          p_delivery_deadline: string
+          p_payment_methods: string[]
+          p_service_ids: string[]
+          p_niche_ids: string[]
+          p_language_ids: string[]
+          p_reference_links: string[]
+          p_reference_images: string[]
+        }
+        Returns: string[]
+      }
       delete_my_creator_account: { Args: never; Returns: undefined }
       creator_is_published: { Args: { p_creator_id: string }; Returns: boolean }
       has_paid_plan: { Args: never; Returns: boolean }

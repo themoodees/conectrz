@@ -29,6 +29,8 @@ export interface Project {
   deliveryDeadline: string;
   status: ProjectStatus;
   createdAt: string;
+  /** When the company last changed the brief itself, or null if never edited. */
+  editedAt?: string | null;
   companyName: string;
   /** Names of the wanted services, niches and languages. */
   services: string[];
@@ -78,4 +80,21 @@ export interface ProjectFormOptions {
   services: { id: string; name: string }[];
   niches: { id: string; name: string }[];
   languages: { id: string; name: string }[];
+}
+
+/** An existing project's values, to pre-fill the edit form. */
+export interface ProjectFormInitial {
+  id: string;
+  title: string;
+  description: string;
+  writtenLanguage: Locale;
+  budgetUsd: number;
+  deliveryDeadline: string;
+  serviceIds: string[];
+  nicheIds: string[];
+  languageIds: string[];
+  paymentMethods: PaymentMethod[];
+  referenceLinks: string[];
+  /** Images already attached: storage path + a signed URL for the preview. */
+  referenceImages: { path: string; previewUrl: string }[];
 }

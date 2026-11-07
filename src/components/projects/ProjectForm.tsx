@@ -2,8 +2,8 @@
 
 import { useActionState, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import type { ProjectFormOptions } from "@/types/projects";
-import { createProject, type ProjectActionState } from "@/lib/actions/projects";
+import type { ProjectFormInitial, ProjectFormOptions } from "@/types/projects";
+import { createProject, updateProject, type ProjectActionState } from "@/lib/actions/projects";
 import { OptionButton } from "@/components/discovery/OptionButton";
 import { buttonClass } from "@/components/ui/buttonStyles";
 import { FormMessage } from "@/components/ui/FormMessage";
@@ -20,12 +20,14 @@ function ChipPicker({
   legend,
   name,
   options,
+  initial = [],
 }: {
   legend: string;
   name: string;
   options: { id: string; name: string }[];
+  initial?: string[];
 }) {
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(initial);
   const toggle = (id: string) =>
     setSelected((current) =>
       current.includes(id) ? current.filter((value) => value !== id) : [...current, id],
@@ -51,11 +53,17 @@ function ChipPicker({
   );
 }
 
-/** "Post a project" form. */
-export function ProjectForm({ options }: { options: ProjectFormOptions }) {
+/** "Post a project" form; with `initial` it edits that project instead. */
+export function ProjectForm({
+  options,
+  initial,
+}: {
+  options: ProjectFormOptions;
+  initial?: ProjectFormInitial;
+}) {
   const t = useTranslations("app.projects.form");
   const [state, formAction, pending] = useActionState<ProjectActionState, FormData>(
-    createProject,
+    initial ? updateProject : createProject,
     {},
   );
   const locale = useLocale();
@@ -64,9 +72,11 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
   return (
     <form action={formAction} className="space-y-6">
       {state.error && <FormMessage tone="error">{state.error}</FormMessage>}
+      {initial && <input type="hidden" name="projectId" value={initial.id} />}
       <TextField
         label={t("titleLabel")}
         name="title"
+        defaultValue={initial?.title}
         required
         maxLength={120}
         placeholder={t("titlePlaceholder")}
@@ -74,6 +84,7 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
       <TextAreaField
         label={t("descLabel")}
         name="description"
+        defaultValue={initial?.description}
         required
         rows={7}
         maxLength={3000}
@@ -83,7 +94,7 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
         <SelectField
           label={t("writtenLanguage")}
           name="writtenLanguage"
-          defaultValue={locale}
+          defaultValue={initial?.writtenLanguage ?? locale}
           options={ENABLED_LOCALES.map((code) => ({ value: code, label: LOCALE_LABELS[code] }))}
         />
         <p className="mt-1.5 text-xs text-muted">{t("writtenLanguageHint")}</p>
@@ -92,23 +103,53 @@ export function ProjectForm({ options }: { options: ProjectFormOptions }) {
         <TextField
           label={t("budgetLabel")}
           name="budget"
+          defaultValue={initial?.budgetUsd}
           required
           inputMode="numeric"
           placeholder="600"
           hint={t("budgetHint")}
         />
-        <TextField label={t("deadlineLabel")} name="deadline" type="date" required min={today} />
+        <TextField
+          label={t("deadlineLabel")}
+          name="deadline"
+          type="date"
+          required
+          min={today}
+          defaultValue={initial?.deliveryDeadline}
+        />
       </div>
-      <ChipPicker legend={t("services")} name="serviceIds" options={options.services} />
-      <ChipPicker legend={t("niches")} name="nicheIds" options={options.niches} />
-      <ChipPicker legend={t("languages")} name="languageIds" options={options.languages} />
-      <ReferencesField />
+      <ChipPicker
+        legend={t("services")}
+        name="serviceIds"
+        options={options.services}
+        initial={initial?.serviceIds}
+      />
+      <ChipPicker
+        legend={t("niches")}
+        name="nicheIds"
+        options={options.niches}
+        initial={initial?.nicheIds}
+      />
+      <ChipPicker
+        legend={t("languages")}
+        name="languageIds"
+        options={options.languages}
+        initial={initial?.languageIds}
+      />
+      <ReferencesField
+        initialLinks={initial?.referenceLinks}
+        initialImages={initial?.referenceImages}
+      />
       <div className="space-y-2">
-        <PaymentMethodsPicker legend={t("payLegend")} hint={t("payHint")} />
+        <PaymentMethodsPicker
+          legend={t("payLegend")}
+          hint={t("payHint")}
+          initial={initial?.paymentMethods}
+        />
         <PaymentNotice />
       </div>
       <button type="submit" disabled={pending} className={buttonClass()}>
-        {pending ? t("posting") : t("post")}
+        {initial ? (pending ? t("saving") : t("save")) : pending ? t("posting") : t("post")}
       </button>
     </form>
   );
