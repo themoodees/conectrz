@@ -1,6 +1,7 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { ensureCompanyProfile } from "@/lib/data/account";
+import { syncLocaleOnSignIn } from "@/lib/data/language";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
@@ -29,5 +30,6 @@ export async function GET(request: NextRequest) {
   }
 
   await ensureCompanyProfile(supabase, data.user);
+  await syncLocaleOnSignIn(supabase, data.user.id);
   return NextResponse.redirect(new URL(next, origin));
 }

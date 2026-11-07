@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { PageContainer } from "@/components/layout/PageContainer";
 import {
   DeleteAccountForm,
@@ -11,12 +13,14 @@ export const metadata: Metadata = { title: "Account settings" };
 
 const SECTIONS = [
   { id: "password", label: "Password" },
+  { id: "language", label: "Language" },
   { id: "delete", label: "Delete account" },
 ] as const;
 
 export default async function CreatorSettingsPage({
   searchParams,
 }: PageProps<"/creator/settings">) {
+  const t = await getTranslations("app.settings");
   const { section } = await searchParams;
   const active = SECTIONS.find((s) => s.id === section)?.id ?? "password";
 
@@ -38,7 +42,7 @@ export default async function CreatorSettingsPage({
                 s.id === active ? "bg-primary-light text-primary" : "text-muted hover:text-ink"
               }`}
             >
-              {s.label}
+              {s.id === "language" ? t("navLabel") : s.label}
             </Link>
           ))}
         </nav>
@@ -46,6 +50,10 @@ export default async function CreatorSettingsPage({
           {active === "password" ? (
             <SettingsSection title="Password">
               <PasswordForm />
+            </SettingsSection>
+          ) : active === "language" ? (
+            <SettingsSection title={t("title")} description={t("description")}>
+              <LanguageSwitcher />
             </SettingsSection>
           ) : (
             <SettingsSection
