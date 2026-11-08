@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -45,6 +46,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   return (
     <html lang={locale} className={`${urbanist.variable} ${inter.variable}`}>
+      {/* Google Tag Manager: production only, so local and preview work never sends hits. */}
+      {process.env.NODE_ENV === "production" && <GoogleTagManager gtmId="GTM-MFVS9ZP6" />}
       <body className="min-h-dvh">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Analytics />
