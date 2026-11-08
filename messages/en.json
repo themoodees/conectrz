@@ -1205,6 +1205,14 @@
       "reviewsTitle": "Reviews from creators",
       "reviewsDescription": "What creators you have talked with say about working with you. Creators can read these too.",
       "passwordTitle": "Password"
+    },
+    "profileHidden": {
+      "title": "Companies can't see your profile yet",
+      "body": "Add the following to your profile so companies can find you:",
+      "location": "Your prefecture",
+      "language": "At least one language",
+      "service": "At least one service (e.g. UGC video) with your rate",
+      "cta": "Complete my profile"
     }
   }
 }
