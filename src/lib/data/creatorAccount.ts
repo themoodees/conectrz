@@ -26,26 +26,36 @@ export interface OwnCreatorSummary {
   id: string;
   displayName: string;
   status: AccountStatus;
+  /** What is still missing for companies to see this profile (mirrors creator_is_published). */
+  missing: ("location" | "language" | "service")[];
 }
 
 /** The signed-in creator's profile basics, or null if they haven't onboarded yet. */
 export const getOwnCreatorSummary = cache(async (): Promise<OwnCreatorSummary | null> => {
   if (isMockMode) {
     const creator = mockCreators.find((c) => c.id === MOCK_CREATOR_ID)!;
-    return { id: creator.id, displayName: creator.displayName, status: "active" };
+    return { id: creator.id, displayName: creator.displayName, status: "active", missing: [] };
   }
 
   const { supabase, user } = await getSupabaseSession();
   if (!user) return null;
   const { data, error } = await supabase
     .from("creator_profiles")
-    .select("id, first_name, last_name, status")
+    .select("id, first_name, last_name, status, prefecture, creator_languages(language_id), creator_services(service_id)")
     .eq("id", user.id)
     .maybeSingle();
   if (error) throw error;
-  return data
-    ? { id: data.id, displayName: `${data.first_name} ${data.last_name}`.trim(), status: data.status }
-    : null;
+  if (!data) return null;
+  const missing: OwnCreatorSummary["missing"] = [];
+  if (!data.prefecture) missing.push("location");
+  if (data.creator_languages.length === 0) missing.push("language");
+  if (data.creator_services.length === 0) missing.push("service");
+  return {
+    id: data.id,
+    displayName: `${data.first_name} ${data.last_name}`.trim(),
+    status: data.status,
+    missing,
+  };
 });
 
 export async function getEditorOptions(): Promise<CreatorEditorOptions> {
