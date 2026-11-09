@@ -157,56 +157,27 @@ interface Recipient {
 
 /** Creators who confirmed their email, are not visible to companies and have not had the reminder yet. */
 async function findRecipients(): Promise<Recipient[]> {
-  const users: { id: string; email: string }[] = [];
-  for (let page = 1; page < 20; page++) {
-    const { data } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
-    const batch = data?.users ?? [];
-    for (const u of batch) {
-      if (u.user_metadata?.role === "creator" && u.email_confirmed_at && u.email) {
-        users.push({ id: u.id, email: u.email });
-      }
-    }
-    if (batch.length < 1000) break;
+  const { data, error } = await supabase.rpc("profile_reminder_candidates");
+  if (error) {
+    console.error("send-profile-reminder: candidates query failed:", error.message);
+    throw new Error("candidates_failed");
   }
-  if (!users.length) return [];
-  const ids = users.map((u) => u.id);
-
-  const [{ data: profiles }, { data: prefs }, { data: sent }] = await Promise.all([
-    supabase
-      .from("creator_profiles")
-      .select("id, first_name, status, prefecture, creator_languages(language_id), creator_services(service_id)")
-      .in("id", ids),
-    supabase.from("profiles").select("id, preferred_language").in("id", ids),
-    supabase.from("profile_reminders").select("user_id").in("user_id", ids),
-  ]);
-  const sentIds = new Set((sent ?? []).map((s) => s.user_id));
-  // deno-lint-ignore no-explicit-any
-  const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
-  const langById = new Map((prefs ?? []).map((p) => [p.id, p.preferred_language]));
 
   const out: Recipient[] = [];
-  for (const u of users) {
-    if (sentIds.has(u.id)) continue;
-    const lang: Lang = langById.get(u.id) === "ja" ? "ja" : "en";
-    const profile = profileById.get(u.id);
-    if (!profile) {
-      out.push({ id: u.id, email: u.email, kind: "no_profile", firstName: "", missing: [], lang });
+  // deno-lint-ignore no-explicit-any
+  for (const r of (data ?? []) as any[]) {
+    const lang: Lang = r.preferred_language === "ja" ? "ja" : "en";
+    if (!r.has_profile) {
+      out.push({ id: r.user_id, email: r.email, kind: "no_profile", firstName: "", missing: [], lang });
       continue;
     }
-    if (profile.status !== "active") continue;
+    if (r.status !== "active") continue;
     const missing: Missing[] = [];
-    if (!profile.prefecture) missing.push("location");
-    if (!profile.creator_languages?.length) missing.push("language");
-    if (!profile.creator_services?.length) missing.push("service");
+    if (!r.has_prefecture) missing.push("location");
+    if (!r.has_language) missing.push("language");
+    if (!r.has_service) missing.push("service");
     if (missing.length) {
-      out.push({
-        id: u.id,
-        email: u.email,
-        kind: "hidden_profile",
-        firstName: profile.first_name || "",
-        missing,
-        lang,
-      });
+      out.push({ id: r.user_id, email: r.email, kind: "hidden_profile", firstName: r.first_name || "", missing, lang });
     }
   }
   return out;
@@ -255,7 +226,12 @@ Deno.serve(async (req) => {
   const linkFor = (kind: Kind) => `${appUrl}${kind === "hidden_profile" ? "/creator/profile" : "/creator/onboarding"}`;
 
   if (body.mode === "count" || body.mode === "send") {
-    const recipients = await findRecipients();
+    let recipients: Recipient[];
+    try {
+      recipients = await findRecipients();
+    } catch {
+      return json({ error: "candidates_failed" }, 500);
+    }
     const counts = {
       hidden_profile: recipients.filter((r) => r.kind === "hidden_profile").length,
       no_profile: recipients.filter((r) => r.kind === "no_profile").length,
