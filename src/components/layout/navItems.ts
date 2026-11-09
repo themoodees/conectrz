@@ -1,5 +1,6 @@
 import type { SVGProps } from "react";
 import {
+  BellIcon,
   BookmarkIcon,
   BriefcaseIcon,
   CompassIcon,
@@ -91,6 +92,7 @@ export const ADMIN_NAV: NavItem[] = [
   },
   { label: "Plans", href: "/admin/plans", icon: BookmarkIcon, activeFor: ["/admin/plans"] },
   { label: "Activity", href: "/admin/activity", icon: CompassIcon, activeFor: ["/admin/activity"] },
+  { label: "Reminders", href: "/admin/reminders", icon: BellIcon, activeFor: ["/admin/reminders"] },
 ];
 
 export type AppArea = "company" | "creator" | "admin";

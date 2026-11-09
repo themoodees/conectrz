@@ -497,3 +497,58 @@ export async function cancelPlan(companyId: string): Promise<AdminResult> {
   revalidatePath("/admin", "layout");
   return { success: "Subscription canceled." };
 }
+
+/* ---------- "Complete your profile" reminder emails ---------- */
+
+export interface ReminderCounts {
+  total: number;
+  hidden_profile: number;
+  no_profile: number;
+}
+
+const REMINDER_ERRORS: Record<string, string> = {
+  not_configured: "Email isn't configured (RESEND_API_KEY, EMAIL_FROM, APP_URL).",
+  count_changed: "The number of creators changed. Reload the page and check again.",
+  admins_only: "Admins only.",
+};
+
+/** How many creators would get the reminder right now. Nothing is sent. */
+export async function getReminderCounts(): Promise<ReminderCounts | null> {
+  if (isMockMode) return null;
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.functions.invoke("send-profile-reminder", {
+    body: { mode: "count" },
+  });
+  return error ? null : (data as ReminderCounts);
+}
+
+async function invokeReminder(body: Record<string, unknown>): Promise<{ data?: unknown; error?: string }> {
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.functions.invoke("send-profile-reminder", { body });
+  if (!error) return { data };
+  let code = "";
+  try {
+    code = (await (error as { context?: Response }).context?.json())?.error ?? "";
+  } catch {
+    // not a JSON error body
+  }
+  return { error: REMINDER_ERRORS[code] ?? "Couldn't send. Please try again." };
+}
+
+/** Sends the 4 versions of the reminder to the signed-in admin's own email. */
+export async function sendReminderTest(): Promise<AdminResult> {
+  if (isMockMode) return { error: "Not available in the demo." };
+  const { data, error } = await invokeReminder({ mode: "test" });
+  if (error) return { error };
+  return { success: `Sent ${(data as { sent: number }).sent} test emails to your address.` };
+}
+
+/** Sends the reminder to every eligible creator (once each). `expected` must match the count shown. */
+export async function sendReminders(expected: number): Promise<AdminResult> {
+  if (isMockMode) return { error: "Not available in the demo." };
+  const { data, error } = await invokeReminder({ mode: "send", expected });
+  if (error) return { error };
+  const { sent, failed } = data as { sent: number; failed: number };
+  revalidatePath("/admin/reminders");
+  return { success: `Sent ${sent} emails${failed ? `, ${failed} failed (they can be retried)` : ""}.` };
+}
