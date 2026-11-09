@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GoogleTagManager } from "@next/third-parties/google";
+import { SignupEvent } from "@/components/analytics/SignupEvent";
 import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       {process.env.NODE_ENV === "production" && <GoogleTagManager gtmId="GTM-MFVS9ZP6" />}
       <body className="min-h-dvh">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <SignupEvent />
         <Analytics />
       </body>
     </html>
