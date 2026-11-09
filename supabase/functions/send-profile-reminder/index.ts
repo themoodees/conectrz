@@ -216,7 +216,15 @@ async function sendEmail(to: string, subject: string, html: string, text: string
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${Deno.env.get("RESEND_API_KEY")}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: Deno.env.get("EMAIL_FROM"), to: [to], subject, html, text }),
+    // Replies go to the support inbox, not to the notifications sender.
+    body: JSON.stringify({
+      from: Deno.env.get("EMAIL_FROM"),
+      to: [to],
+      reply_to: Deno.env.get("SUPPORT_EMAIL") || "hello@conectrz.com",
+      subject,
+      html,
+      text,
+    }),
   });
   if (!response.ok) console.error("send-profile-reminder: Resend error", response.status, await response.text());
   return response.ok;
