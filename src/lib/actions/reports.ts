@@ -19,6 +19,7 @@ const REASONS: ReportReason[] = [
   "inappropriate_content",
   "harassment",
   "no_response",
+  "non_payment",
   "other",
 ];
 

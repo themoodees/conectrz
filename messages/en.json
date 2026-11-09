@@ -227,6 +227,10 @@
             "a": "Directly by the brand. Add the payment methods you accept to your profile, and check how the brand plans to pay on the project page. You agree the details in the chat before you start, and Conectrz is not involved in the payment."
           },
           {
+            "q": "What if a brand doesn't pay me?",
+            "a": "Conectrz doesn't handle or guarantee payments, so protect yourself before you start: agree the price, deadline, usage rights and payment method in the chat, and consider asking for part of the fee in advance. Don't send final files until the agreed payment is received. If a brand doesn't pay, open the conversation, choose the ⋯ menu, then Report, and select \"Payment problem\". Our team reviews reports and can pause or close accounts that break the rules, but we can't recover money for you."
+          },
+          {
             "q": "What are reviews?",
             "a": "Brands you have talked with can rate you from 1 to 5 stars and leave a comment. They show on your profile, so a good review helps you get chosen."
           },
@@ -455,7 +459,8 @@
       "selectHint": "Your conversations appear on the left.",
       "creatorEmpty": "No messages yet. When a brand contacts you, the conversation appears here.",
       "companyEmpty": "No conversations yet. Contact a creator from their profile to start one.",
-      "archivedTitle": "Archived"
+      "archivedTitle": "Archived",
+      "paymentTip": "Before you start, agree the price, deadline and how you'll be paid here in the chat. Conectrz doesn't handle payments. If a brand doesn't pay, report it from the ⋯ menu."
     },
     "thread": {
       "unavailable": "{name} (unavailable)",
@@ -499,7 +504,8 @@
         "inappropriate_content": "Inappropriate content",
         "harassment": "Harassment",
         "no_response": "No response",
-        "other": "Other"
+        "other": "Other",
+        "non_payment": "Payment problem (brand didn't pay)"
       }
     },
     "serverErrors": {
