@@ -60,6 +60,12 @@ export async function ConversationView({ conversation, viewer, backHref }: Conve
         />
       </header>
 
+      {viewer === "creator" && (
+        <p className="border-b border-border bg-surface px-4 py-2 text-xs text-graphite md:px-6">
+          {t("paymentTip")}
+        </p>
+      )}
+
       <MessageThread
         conversationId={conversation.id}
         viewer={viewer}

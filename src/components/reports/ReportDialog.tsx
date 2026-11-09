@@ -17,6 +17,7 @@ export const REPORT_REASON_LABELS: Record<string, string> = {
   inappropriate_content: "Inappropriate content",
   harassment: "Harassment",
   no_response: "No response",
+  non_payment: "Payment problem",
   other: "Other",
 };
 
