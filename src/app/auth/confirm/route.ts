@@ -31,5 +31,11 @@ export async function GET(request: NextRequest) {
 
   await ensureCompanyProfile(supabase, data.user);
   await syncLocaleOnSignIn(supabase, data.user.id);
-  return NextResponse.redirect(new URL(next, origin));
+  const response = NextResponse.redirect(new URL(next, origin));
+  // One-time marker so the next page can send a `sign_up` conversion to GTM (not for password resets).
+  if (next !== "/reset-password") {
+    const role = data.user.user_metadata?.role === "creator" ? "creator" : "company";
+    response.cookies.set("cz_signup", role, { path: "/", maxAge: 600, sameSite: "lax" });
+  }
+  return response;
 }

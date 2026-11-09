@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { DataLayerEvent } from "@/components/analytics/DataLayerEvent";
+import { getSupabaseSession } from "@/lib/data/session";
 import { TrackOnMount } from "@/components/analytics/TrackOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
 import {
@@ -29,7 +31,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   const t = await getTranslations("app.settings");
   const tc = await getTranslations("app.companySettings");
   const locale = await getLocale();
-  const [account, usage, billing, reviews, { billing: billingResult }] = await Promise.all([
+  const [account, usage, billing, reviews, { billing: billingResult, plan: planParam, session_id: sessionParam }] = await Promise.all([
     getCurrentCompanyAccount(),
     getConversationUsage(),
     getBillingStatus(),
@@ -37,6 +39,19 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
     searchParams,
   ]);
   if (!account) return null;
+
+  // Purchase conversion for GTM: plan list price (promo codes are not subtracted).
+  let purchase: { plan: string; value: number } | null = null;
+  const sessionId = typeof sessionParam === "string" ? sessionParam : "";
+  if (billingResult === "success" && typeof planParam === "string" && sessionId) {
+    const { supabase } = await getSupabaseSession();
+    const { data: tier } = await supabase
+      .from("subscription_tiers")
+      .select("name, monthly_price_usd_cents")
+      .eq("id", planParam)
+      .maybeSingle();
+    if (tier) purchase = { plan: tier.name, value: tier.monthly_price_usd_cents / 100 };
+  }
 
   return (
     <PageContainer>
@@ -61,6 +76,13 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           )}
           {billingResult === "success" && <AutoRefresh times={12} />}
           {billingResult === "success" && <TrackOnMount event="subscription_started" />}
+          {purchase && (
+            <DataLayerEvent
+              event="purchase"
+              data={{ plan: purchase.plan, value: purchase.value, currency: "USD" }}
+              dedupeKey={sessionId}
+            />
+          )}
           {billingResult === "error" && (
             <p
               role="alert"

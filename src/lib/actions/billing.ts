@@ -76,7 +76,7 @@ export async function startCheckout(formData: FormData): Promise<void> {
       ...(customer
         ? { customer: customer.stripe_customer_id }
         : { customer_email: user.email ?? undefined }),
-      success_url: `${origin}/settings?billing=success`,
+      success_url: `${origin}/settings?billing=success&plan=${encodeURIComponent(planId)}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/plans`,
     });
     url = session.url;
