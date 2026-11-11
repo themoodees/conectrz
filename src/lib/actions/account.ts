@@ -87,6 +87,13 @@ export async function deleteCreatorAccount(
     }
   }
 
+  // Take them off the marketing list while we still know their email.
+  try {
+    await supabase.functions.invoke("marketing-contact", { body: { mode: "remove" } });
+  } catch {
+    // best effort
+  }
+
   const { error } = await supabase.rpc("delete_my_creator_account");
   if (error) return { error: t("deleteFailed") };
 

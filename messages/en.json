@@ -345,7 +345,8 @@
       "switchToCreatorLink": "Join as a creator",
       "switchToCompany": "Hiring creators?",
       "switchToCompanyLink": "Create a company account",
-      "agreeSuffix": "."
+      "agreeSuffix": ".",
+      "marketingOptIn": "Send me news and tips about Conectrz (optional). You can unsubscribe at any time."
     },
     "forgot": {
       "metaTitle": "Reset your password",

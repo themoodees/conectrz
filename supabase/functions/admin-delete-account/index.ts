@@ -2,7 +2,8 @@
 //
 // Called by the web app with the signed-in admin's session token and { user_id }.
 // 1) checks the caller is an admin, 2) clears rows that would block the delete
-//    (admin_purge_account), 3) deletes the login, which cascades to the profile and its data.
+//    (admin_purge_account), 3) deletes the login, which cascades to the profile and its data,
+//    4) removes the person from the Resend marketing list (only if RESEND_CONTACTS_API_KEY is set).
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided automatically.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -46,6 +47,10 @@ Deno.serve(async (req) => {
   if (profile?.role !== "admin") return json({ error: "admins_only" }, 403);
   if (userId === caller.user.id) return json({ error: "cannot_delete_admin" }, 400);
 
+  // Their email is gone once the login is deleted, so read it now for the marketing list.
+  const { data: target } = await supabase.auth.admin.getUserById(userId);
+  const targetEmail = target.user?.email;
+
   const { error: purgeError } = await supabase.rpc("admin_purge_account", { p_user_id: userId });
   if (purgeError) {
     const known = ["account_not_found", "cannot_delete_admin", "cancel_plan_first"].find((code) =>
@@ -56,6 +61,21 @@ Deno.serve(async (req) => {
 
   const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
   if (deleteError) return json({ error: "delete_failed" }, 500);
+
+  const contactsKey = Deno.env.get("RESEND_CONTACTS_API_KEY");
+  if (contactsKey && targetEmail) {
+    try {
+      const response = await fetch(`https://api.resend.com/contacts/${encodeURIComponent(targetEmail)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${contactsKey}` },
+      });
+      if (!response.ok && response.status !== 404) {
+        console.error("admin-delete-account: Resend contact delete failed", response.status);
+      }
+    } catch (e) {
+      console.error("admin-delete-account: Resend contact delete error", e);
+    }
+  }
 
   return json({ ok: true });
 });

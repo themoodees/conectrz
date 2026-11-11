@@ -60,6 +60,8 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const values = { name, email };
+  // Optional, unticked by default: agreement to marketing email (news and tips).
+  const marketingOptIn = formData.get("marketing") === "on";
   const t = await getTranslations("auth");
 
   if (!name || !email || !password) {
@@ -77,7 +79,10 @@ export async function signUp(_previous: AuthFormState, formData: FormData): Prom
     password,
     options: {
       // "role" is read by the on_auth_user_created trigger (only company/creator are accepted).
-      data: role === "company" ? { role, company_name: name } : { role, display_name: name },
+      data: {
+        ...(role === "company" ? { role, company_name: name } : { role, display_name: name }),
+        ...(marketingOptIn ? { marketing_opt_in: true } : {}),
+      },
       emailRedirectTo: `${origin}/auth/confirm`,
     },
   });
