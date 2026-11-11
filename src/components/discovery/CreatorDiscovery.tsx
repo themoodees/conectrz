@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Pagination } from "@/components/ui/Pagination";
+import { PAGE_SIZE, paginate } from "@/lib/pagination";
 import { useTranslations } from "next-intl";
 import type { Creator } from "@/types/creator";
 import type { DiscoveryFilterOptions, FilterKey, SortOption } from "@/types/discovery";
@@ -62,6 +64,19 @@ export function CreatorDiscovery({
     [creators, query, filters, sort],
   );
 
+  // The page resets to 1 whenever the search, filters or sort change.
+  const signature = JSON.stringify([query, filters, sort]);
+  const [pageState, setPageState] = useState({ signature, page: 1 });
+  const paged = paginate(
+    results,
+    pageState.signature === signature ? pageState.page : 1,
+    PAGE_SIZE.discover,
+  );
+  const goToPage = (page: number) => {
+    setPageState({ signature, page });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const chips = getActiveFilterChips(filters, labels);
   const panelKeys = panel === "more" ? SECONDARY_FILTERS : ALL_FILTERS;
   const panelHasSelection = chips.some((chip) => panelKeys.includes(chip.key));
@@ -110,7 +125,10 @@ export function CreatorDiscovery({
       </div>
 
       {results.length > 0 ? (
-        <CreatorGrid creators={results} savedIds={savedIds} onToggleSave={toggleSave} />
+        <>
+          <CreatorGrid creators={paged.items} savedIds={savedIds} onToggleSave={toggleSave} />
+          <Pagination page={paged.page} totalPages={paged.totalPages} onChange={goToPage} />
+        </>
       ) : (
         <EmptyResults onReset={resetAll} />
       )}

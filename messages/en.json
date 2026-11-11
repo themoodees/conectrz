@@ -1219,6 +1219,13 @@
       "language": "At least one language",
       "service": "At least one service (e.g. UGC video) with your rate",
       "cta": "Complete my profile"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}",
+      "goTo": "Go to page {page}"
     }
   }
 }

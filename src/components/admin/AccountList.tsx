@@ -71,7 +71,7 @@ export function AccountList({ accounts, plans }: { accounts: AdminAccount[]; pla
             onChange={() => setSelected(allSelected ? [] : accounts.map((a) => a.id))}
             className="size-4 accent-primary"
           />
-          {selected.length > 0 ? `${selected.length} selected` : "Select all"}
+          {selected.length > 0 ? `${selected.length} selected` : "Select all on this page"}
         </label>
         <div ref={menuRef} className="relative">
           <button
