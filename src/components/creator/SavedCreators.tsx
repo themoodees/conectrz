@@ -6,7 +6,7 @@ import { CreatorGrid } from "@/components/discovery/CreatorGrid";
 import { useSavedCreators } from "./useSavedCreators";
 
 /** Grid of saved creators. Un-saving removes the card after the page refreshes. */
-export function SavedCreators({ creators }: { creators: Creator[] }) {
+export function SavedCreators({ creators, total }: { creators: Creator[]; total: number }) {
   const t = useTranslations("app.discovery");
   const { savedIds, toggleSave } = useSavedCreators(creators.map((creator) => creator.id));
 
@@ -14,7 +14,7 @@ export function SavedCreators({ creators }: { creators: Creator[] }) {
     <div className="space-y-5">
       <p className="text-sm text-graphite">
         {t.rich("count", {
-          count: creators.length,
+          count: total,
           b: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
         })}
       </p>

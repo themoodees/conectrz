@@ -3,17 +3,22 @@ import { AdminPageHeader, StatusBadge } from "@/components/admin/AdminPageHeader
 import { ReportActions } from "@/components/admin/AdminActionButtons";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { REPORT_REASON_LABELS } from "@/components/reports/ReportDialog";
+import { Pagination } from "@/components/ui/Pagination";
 import { getReports } from "@/lib/data/admin";
+import { PAGE_SIZE, paginate, parsePage } from "@/lib/pagination";
 import { formatShortDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Reports · Admin" };
 
 export default async function AdminReportsPage({ searchParams }: PageProps<"/admin/reports">) {
-  const [{ view }, reports] = await Promise.all([searchParams, getReports()]);
+  const [{ view, page: pageParam }, reports] = await Promise.all([searchParams, getReports()]);
   const showResolved = view === "resolved";
   const pending = reports.filter((r) => r.status === "pending");
   const resolved = reports.filter((r) => r.status === "resolved");
-  const visible = showResolved ? resolved : pending;
+  const all = showResolved ? resolved : pending;
+  const paged = paginate(all, parsePage(pageParam), PAGE_SIZE.reports);
+  const visible = paged.items;
+  const hrefFor = (n: number) => `/admin/reports?${showResolved ? "view=resolved&" : ""}page=${n}`;
 
   return (
     <PageContainer>
@@ -36,7 +41,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
         ]}
       />
 
-      {visible.length === 0 ? (
+      {all.length === 0 ? (
         <p className="py-10 text-center text-sm text-muted">
           {showResolved ? "No resolved reports yet." : "No pending reports. 🎉"}
         </p>
@@ -69,6 +74,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
           ))}
         </ul>
       )}
+      <Pagination page={paged.page} totalPages={paged.totalPages} hrefFor={hrefFor} />
     </PageContainer>
   );
 }

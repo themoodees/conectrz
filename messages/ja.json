@@ -1219,6 +1219,13 @@
       "language": "言語（1つ以上）",
       "service": "サービス（例：UGC動画）と料金（1つ以上）",
       "cta": "プロフィールを完成させる"
+    },
+    "pagination": {
+      "label": "ページ送り",
+      "previous": "前へ",
+      "next": "次へ",
+      "pageOf": "{page} / {total} ページ",
+      "goTo": "{page}ページへ"
     }
   }
 }

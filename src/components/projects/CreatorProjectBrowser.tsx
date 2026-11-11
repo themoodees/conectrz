@@ -12,6 +12,8 @@ import { FilterPanel } from "@/components/discovery/FilterPanel";
 import { MoreFiltersButton } from "@/components/discovery/FilterBar";
 import { OptionButton } from "@/components/discovery/OptionButton";
 import { RangeSlider } from "@/components/discovery/RangeSlider";
+import { Pagination } from "@/components/ui/Pagination";
+import { PAGE_SIZE, paginate } from "@/lib/pagination";
 import { ProjectCard } from "./ProjectCard";
 
 type Deadline = "week" | "month" | "later";
@@ -124,6 +126,19 @@ export function CreatorProjectBrowser({
           : b.createdAt.localeCompare(a.createdAt),
     );
   }, [projects, query, selected, payments, budget, deadline, sort]);
+
+  // The page resets to 1 whenever the search, filters or sort change.
+  const signature = JSON.stringify([query, selected, payments, budget, deadline, sort]);
+  const [pageState, setPageState] = useState({ signature, page: 1 });
+  const paged = paginate(
+    visible,
+    pageState.signature === signature ? pageState.page : 1,
+    PAGE_SIZE.creatorProjects,
+  );
+  const goToPage = (page: number) => {
+    setPageState({ signature, page });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const toggle = <T extends string>(list: T[], value: T) =>
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -349,13 +364,20 @@ export function CreatorProjectBrowser({
       )}
 
       {visible.length > 0 ? (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {visible.map((project) => (
-            <li key={project.id}>
-              <ProjectCard project={project} href={`/creator/projects/${project.id}`} showCompany />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="grid gap-4 md:grid-cols-2">
+            {paged.items.map((project) => (
+              <li key={project.id}>
+                <ProjectCard
+                  project={project}
+                  href={`/creator/projects/${project.id}`}
+                  showCompany
+                />
+              </li>
+            ))}
+          </ul>
+          <Pagination page={paged.page} totalPages={paged.totalPages} onChange={goToPage} />
+        </>
       ) : (
         <div className="flex flex-col items-center rounded-card border border-dashed border-border px-6 py-16 text-center">
           <span className="grid size-12 place-items-center rounded-full bg-surface text-muted">
