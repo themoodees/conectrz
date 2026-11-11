@@ -57,6 +57,15 @@ export function SignupForm({ role }: { role: "company" | "creator" }) {
         hint={t("passwordHint")}
       />
 
+      <label className="flex items-start gap-3 text-sm text-graphite">
+        <input
+          type="checkbox"
+          name="marketing"
+          className="mt-0.5 size-4 shrink-0 rounded border-border accent-primary"
+        />
+        <span>{t("marketingOptIn")}</span>
+      </label>
+
       <button type="submit" disabled={pending} className={buttonClass({ className: "w-full" })}>
         {pending ? t("submitting") : t("submit")}
       </button>

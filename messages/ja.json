@@ -345,7 +345,8 @@
       "switchToCreatorLink": "クリエイターとして参加",
       "switchToCompany": "クリエイターを探していますか？",
       "switchToCompanyLink": "企業アカウントを作成",
-      "agreeSuffix": "に同意したものとみなされます。"
+      "agreeSuffix": "に同意したものとみなされます。",
+      "marketingOptIn": "Conectrzからのお知らせやヒントを受け取る（任意）。いつでも配信停止できます。"
     },
     "forgot": {
       "metaTitle": "パスワードの再設定",

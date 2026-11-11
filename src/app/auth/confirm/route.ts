@@ -31,6 +31,14 @@ export async function GET(request: NextRequest) {
 
   await ensureCompanyProfile(supabase, data.user);
   await syncLocaleOnSignIn(supabase, data.user.id);
+  // Ticked "news and tips" at sign-up: add them to the marketing list now that the email is confirmed.
+  if (data.user.user_metadata?.marketing_opt_in === true && next !== "/reset-password") {
+    try {
+      await supabase.functions.invoke("marketing-contact", { body: { mode: "subscribe" } });
+    } catch {
+      // never block sign-in on the mailing list
+    }
+  }
   const response = NextResponse.redirect(new URL(next, origin));
   // One-time marker so the next page can send a `sign_up` conversion to GTM (not for password resets).
   if (next !== "/reset-password") {
