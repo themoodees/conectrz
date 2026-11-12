@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { Logo } from "@/components/ui/Logo";
-import { SUPPORT_EMAIL } from "@/lib/config";
+import { SOCIAL_LINKS, SUPPORT_EMAIL } from "@/lib/config";
 
 export async function MarketingFooter() {
   const t = await getTranslations("nav");
@@ -41,6 +41,17 @@ export async function MarketingFooter() {
           <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-ink">
             {t("contact")}
           </a>
+          {SOCIAL_LINKS.map((social) => (
+            <a
+              key={social.name}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink"
+            >
+              {social.name}
+            </a>
+          ))}
         </nav>
         <LanguageSwitcher />
         <p className="text-xs text-muted">© {new Date().getFullYear()} Conectrz</p>
