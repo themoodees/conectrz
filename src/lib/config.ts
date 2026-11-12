@@ -21,8 +21,12 @@ export const supabaseConfig = {
 /** Where upgrade requests and support questions go. PLACEHOLDER — set your real address. */
 /** Conectrz's social media pages (shown in the footer). */
 export const SOCIAL_LINKS = [
-  { name: "Instagram", href: "https://www.instagram.com/conectrz/" },
-  { name: "Facebook", href: "https://www.facebook.com/profile.php?id=61596347872113" },
+  { name: "Instagram", href: "https://www.instagram.com/conectrz/", icon: "/social/instagram.svg" },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61596347872113",
+    icon: "/social/facebook.svg",
+  },
 ] as const;
 
 export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "hello@conectrz.com";

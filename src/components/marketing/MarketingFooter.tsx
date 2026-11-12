@@ -41,18 +41,22 @@ export async function MarketingFooter() {
           <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-ink">
             {t("contact")}
           </a>
+        </nav>
+        <div className="flex items-center gap-4">
           {SOCIAL_LINKS.map((social) => (
             <a
               key={social.name}
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-ink"
+              aria-label={social.name}
+              className="opacity-100 transition-opacity hover:opacity-70"
             >
-              {social.name}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={social.icon} alt="" width={20} height={20} />
             </a>
           ))}
-        </nav>
+        </div>
         <LanguageSwitcher />
         <p className="text-xs text-muted">© {new Date().getFullYear()} Conectrz</p>
       </div>
