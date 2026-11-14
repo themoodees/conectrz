@@ -19,6 +19,8 @@ export interface CreatorEditorData {
   /** yyyy-mm-dd, or "" when not set. Private: companies only see the age. */
   birthDate: string;
   gender: Gender | "";
+  /** ISO country code, "JP" unless the creator lives abroad. */
+  countryCode: string;
   prefecture: string;
   /** Official 5-digit municipality code, or "" when the city is free text. */
   cityCode: string;

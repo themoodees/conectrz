@@ -48,6 +48,8 @@ export interface Creator {
   photoUrl: string | null;
   bio?: string | null;
   country: string;
+  /** ISO country code; "JP" (or missing) for creators in Japan. */
+  countryCode?: string;
   prefecture: string | null;
   city: string | null;
   isAvailable: boolean;

@@ -11,6 +11,7 @@ import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { requireSupabaseUser } from "@/lib/data/session";
 import { findMunicipality, prefectureCode } from "@/lib/municipalities";
+import { countryName, HOME_COUNTRY, isCountryCode } from "@/lib/countries";
 import { PREFECTURES } from "@/lib/prefectures";
 import { MOCK_CREATOR_ID } from "@/mocks/account";
 import { mockCreators } from "@/mocks/creators";
@@ -57,6 +58,7 @@ function readBasics(formData: FormData) {
     bio: String(formData.get("bio") ?? "")
       .trim()
       .slice(0, 1500),
+    countryCode: String(formData.get("countryCode") ?? HOME_COUNTRY),
     prefecture: String(formData.get("prefecture") ?? ""),
     cityCode: String(formData.get("cityCode") ?? ""),
     city: String(formData.get("city") ?? "")
@@ -73,12 +75,24 @@ function readBasics(formData: FormData) {
  * prefecture), or the creator's own text when they chose "Other". Null = invalid pick.
  */
 async function resolveCity(basics: ReturnType<typeof readBasics>) {
+  // Outside Japan only the country is stored: no city.
+  if (basics.countryCode !== HOME_COUNTRY) return { city: null, cityCode: null };
   if (/^\d{5}$/.test(basics.cityCode)) {
     if (basics.cityCode.slice(0, 2) !== prefectureCode(basics.prefecture)) return null;
     const municipality = await findMunicipality(basics.cityCode);
     return municipality ? { city: municipality.en, cityCode: municipality.c } : null;
   }
   return { city: basics.city || null, cityCode: null };
+}
+
+/** What to store for the place: Japan keeps its prefecture; abroad has none. */
+function placeColumns(basics: ReturnType<typeof readBasics>) {
+  const abroad = basics.countryCode !== HOME_COUNTRY;
+  return {
+    country: countryName(basics.countryCode, "en"),
+    country_code: basics.countryCode,
+    prefecture: abroad ? null : basics.prefecture,
+  };
 }
 
 /** Whole years between a yyyy-mm-dd birth date and today. */
@@ -98,7 +112,8 @@ function validateBasics(
 ): string | null {
   if (!basics.firstName) return t("firstName");
   if (!basics.lastName) return t("lastName");
-  if (!PREFECTURES.includes(basics.prefecture)) return t("prefecture");
+  if (!isCountryCode(basics.countryCode)) return t("country");
+  if (basics.countryCode === HOME_COUNTRY && !PREFECTURES.includes(basics.prefecture)) return t("prefecture");
   if (basics.birthDate) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(basics.birthDate) || Number.isNaN(Date.parse(basics.birthDate)))
       return t("birth");
@@ -129,8 +144,7 @@ export async function createCreatorProfile(
     first_name: basics.firstName,
     last_name: basics.lastName,
     bio: basics.bio || null,
-    country: "Japan",
-    prefecture: basics.prefecture,
+    ...placeColumns(basics),
     city: place.city,
     city_code: place.cityCode,
     is_available: true,
@@ -159,7 +173,9 @@ export async function updateCreatorBasics(
     Object.assign(creator, {
       displayName: `${basics.firstName} ${basics.lastName}`,
       bio: basics.bio || null,
-      prefecture: basics.prefecture,
+      country: countryName(basics.countryCode, "en"),
+      countryCode: basics.countryCode,
+      prefecture: basics.countryCode === HOME_COUNTRY ? basics.prefecture : null,
       city: place.city,
       isAvailable: basics.isAvailable,
       gender: (basics.gender || null) as Gender | null,
@@ -178,7 +194,7 @@ export async function updateCreatorBasics(
       first_name: basics.firstName,
       last_name: basics.lastName,
       bio: basics.bio || null,
-      prefecture: basics.prefecture,
+      ...placeColumns(basics),
       city: place.city,
       city_code: place.cityCode,
       is_available: basics.isAvailable,

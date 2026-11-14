@@ -11,6 +11,7 @@ import {
   PLATFORM_LABELS,
 } from "./filterConfig";
 import { getLargestAudience, getLowestRate } from "@/lib/format";
+import { OUTSIDE_JAPAN } from "@/lib/prefectures";
 
 /*
  * Local (mock) search, filter and sort.
@@ -26,6 +27,7 @@ export function matchesSearch(creator: Creator, query: string): boolean {
     creator.bio ?? "",
     creator.city ?? "",
     creator.prefecture ?? "",
+    creator.country,
     ...creator.niches,
     ...creator.languages.map((language) => language.name),
     ...creator.services.map((service) => service.name),
@@ -56,7 +58,10 @@ const describeRange = (range: NumberRange, format: (n: number) => string) =>
 
 export function matchesFilters(creator: Creator, filters: DiscoveryFilters): boolean {
   if (!includesAny(creator.niches, filters.niches)) return false;
-  if (!includesAny(creator.prefecture ? [creator.prefecture] : [], filters.locations)) return false;
+  // Creators abroad match the "Outside Japan" option; the others match their prefecture.
+  const abroad = creator.countryCode ? creator.countryCode !== "JP" : creator.country !== "Japan";
+  if (!includesAny(abroad ? [OUTSIDE_JAPAN] : creator.prefecture ? [creator.prefecture] : [], filters.locations))
+    return false;
   if (
     !includesAny(
       creator.languages.map((l) => l.name),

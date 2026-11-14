@@ -41,13 +41,13 @@ export const getOwnCreatorSummary = cache(async (): Promise<OwnCreatorSummary | 
   if (!user) return null;
   const { data, error } = await supabase
     .from("creator_profiles")
-    .select("id, first_name, last_name, status, prefecture, creator_languages(language_id), creator_services(service_id)")
+    .select("id, first_name, last_name, status, country_code, prefecture, creator_languages(language_id), creator_services(service_id)")
     .eq("id", user.id)
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
   const missing: OwnCreatorSummary["missing"] = [];
-  if (!data.prefecture) missing.push("location");
+  if (data.country_code === "JP" && !data.prefecture) missing.push("location");
   if (data.creator_languages.length === 0) missing.push("language");
   if (data.creator_services.length === 0) missing.push("service");
   return {
@@ -102,6 +102,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
       bio: creator.bio ?? "",
       birthDate: mockStore.creatorBirthDates[creator.id] ?? "",
       gender: creator.gender ?? "",
+      countryCode: creator.countryCode ?? "JP",
       prefecture: creator.prefecture ?? "",
       cityCode: "",
       city: creator.city ?? "",
@@ -132,7 +133,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
   const { data, error } = await supabase
     .from("creator_profiles")
     .select(
-      `id, status, first_name, last_name, bio, birth_date, gender, payment_methods, prefecture, city, city_code, is_available, photo_url,
+      `id, status, first_name, last_name, bio, birth_date, gender, payment_methods, country_code, prefecture, city, city_code, is_available, photo_url,
        creator_niches ( niche_id ),
        creator_languages ( language_id, proficiency ),
        creator_services ( service_id, rate_type, rate_amount_usd_cents ),
@@ -163,6 +164,7 @@ export async function getOwnCreatorEditorData(): Promise<CreatorEditorData | nul
     bio: data.bio ?? "",
     birthDate: data.birth_date ?? "",
     gender: (data.gender as Gender | null) ?? "",
+    countryCode: data.country_code,
     prefecture: data.prefecture ?? "",
     cityCode: data.city_code ?? "",
     city: data.city ?? "",

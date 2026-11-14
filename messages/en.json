@@ -94,8 +94,8 @@
       "title": "Built for working with creators in Japan",
       "items": [
         {
-          "title": "Based in Japan",
-          "text": "Japanese and international creators who live in Japan, in the languages your audience speaks.",
+          "title": "Japan and Japanese abroad",
+          "text": "Japanese and international creators who live in Japan, plus Japanese creators living abroad, in the languages your audience speaks.",
           "icon": "map"
         },
         {
@@ -204,11 +204,11 @@
           },
           {
             "q": "Who can join as a creator?",
-            "a": "Creators who live in Japan, Japanese or international. You don't need a minimum number of followers, and UGC creators are welcome: you can create content for a brand's own channels, post to your own audience, or both."
+            "a": "Creators who live in Japan, Japanese or international, and Japanese creators living abroad. You don't need a minimum number of followers, and UGC creators are welcome: you can create content for a brand's own channels, post to your own audience, or both."
           },
           {
             "q": "How do I get my profile in front of brands?",
-            "a": "Add your prefecture, at least one language and at least one service with your price. Once those are in place your profile is published and brands can find it in search. A photo, a short bio and portfolio examples make a big difference."
+            "a": "Add your prefecture (or just your country if you live abroad), at least one language and at least one service with your price. Once those are in place your profile is published and brands can find it in search. A photo, a short bio and portfolio examples make a big difference."
           },
           {
             "q": "What can brands see about me?",
@@ -325,7 +325,7 @@
       "companySubtitle": "Find and connect with creators living in Japan.",
       "creatorMetaTitle": "Join as a creator",
       "creatorTitle": "Join as a creator",
-      "creatorSubtitle": "Get discovered by brands looking for creators in Japan.",
+      "creatorSubtitle": "Get discovered by brands looking for creators in Japan, or Japanese creators abroad.",
       "companyName": "Company name",
       "creatorName": "Your name (shown on your profile)",
       "workEmail": "Work email",
@@ -730,6 +730,7 @@
       "closedEdit": "Only open projects can be edited. Reopen it first."
     },
     "prefectures": {
+      "OutsideJapan": "Outside Japan",
       "Hokkaido": "Hokkaido",
       "Aomori": "Aomori",
       "Iwate": "Iwate",
@@ -807,7 +808,8 @@
         "available": "Available for new work",
         "cityOther": "Other (not in the list)",
         "cityOtherLabel": "Your city or area",
-        "cityPrefectureFirst": "Choose a prefecture first"
+        "cityPrefectureFirst": "Choose a prefecture first",
+        "country": "Country of residence"
       },
       "personal": {
         "birth": "Birth date (optional)",
@@ -921,6 +923,7 @@
       "firstName": "Enter your first name.",
       "lastName": "Enter your last name.",
       "prefecture": "Choose your prefecture.",
+      "country": "Choose your country.",
       "birth": "Enter a valid birth date.",
       "gender": "Choose a valid gender.",
       "createFailed": "Couldn't create your profile. Please try again.",
