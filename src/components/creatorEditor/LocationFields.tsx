@@ -14,8 +14,7 @@ const OTHER = "other";
  * Prefecture + city/ward. The city is picked from the official list for that prefecture, so it
  * can be shown in every language; "Other" lets someone type a place that isn't listed.
  * Submits `prefecture`, `cityCode` ("other" or a 5-digit code) and, for "Other", `city`.
- * Country comes first (Japan by default). Outside Japan there is no prefecture: the creator
- * types their city instead (`countryCode` + `city`).
+ * Country comes first (Japan by default). Outside Japan only the country is asked.
  */
 export function LocationFields({
   defaultCountryCode = HOME_COUNTRY,
@@ -53,26 +52,16 @@ export function LocationFields({
     ...(prefecture ? [{ value: OTHER, label: t("cityOther") }] : []),
   ];
 
+  // Outside Japan only the country is asked: no prefecture, no city.
   if (countryCode !== HOME_COUNTRY) {
     return (
-      <>
-        <SelectField
-          label={t("country")}
-          name="countryCode"
-          value={countryCode}
-          onChange={(event) => setCountryCode(event.target.value)}
-          options={countryOptions(locale)}
-        />
-        <TextField
-          label={t("cityAbroadLabel")}
-          name="city"
-          defaultValue={defaultCityCode ? "" : defaultCity}
-          required
-          maxLength={80}
-          placeholder={t("cityAbroadPlaceholder")}
-          hint={t("abroadHint")}
-        />
-      </>
+      <SelectField
+        label={t("country")}
+        name="countryCode"
+        value={countryCode}
+        onChange={(event) => setCountryCode(event.target.value)}
+        options={countryOptions(locale)}
+      />
     );
   }
 

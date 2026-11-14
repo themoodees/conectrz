@@ -75,10 +75,8 @@ function readBasics(formData: FormData) {
  * prefecture), or the creator's own text when they chose "Other". Null = invalid pick.
  */
 async function resolveCity(basics: ReturnType<typeof readBasics>) {
-  // Outside Japan there is no official list: the creator's own text (required).
-  if (basics.countryCode !== HOME_COUNTRY) {
-    return basics.city ? { city: basics.city, cityCode: null } : null;
-  }
+  // Outside Japan only the country is stored: no city.
+  if (basics.countryCode !== HOME_COUNTRY) return { city: null, cityCode: null };
   if (/^\d{5}$/.test(basics.cityCode)) {
     if (basics.cityCode.slice(0, 2) !== prefectureCode(basics.prefecture)) return null;
     const municipality = await findMunicipality(basics.cityCode);

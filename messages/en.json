@@ -208,7 +208,7 @@
           },
           {
             "q": "How do I get my profile in front of brands?",
-            "a": "Add your prefecture (or your country and city if you live abroad), at least one language and at least one service with your price. Once those are in place your profile is published and brands can find it in search. A photo, a short bio and portfolio examples make a big difference."
+            "a": "Add your prefecture (or just your country if you live abroad), at least one language and at least one service with your price. Once those are in place your profile is published and brands can find it in search. A photo, a short bio and portfolio examples make a big difference."
           },
           {
             "q": "What can brands see about me?",
@@ -809,10 +809,7 @@
         "cityOther": "Other (not in the list)",
         "cityOtherLabel": "Your city or area",
         "cityPrefectureFirst": "Choose a prefecture first",
-        "country": "Country of residence",
-        "cityAbroadLabel": "City",
-        "cityAbroadPlaceholder": "e.g. Los Angeles",
-        "abroadHint": "Brands on paid plans see your city. Everyone sees your country."
+        "country": "Country of residence"
       },
       "personal": {
         "birth": "Birth date (optional)",
