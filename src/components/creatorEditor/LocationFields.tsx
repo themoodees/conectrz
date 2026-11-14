@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { loadMunicipalities, municipalityLabel, type Municipality } from "@/lib/municipalities";
 import { PREFECTURES } from "@/lib/prefectures";
+import { countryOptions, HOME_COUNTRY } from "@/lib/countries";
 import { SelectField } from "@/components/ui/SelectField";
 import { TextField } from "@/components/ui/TextField";
 
@@ -13,12 +14,16 @@ const OTHER = "other";
  * Prefecture + city/ward. The city is picked from the official list for that prefecture, so it
  * can be shown in every language; "Other" lets someone type a place that isn't listed.
  * Submits `prefecture`, `cityCode` ("other" or a 5-digit code) and, for "Other", `city`.
+ * Country comes first (Japan by default). Outside Japan there is no prefecture: the creator
+ * types their city instead (`countryCode` + `city`).
  */
 export function LocationFields({
+  defaultCountryCode = HOME_COUNTRY,
   defaultPrefecture = "",
   defaultCityCode = "",
   defaultCity = "",
 }: {
+  defaultCountryCode?: string;
   defaultPrefecture?: string;
   defaultCityCode?: string;
   defaultCity?: string;
@@ -26,6 +31,7 @@ export function LocationFields({
   const t = useTranslations("app.editor.basics");
   const tp = useTranslations("app.prefectures");
   const locale = useLocale();
+  const [countryCode, setCountryCode] = useState(defaultCountryCode || HOME_COUNTRY);
   const [prefecture, setPrefecture] = useState(defaultPrefecture);
   const [cityCode, setCityCode] = useState(defaultCityCode || (defaultCity ? OTHER : ""));
   const [loaded, setLoaded] = useState<{ prefecture: string; list: Municipality[] } | null>(null);
@@ -47,8 +53,38 @@ export function LocationFields({
     ...(prefecture ? [{ value: OTHER, label: t("cityOther") }] : []),
   ];
 
+  if (countryCode !== HOME_COUNTRY) {
+    return (
+      <>
+        <SelectField
+          label={t("country")}
+          name="countryCode"
+          value={countryCode}
+          onChange={(event) => setCountryCode(event.target.value)}
+          options={countryOptions(locale)}
+        />
+        <TextField
+          label={t("cityAbroadLabel")}
+          name="city"
+          defaultValue={defaultCityCode ? "" : defaultCity}
+          required
+          maxLength={80}
+          placeholder={t("cityAbroadPlaceholder")}
+          hint={t("abroadHint")}
+        />
+      </>
+    );
+  }
+
   return (
     <>
+      <SelectField
+        label={t("country")}
+        name="countryCode"
+        value={countryCode}
+        onChange={(event) => setCountryCode(event.target.value)}
+        options={countryOptions(locale)}
+      />
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label={t("prefecture")}

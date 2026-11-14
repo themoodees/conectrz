@@ -1,4 +1,5 @@
 import type { Creator, CreatorService, LanguageProficiency, SocialAccount } from "@/types/creator";
+import { countryName } from "@/lib/countries";
 
 const compactCache = new Map<string, Intl.NumberFormat>();
 const compactFor = (locale: string) => {
@@ -29,10 +30,16 @@ export const usdToCents = (dollars: number) => Math.round(dollars * 100);
 
 /** "Shibuya, Tokyo" — falls back gracefully when parts are missing. */
 export function formatLocation(
-  creator: Pick<Creator, "city" | "prefecture" | "country">,
+  creator: Pick<Creator, "city" | "prefecture" | "country"> & { countryCode?: string },
   translatePrefecture: (name: string) => string = (name) => name,
   locale = "en",
 ) {
+  const abroad = creator.countryCode ? creator.countryCode !== "JP" : creator.country !== "Japan";
+  if (abroad) {
+    // Outside Japan there is no prefecture: "Paris, France" / フランス、Paris.
+    const country = creator.countryCode ? countryName(creator.countryCode, locale) : creator.country;
+    return [creator.city, country].filter(Boolean).join(", ");
+  }
   const prefecture = creator.prefecture ? translatePrefecture(creator.prefecture) : creator.prefecture;
   if (locale === "ja" && prefecture && creator.city) {
     // Japanese writes the place big to small without a separator: 東京都渋谷区.

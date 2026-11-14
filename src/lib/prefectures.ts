@@ -1,4 +1,7 @@
 /** Japan's 47 prefectures, in the conventional north-to-south order. */
+/** Location-filter value for creators who live outside Japan (translated in app.prefectures). */
+export const OUTSIDE_JAPAN = "OutsideJapan";
+
 export const PREFECTURES = [
   "Hokkaido",
   "Aomori",

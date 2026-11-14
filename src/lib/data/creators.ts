@@ -15,7 +15,7 @@ import { parsePaymentMethods } from "@/lib/payments";
 import { PLATFORM_OPTIONS } from "@/lib/discovery/filterConfig";
 import { mockCreators } from "@/mocks/creators";
 import { mockFilterOptions } from "@/mocks/filterOptions";
-import { PREFECTURES } from "@/lib/prefectures";
+import { OUTSIDE_JAPAN, PREFECTURES } from "@/lib/prefectures";
 import { mockPortfolio } from "@/mocks/portfolio";
 import { mockStore } from "@/mocks/store";
 import { localizedName } from "@/lib/i18n/names";
@@ -44,6 +44,7 @@ interface BaseRow {
   photo_url: string | null;
   bio: string | null;
   country: string | null;
+  country_code?: string | null;
   prefecture: string | null;
   city: string | null;
   city_code?: string | null;
@@ -84,7 +85,7 @@ function ageFromBirthDate(birthDate: string | null | undefined): number | null {
 async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Creator[]> {
   const { supabase } = await getSupabaseSession();
   const locale = await getLocale();
-  const columns = "id, first_name, last_name, photo_url, bio, country, prefecture, city, city_code, is_available";
+  const columns = "id, first_name, last_name, photo_url, bio, country, country_code, prefecture, city, city_code, is_available";
   // Companies get a calculated age and rating; the creator's own view reads the birth date.
   const ownColumns = `${columns}, gender, birth_date, payment_methods`;
   const directoryColumns = `${columns}, gender, age, rating_avg, review_count, payment_methods`;
@@ -159,6 +160,7 @@ async function fetchCreators(ids?: string[], { own = false } = {}): Promise<Crea
     photoUrl: photos[index],
     bio: row.bio,
     country: row.country ?? "Japan",
+    countryCode: row.country_code ?? "JP",
     prefecture: row.prefecture,
     city: cityOf(row),
     isAvailable: row.is_available ?? false,
@@ -300,7 +302,7 @@ export async function getDiscoveryFilterOptions(): Promise<DiscoveryFilterOption
     activeNames("services"),
   ]);
 
-  // Locations: every prefecture, so the filter works even before creators exist there.
-  const locations = [...PREFECTURES];
+  // Locations: every prefecture plus "Outside Japan", so the filter works even before creators exist there.
+  const locations = [...PREFECTURES, OUTSIDE_JAPAN];
   return { niches, languages, services, locations };
 }

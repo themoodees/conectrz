@@ -1,4 +1,4 @@
-import { PREFECTURES } from "@/lib/prefectures";
+import { OUTSIDE_JAPAN, PREFECTURES } from "@/lib/prefectures";
 import type { DiscoveryFilterOptions } from "@/types/discovery";
 
 /*
@@ -21,7 +21,7 @@ export const mockFilterOptions: DiscoveryFilterOptions = {
     "Parenting",
     "Home & Interior",
   ],
-  locations: [...PREFECTURES],
+  locations: [...PREFECTURES, OUTSIDE_JAPAN],
   languages: [
     "Japanese",
     "English",

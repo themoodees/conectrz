@@ -62,9 +62,9 @@ export type Database = {
         ]
       }
       creator_profiles: {
-        Row: { city_code: string | null; payment_methods: string[]; birth_date: string | null; gender: string | null; bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
-        Insert: { city_code?: string | null; payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
-        Update: { city_code?: string | null; payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Row: { country_code: string; city_code: string | null; payment_methods: string[]; birth_date: string | null; gender: string | null; bio: string | null; city: string | null; country: string; created_at: string; first_name: string; id: string; is_available: boolean; last_name: string; photo_url: string | null; prefecture: string | null; status: Database["public"]["Enums"]["account_status"]; updated_at: string }
+        Insert: { country_code?: string; city_code?: string | null; payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country: string; created_at?: string; first_name: string; id: string; is_available?: boolean; last_name: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
+        Update: { country_code?: string; city_code?: string | null; payment_methods?: string[]; birth_date?: string | null; gender?: string | null; bio?: string | null; city?: string | null; country?: string; created_at?: string; first_name?: string; id?: string; is_available?: boolean; last_name?: string; photo_url?: string | null; prefecture?: string | null; status?: Database["public"]["Enums"]["account_status"]; updated_at?: string }
         Relationships: [
           { foreignKeyName: "creator_profiles_id_fkey"; columns: ["id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
@@ -272,7 +272,7 @@ export type Database = {
         Relationships: []
       }
       creator_directory: {
-        Row: { city_code: string | null; payment_methods: string[] | null; age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
+        Row: { country_code: string | null; city_code: string | null; payment_methods: string[] | null; age: number | null; gender: string | null; rating_avg: number | null; review_count: number | null; bio: string | null; city: string | null; country: string | null; first_name: string | null; id: string | null; is_available: boolean | null; last_name: string | null; photo_url: string | null; prefecture: string | null }
         Relationships: []
       }
       company_reviews_public: {

@@ -39,6 +39,7 @@ export function BasicsForm({ data }: { data: CreatorEditorData }) {
         />
       </div>
       <LocationFields
+        defaultCountryCode={data.countryCode}
         defaultPrefecture={data.prefecture}
         defaultCityCode={data.cityCode}
         defaultCity={data.city}
